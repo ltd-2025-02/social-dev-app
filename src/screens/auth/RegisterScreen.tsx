@@ -54,7 +54,21 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       await dispatch(signUp({ email, password, name })).unwrap();
-      Alert.alert('Sucesso!', 'Conta criada com sucesso!');
+      
+      // Após registro bem-sucedido, navegar para onboarding
+      Alert.alert(
+        'Sucesso!', 
+        'Conta criada com sucesso!',
+        [
+          {
+            text: 'Continuar',
+            onPress: () => {
+              // Navegar para onboarding pois é um novo usuário
+              navigation.navigate('Welcome');
+            }
+          }
+        ]
+      );
     } catch (err) {
       Alert.alert('Erro', err.message || 'Erro ao criar conta');
     }

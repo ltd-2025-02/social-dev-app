@@ -2,74 +2,188 @@ export interface Persona {
   id: string;
   name: string;
   path: any;
+  category?: string;
 }
 
-// Mapeamento das imagens de personas disponíveis
+// Mapeamento completo de todas as imagens de personas disponíveis
 const personaImages: { [key: string]: any } = {
-  a: require('../../assets/personas/a/arara.png'),
-  b: require('../../assets/personas/b/baleia.png'),
-  c: require('../../assets/personas/c/cachorro.png'),
-  d: require('../../assets/personas/d/dinossauro.png'),
-  e: require('../../assets/personas/e/elefante.png'),
-  f: require('../../assets/personas/f/flamingo.png'),
-  g: require('../../assets/personas/g/girafa.png'),
-  h: require('../../assets/personas/h/hipopotamo.png'),
-  i: require('../../assets/personas/i/iguana.png'),
-  j: require('../../assets/personas/j/jacare.png'),
-  k: require('../../assets/personas/k/koala.png'),
-  l: require('../../assets/personas/l/leao.png'),
-  m: require('../../assets/personas/m/macaco.png'),
-  n: require('../../assets/personas/n/naja.png'),
-  o: require('../../assets/personas/o/onca.png'),
-  p: require('../../assets/personas/p/panda.png'),
-  q: require('../../assets/personas/q/quati.png'),
-  r: require('../../assets/personas/r/raposa.png'),
-  s: require('../../assets/personas/s/sapo.png'),
-  t: require('../../assets/personas/t/tigre.png'),
-  u: require('../../assets/personas/u/urso.png'),
-  v: require('../../assets/personas/v/vaca.png'),
-  w: require('../../assets/personas/w/wallaby.png'),
-  x: require('../../assets/personas/x/xenops.png'),
-  y: require('../../assets/personas/y/yak.png'),
-  z: require('../../assets/personas/z/zebra.png'),
+  // Letra A
+  arara: require('../../assets/personas/a/arara.png'),
+  
+  // Letra B
+  baleia: require('../../assets/personas/b/baleia.png'),
+  borboleta: require('../../assets/personas/b/borboleta.png'),
+  
+  // Letra C
+  cachorro: require('../../assets/personas/c/cachorro.png'),
+  cobra: require('../../assets/personas/c/cobra.png'),
+  
+  // Letra D
+  dinossauro: require('../../assets/personas/d/dinossauro.png'),
+  dragao: require('../../assets/personas/d/dragao.png'),
+  
+  // Letra E
+  elefante: require('../../assets/personas/e/elefante.png'),
+  
+  // Letra F
+  flamingo: require('../../assets/personas/f/flamingo.png'),
+  
+  // Letra G
+  girafa: require('../../assets/personas/g/girafa.png'),
+  
+  // Letra H
+  hipopotamo: require('../../assets/personas/h/hipopotamo.png'),
+  
+  // Letra I
+  iguana: require('../../assets/personas/i/iguana.png'),
+  
+  // Letra J
+  jacare: require('../../assets/personas/j/jacare.png'),
+  jaguar: require('../../assets/personas/j/jaguar.png'),
+  
+  // Letra K
+  koala: require('../../assets/personas/k/koala.png'),
+  
+  // Letra L
+  leao: require('../../assets/personas/l/leao.png'),
+  
+  // Letra M
+  macaco: require('../../assets/personas/m/macaco.png'),
+  
+  // Letra N
+  naja: require('../../assets/personas/n/naja.png'),
+  
+  // Letra O
+  onca: require('../../assets/personas/o/onca.png'),
+  
+  // Letra P
+  panda: require('../../assets/personas/p/panda.png'),
+  
+  // Letra Q
+  quati: require('../../assets/personas/q/quati.png'),
+  
+  // Letra R
+  raposa: require('../../assets/personas/r/raposa.png'),
+  
+  // Letra S
+  sapo: require('../../assets/personas/s/sapo.png'),
+  
+  // Letra T
+  tigre: require('../../assets/personas/t/tigre.png'),
+  
+  // Letra U
+  urso: require('../../assets/personas/u/urso.png'),
+  
+  // Letra V
+  vaca: require('../../assets/personas/v/vaca.png'),
+  
+  // Letra W
+  wallaby: require('../../assets/personas/w/wallaby.png'),
+  wombate: require('../../assets/personas/w/wombate.png'),
+  
+  // Letra X
+  xenops: require('../../assets/personas/x/xenops.png'),
+  xingu: require('../../assets/personas/x/xingu.png'),
+  
+  // Letra Y
+  yak: require('../../assets/personas/y/yak.png'),
+  yorkshire: require('../../assets/personas/y/yorkshire.png'),
+  
+  // Letra Z
+  zebra: require('../../assets/personas/z/zebra.png'),
 };
 
-// Nomes dos animais para cada letra (baseado nas imagens realmente disponíveis)
+// Nomes amigáveis dos animais
 const animalNames: { [key: string]: string } = {
-  a: 'Arara',
-  b: 'Baleia',
-  c: 'Cachorro',
-  d: 'Dinossauro',
-  e: 'Elefante',
-  f: 'Flamingo',
-  g: 'Girafa',
-  h: 'Hipopótamo',
-  i: 'Iguana',
-  j: 'Jacaré',
-  k: 'Koala',
-  l: 'Leão',
-  m: 'Macaco',
-  n: 'Naja',
-  o: 'Onça',
-  p: 'Panda',
-  q: 'Quati',
-  r: 'Raposa',
-  s: 'Sapo',
-  t: 'Tigre',
-  u: 'Urso',
-  v: 'Vaca',
-  w: 'Wallaby',
-  x: 'Xenops',
-  y: 'Yak',
-  z: 'Zebra'
+  arara: 'Arara',
+  baleia: 'Baleia',
+  borboleta: 'Borboleta',
+  cachorro: 'Cachorro',
+  cobra: 'Cobra',
+  dinossauro: 'Dinossauro',
+  dragao: 'Dragão',
+  elefante: 'Elefante',
+  flamingo: 'Flamingo',
+  girafa: 'Girafa',
+  hipopotamo: 'Hipopótamo',
+  iguana: 'Iguana',
+  jacare: 'Jacaré',
+  jaguar: 'Jaguar',
+  koala: 'Koala',
+  leao: 'Leão',
+  macaco: 'Macaco',
+  naja: 'Naja',
+  onca: 'Onça',
+  panda: 'Panda',
+  quati: 'Quati',
+  raposa: 'Raposa',
+  sapo: 'Sapo',
+  tigre: 'Tigre',
+  urso: 'Urso',
+  vaca: 'Vaca',
+  wallaby: 'Wallaby',
+  wombate: 'Wombate',
+  xenops: 'Xenops',
+  xingu: 'Peixe Xingu',
+  yak: 'Yak',
+  yorkshire: 'Yorkshire',
+  zebra: 'Zebra'
 };
 
-// Criar personas apenas para as letras que têm imagens disponíveis
+// Categorias dos animais para organização
+const animalCategories: { [key: string]: string } = {
+  arara: 'Aves',
+  baleia: 'Aquáticos',
+  borboleta: 'Insetos',
+  cachorro: 'Domésticos',
+  cobra: 'Répteis',
+  dinossauro: 'Extintos',
+  dragao: 'Míticos',
+  elefante: 'Terrestres',
+  flamingo: 'Aves',
+  girafa: 'Terrestres',
+  hipopotamo: 'Aquáticos',
+  iguana: 'Répteis',
+  jacare: 'Répteis',
+  jaguar: 'Felinos',
+  koala: 'Marsupiais',
+  leao: 'Felinos',
+  macaco: 'Primatas',
+  naja: 'Répteis',
+  onca: 'Felinos',
+  panda: 'Terrestres',
+  quati: 'Terrestres',
+  raposa: 'Terrestres',
+  sapo: 'Anfíbios',
+  tigre: 'Felinos',
+  urso: 'Terrestres',
+  vaca: 'Domésticos',
+  wallaby: 'Marsupiais',
+  wombate: 'Marsupiais',
+  xenops: 'Aves',
+  xingu: 'Aquáticos',
+  yak: 'Terrestres',
+  yorkshire: 'Domésticos',
+  zebra: 'Terrestres'
+};
+
+// Criar personas com todas as imagens disponíveis
 export const PERSONAS: Persona[] = Object.keys(personaImages).map(id => ({
   id,
-  name: animalNames[id] || id.toUpperCase(),
-  path: personaImages[id]
+  name: animalNames[id] || id.charAt(0).toUpperCase() + id.slice(1),
+  path: personaImages[id],
+  category: animalCategories[id] || 'Outros'
 }));
+
+// Organizar personas por categoria
+export const PERSONAS_BY_CATEGORY = PERSONAS.reduce((acc, persona) => {
+  const category = persona.category || 'Outros';
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(persona);
+  return acc;
+}, {} as { [key: string]: Persona[] });
 
 export const getPersonaById = (id: string): Persona | undefined => {
   return PERSONAS.find(persona => persona.id === id);

@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,22 +123,53 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
     const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
     const showAvatar = !isMyMessage && (!nextMessage || nextMessage.sender_id !== item.sender_id);
 
+    const animatedValue = new Animated.Value(0);
+    
+    useEffect(() => {
+      Animated.timing(animatedValue, {
+        toValue: 1,
+        duration: 300,
+        delay: index * 50,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+
+    const translateY = animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [30, 0],
+    });
+
+    const opacity = animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    });
+
     return (
-      <View style={[
+      <Animated.View style={[
         styles.messageContainer,
-        isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer
+        isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer,
+        {
+          opacity,
+          transform: [{ translateY }],
+        }
       ]}>
         {showAvatar && (
-          <Image
-            source={getProfileImage(otherUser)}
-            style={styles.messageAvatar}
-          />
+          <Animated.View style={{ opacity }}>
+            <Image
+              source={getProfileImage(otherUser)}
+              style={styles.messageAvatar}
+            />
+          </Animated.View>
         )}
         
-        <View style={[
+        <Animated.View style={[
           styles.messageBubble,
           isMyMessage ? styles.myMessageBubble : styles.otherMessageBubble,
-          !showAvatar && !isMyMessage ? styles.messageWithoutAvatar : null
+          !showAvatar && !isMyMessage ? styles.messageWithoutAvatar : null,
+          {
+            opacity,
+            transform: [{ translateY }],
+          }
         ]}>
           <Text style={[
             styles.messageText,
@@ -151,8 +183,8 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
           ]}>
             {formatMessageTime(item.created_at)}
           </Text>
-        </View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     );
   };
 
@@ -278,11 +310,19 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   backButton: {
     padding: 8,
@@ -295,10 +335,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 12,
+    borderWidth: 2,
+    borderColor: '#f1f5f9',
   },
   headerUserInfo: {
     flex: 1,
@@ -343,12 +385,20 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     maxWidth: '75%',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   myMessageBubble: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#667eea',
     marginLeft: 48,
   },
   otherMessageBubble: {
@@ -430,13 +480,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     backgroundColor: '#f9fafb',
-    borderRadius: 20,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: '#e5e7eb',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    minHeight: 40,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    minHeight: 44,
     maxHeight: 120,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   messageInput: {
     flex: 1,
@@ -450,12 +508,20 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   sendButton: {
-    backgroundColor: '#3b82f6',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    backgroundColor: '#667eea',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#667eea',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   sendButtonDisabled: {
     backgroundColor: '#9ca3af',

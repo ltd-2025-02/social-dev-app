@@ -137,7 +137,7 @@ export default function JobsScreen({ navigation }: any) {
       <View style={styles.featuredBadgeContainer}>
         <View style={styles.featuredBadgeSmall}>
           <Ionicons name="star" size={10} color="#fff" />
-          <Text style={styles.featuredTextSmall}>Destaque</Text>
+          <Text style={[styles.featuredTextSmall, { marginLeft: 3 }]}>Destaque</Text>
         </View>
       </View>
 
@@ -149,7 +149,7 @@ export default function JobsScreen({ navigation }: any) {
       <View style={styles.featuredJobMeta}>
         <View style={styles.featuredMetaItem}>
           <Ionicons name="location-outline" size={12} color="#6b7280" />
-          <Text style={styles.featuredMetaText}>{job.location}</Text>
+          <Text style={[styles.featuredMetaText, { marginLeft: 4 }]}>{job.location}</Text>
         </View>
         <View style={[styles.featuredTypeBadge, { backgroundColor: getJobTypeColor(job.type) }]}>
           <Text style={styles.featuredTypeText}>{getJobTypeLabel(job.type)}</Text>
@@ -171,7 +171,7 @@ export default function JobsScreen({ navigation }: any) {
       {job.is_featured && (
         <View style={styles.featuredBadge}>
           <Ionicons name="star" size={12} color="#fff" />
-          <Text style={styles.featuredText}>Destaque</Text>
+          <Text style={[styles.featuredText, { marginLeft: 4 }]}>Destaque</Text>
         </View>
       )}
 
@@ -182,7 +182,7 @@ export default function JobsScreen({ navigation }: any) {
           </Text>
           <View style={styles.companySection}>
             {job.company_logo && (
-              <Image source={{ uri: job.company_logo }} style={styles.companyLogo} />
+              <Image source={{ uri: job.company_logo }} style={[styles.companyLogo, { marginRight: 8 }]} />
             )}
             <Text style={styles.jobCompany}>{job.company}</Text>
           </View>
@@ -200,7 +200,7 @@ export default function JobsScreen({ navigation }: any) {
       <View style={styles.jobMeta}>
         <View style={styles.metaItem}>
           <Ionicons name="location-outline" size={14} color="#6b7280" />
-          <Text style={styles.metaText}>{job.location}</Text>
+          <Text style={[styles.metaText, { marginLeft: 4 }]}>{job.location}</Text>
         </View>
         <View style={[styles.jobTypeBadge, { backgroundColor: getJobTypeColor(job.type) }]}>
           <Text style={styles.jobTypeText}>{getJobTypeLabel(job.type)}</Text>
@@ -213,7 +213,7 @@ export default function JobsScreen({ navigation }: any) {
       {job.salary_range && (
         <View style={styles.salarySection}>
           <Ionicons name="card-outline" size={14} color="#059669" />
-          <Text style={styles.salaryText}>{job.salary_range}</Text>
+          <Text style={[styles.salaryText, { marginLeft: 6 }]}>{job.salary_range}</Text>
         </View>
       )}
 
@@ -222,7 +222,7 @@ export default function JobsScreen({ navigation }: any) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.techList}>
               {job.technologies.slice(0, 5).map((tech, index) => (
-                <View key={index} style={styles.techTag}>
+                <View key={index} style={[styles.techTag, { marginRight: 6 }]}>
                   <Text style={styles.techText}>{tech}</Text>
                 </View>
               ))}
@@ -247,7 +247,7 @@ export default function JobsScreen({ navigation }: any) {
         {job.applied_by_user ? (
           <View style={styles.appliedButton}>
             <Ionicons name="checkmark-circle" size={16} color="#10b981" />
-            <Text style={styles.appliedButtonText}>Candidato</Text>
+            <Text style={[styles.appliedButtonText, { marginLeft: 4 }]}>Candidato</Text>
           </View>
         ) : (
           <TouchableOpacity
@@ -263,161 +263,156 @@ export default function JobsScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Vagas</Text>
-        <TouchableOpacity style={styles.headerButton}>
-          <Ionicons name="notifications-outline" size={24} color="#333" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Search and Filters */}
-      <View style={styles.searchSection}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color="#6b7280" />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar vagas..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#6b7280" />
-            </TouchableOpacity>
-          )}
-        </View>
-        <TouchableOpacity
-          style={styles.filterButton}
-          onPress={() => setShowFilters(true)}
-        >
-          <Ionicons name="filter-outline" size={20} color="#3b82f6" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Active Filters */}
-      {(filters.location || filters.type || filters.level) && (
-        <View style={styles.activeFilters}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View style={styles.filtersList}>
-              {filters.location && (
-                <View style={styles.activeFilter}>
-                  <Text style={styles.activeFilterText}>{filters.location}</Text>
-                  <TouchableOpacity onPress={() => handleFilterChange('location', '')}>
-                    <Ionicons name="close" size={14} color="#3b82f6" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              {filters.type && (
-                <View style={styles.activeFilter}>
-                  <Text style={styles.activeFilterText}>{getJobTypeLabel(filters.type)}</Text>
-                  <TouchableOpacity onPress={() => handleFilterChange('type', '')}>
-                    <Ionicons name="close" size={14} color="#3b82f6" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              {filters.level && (
-                <View style={styles.activeFilter}>
-                  <Text style={styles.activeFilterText}>{getLevelLabel(filters.level)}</Text>
-                  <TouchableOpacity onPress={() => handleFilterChange('level', '')}>
-                    <Ionicons name="close" size={14} color="#3b82f6" />
-                  </TouchableOpacity>
-                </View>
-              )}
-              <TouchableOpacity style={styles.clearFiltersButton} onPress={clearAllFilters}>
-                <Text style={styles.clearFiltersText}>Limpar todos</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      )}
-
-      {/* Featured Jobs */}
-      {featuredJobs.length > 0 && (
-        <>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Vagas em Destaque</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>Ver todas</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.featuredJobsList}
-            contentContainerStyle={styles.featuredJobsContent}
-          >
-            {featuredJobs.map((job, index) => renderFeaturedJob(job, index))}
-          </ScrollView>
-        </>
-      )}
-
-      {/* Job Stats */}
-      <View style={styles.statsBar}>
-        <View style={styles.statsLeft}>
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.resultsText}>Carregando vagas...</Text>
-            </View>
-          ) : (
-            <View>
-              <Text style={styles.resultsText}>
-                {jobs.length} vagas encontradas
-              </Text>
-              {jobs.some(job => job.id.startsWith('mock-')) && (
-                <Text style={styles.demoText}>
-                  🎯 Mostrando vagas de demonstração
-                </Text>
-              )}
-            </View>
-          )}
-        </View>
-        <View style={styles.sortSection}>
-          <TouchableOpacity style={styles.sortButton}>
-            <Text style={styles.sortText}>Mais recentes</Text>
-            <Ionicons name="chevron-down" size={16} color="#6b7280" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Jobs List */}
-      <ScrollView
-        style={styles.jobsList}
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        showsVerticalScrollIndicator={false}
       >
-        {jobs.map(renderJobCard)}
-        
-        {jobs.length === 0 && !loading && (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyStateIcon}>
-              <Ionicons name="briefcase-outline" size={64} color="#94a3b8" />
-            </View>
-            <Text style={styles.emptyStateTitle}>Nenhuma vaga encontrada</Text>
-            <Text style={styles.emptyStateText}>
-              Não encontramos vagas com os filtros aplicados.{'\n'}
-              Tente ajustar os critérios de busca ou explorar outras opções.
+        {/* Header */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Vagas</Text>
+            <Text style={styles.subtitle}>
+              {jobs.length > 0 
+                ? `${jobs.length} oportunidade${jobs.length !== 1 ? 's' : ''} encontrada${jobs.length !== 1 ? 's' : ''}`
+                : 'Nenhuma vaga encontrada'
+              }
             </Text>
-            <View style={styles.emptyStateActions}>
-              <TouchableOpacity style={styles.clearFiltersEmptyButton} onPress={clearAllFilters}>
-                <Ionicons name="refresh" size={16} color="white" />
-                <Text style={styles.clearFiltersEmptyText}>Limpar filtros</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.notificationButton}
+            onPress={() => setShowFilters(true)}
+          >
+            <Ionicons name="filter-outline" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Search */}
+        <View style={styles.searchSection}>
+          <View style={styles.searchContainer}>
+            <Ionicons name="search-outline" size={20} color="#9ca3af" />
+            <TextInput
+              style={[styles.searchInput, { marginHorizontal: 8 }]}
+              placeholder="Buscar vagas..."
+              placeholderTextColor="#9ca3af"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSubmitEditing={handleSearch}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Ionicons name="close-circle" size={20} color="#9ca3af" />
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.searchAgainButton}
-                onPress={() => {
-                  setSearchQuery('desenvolvedor');
-                  dispatch(setFilters({ search: 'desenvolvedor' }));
-                }}
-              >
-                <Text style={styles.searchAgainText}>Buscar "desenvolvedor"</Text>
+            )}
+          </View>
+        </View>
+
+        {/* Active Filters */}
+        {(filters.location || filters.type || filters.level) && (
+          <View style={styles.activeFilters}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View style={styles.filtersList}>
+                {filters.location && (
+                  <View style={styles.activeFilter}>
+                    <Text style={styles.activeFilterText}>{filters.location}</Text>
+                    <TouchableOpacity onPress={() => handleFilterChange('location', '')} style={{ marginLeft: 6 }}>
+                      <Ionicons name="close" size={14} color="#3b82f6" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {filters.type && (
+                  <View style={styles.activeFilter}>
+                    <Text style={styles.activeFilterText}>{getJobTypeLabel(filters.type)}</Text>
+                    <TouchableOpacity onPress={() => handleFilterChange('type', '')} style={{ marginLeft: 6 }}>
+                      <Ionicons name="close" size={14} color="#3b82f6" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                {filters.level && (
+                  <View style={styles.activeFilter}>
+                    <Text style={styles.activeFilterText}>{getLevelLabel(filters.level)}</Text>
+                    <TouchableOpacity onPress={() => handleFilterChange('level', '')} style={{ marginLeft: 6 }}>
+                      <Ionicons name="close" size={14} color="#3b82f6" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+                <TouchableOpacity style={styles.clearFiltersButton} onPress={clearAllFilters}>
+                  <Text style={styles.clearFiltersText}>Limpar todos</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Featured Jobs */}
+        {featuredJobs.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Vagas em Destaque</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAllText}>Ver todas</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredJobsContent}
+            >
+              {featuredJobs.map((job, index) => renderFeaturedJob(job, index))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Jobs List */}
+        <View style={styles.section}>
+          <View style={styles.statsBar}>
+            <View style={styles.statsLeft}>
+              {loading ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.resultsText}>Carregando vagas...</Text>
+                </View>
+              ) : (
+                <View>
+                  <Text style={styles.resultsText}>
+                    {jobs.length} vagas encontradas
+                  </Text>
+                  {jobs.some(job => job.id.startsWith('mock-')) && (
+                    <Text style={styles.demoText}>
+                      🎯 Mostrando vagas de demonstração
+                    </Text>
+                  )}
+                </View>
+              )}
+            </View>
+            <View style={styles.sortSection}>
+              <TouchableOpacity style={styles.sortButton}>
+                <Text style={styles.sortText}>Mais recentes</Text>
+                <Ionicons name="chevron-down" size={16} color="#6b7280" style={{ marginLeft: 4 }} />
               </TouchableOpacity>
             </View>
           </View>
-        )}
+
+          <View style={styles.jobsList}>
+            {jobs.map(renderJobCard)}
+            
+            {jobs.length === 0 && !loading && (
+              <View style={styles.emptyState}>
+                <Ionicons name="briefcase-outline" size={48} color="#94a3b8" />
+                <Text style={styles.emptyStateTitle}>Nenhuma vaga encontrada</Text>
+                <Text style={styles.emptyStateText}>
+                  Não encontramos vagas com os filtros aplicados. Tente ajustar os critérios de busca.
+                </Text>
+                <TouchableOpacity
+                  style={styles.emptyStateButton}
+                  onPress={clearAllFilters}
+                >
+                  <Text style={styles.emptyStateButtonText}>Limpar filtros</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
       </ScrollView>
 
       {/* Filters Modal */}
@@ -458,6 +453,7 @@ export default function JobsScreen({ navigation }: any) {
                     key={type}
                     style={[
                       styles.optionButton,
+                      { width: '30%', marginRight: 8 },
                       filters.type === type && styles.optionButtonSelected
                     ]}
                     onPress={() => handleFilterChange('type', filters.type === type ? '' : type)}
@@ -482,6 +478,7 @@ export default function JobsScreen({ navigation }: any) {
                     key={level}
                     style={[
                       styles.optionButton,
+                      { width: '22%', marginRight: 8 },
                       filters.level === level && styles.optionButtonSelected
                     ]}
                     onPress={() => handleFilterChange('level', filters.level === level ? '' : level)}
@@ -512,73 +509,79 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
   },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 100,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    marginBottom: 24,
   },
-  headerTitle: {
+  greeting: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#1f2937',
   },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f3f4f6',
+  subtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginTop: 4,
+  },
+  notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   searchSection: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    gap: 12,
+    marginBottom: 20,
   },
   searchContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
+    backgroundColor: 'white',
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
     color: '#1f2937',
   },
-  filterButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#f0f9ff',
-    borderWidth: 1,
-    borderColor: '#bae6fd',
-    justifyContent: 'center',
-    alignItems: 'center',
+  section: {
+    marginBottom: 32,
   },
   activeFilters: {
     backgroundColor: 'white',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   filtersList: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   activeFilter: {
     flexDirection: 'row',
@@ -587,7 +590,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    gap: 6,
+    marginRight: 8,
   },
   activeFilterText: {
     fontSize: 12,
@@ -613,8 +616,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   statsLeft: {
     flex: 1,
@@ -622,7 +630,7 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
   },
   resultsText: {
     fontSize: 14,
@@ -642,21 +650,23 @@ const styles = StyleSheet.create({
   sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'center',
   },
   sortText: {
     fontSize: 14,
     color: '#6b7280',
   },
   jobsList: {
-    flex: 1,
+    paddingBottom: 20,
+  },
+  bottomSpacing: {
+    height: 50,
   },
   jobCard: {
     backgroundColor: 'white',
-    marginHorizontal: 16,
     marginBottom: 16,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -674,12 +684,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f59e0b',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
-    gap: 4,
   },
   featuredText: {
     fontSize: 10,
@@ -703,7 +713,7 @@ const styles = StyleSheet.create({
   companySection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'flex-start',
   },
   companyLogo: {
     width: 24,
@@ -731,13 +741,14 @@ const styles = StyleSheet.create({
   jobMeta: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 12,
-    gap: 12,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'flex-start',
+    flex: 1,
   },
   metaText: {
     fontSize: 12,
@@ -767,8 +778,8 @@ const styles = StyleSheet.create({
   salarySection: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 12,
-    gap: 6,
   },
   salaryText: {
     fontSize: 14,
@@ -780,7 +791,8 @@ const styles = StyleSheet.create({
   },
   techList: {
     flexDirection: 'row',
-    gap: 6,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   techTag: {
     backgroundColor: '#f1f5f9',
@@ -829,11 +841,11 @@ const styles = StyleSheet.create({
   appliedButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#d1fae5',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    gap: 4,
   },
   appliedButtonText: {
     fontSize: 12,
@@ -841,61 +853,39 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyState: {
+    backgroundColor: 'white',
+    padding: 32,
+    borderRadius: 16,
     alignItems: 'center',
-    paddingVertical: 64,
-    paddingHorizontal: 32,
-  },
-  emptyStateIcon: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyStateTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#1f2937',
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 8,
   },
   emptyStateText: {
     fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',
     lineHeight: 20,
-    marginBottom: 32,
+    marginBottom: 24,
   },
-  emptyStateActions: {
-    gap: 12,
-    width: '100%',
-  },
-  clearFiltersEmptyButton: {
+  emptyStateButton: {
     backgroundColor: '#3b82f6',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
-    gap: 8,
   },
-  clearFiltersEmptyText: {
+  emptyStateButtonText: {
     fontSize: 14,
     color: 'white',
-    fontWeight: '600',
-  },
-  searchAgainButton: {
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  searchAgainText: {
-    fontSize: 14,
-    color: '#4b5563',
     fontWeight: '600',
   },
   // Modal Styles
@@ -952,7 +942,8 @@ const styles = StyleSheet.create({
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   optionButton: {
     paddingHorizontal: 16,
@@ -985,17 +976,14 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     fontWeight: '600',
   },
-  // Featured Jobs Styles
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: 'white',
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#1f2937',
   },
@@ -1004,23 +992,19 @@ const styles = StyleSheet.create({
     color: '#3b82f6',
     fontWeight: '600',
   },
-  featuredJobsList: {
-    backgroundColor: 'white',
-    paddingBottom: 16,
-  },
   featuredJobsContent: {
-    paddingHorizontal: 16,
+    paddingRight: 20,
   },
   featuredCard: {
-    width: width * 0.75,
-    backgroundColor: '#f8fafc',
+    width: '75%',
+    backgroundColor: 'white',
     borderRadius: 16,
     padding: 16,
     marginRight: 12,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#f59e0b',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
@@ -1037,12 +1021,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f59e0b',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 8,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
-    gap: 3,
   },
   featuredTextSmall: {
     fontSize: 9,
@@ -1071,7 +1055,7 @@ const styles = StyleSheet.create({
   featuredMetaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'flex-start',
     flex: 1,
   },
   featuredMetaText: {

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
@@ -223,6 +222,7 @@ export default function FeedScreen({ navigation }: any) {
       {/* Feed Posts */}
       <ScrollView
         style={styles.feed}
+        contentContainerStyle={styles.feedContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -341,7 +341,8 @@ const styles = StyleSheet.create({
   },
   headerActions: {
     flexDirection: 'row',
-    gap: 12,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerButton: {
     width: 40,
@@ -350,6 +351,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 12,
   },
   createPostButton: {
     flexDirection: 'row',
@@ -377,6 +379,10 @@ const styles = StyleSheet.create({
   },
   feed: {
     flex: 1,
+    backgroundColor: 'transparent',
+  },
+  feedContent: {
+    paddingBottom: 100,
   },
   postCard: {
     backgroundColor: 'white',
@@ -449,6 +455,8 @@ const styles = StyleSheet.create({
   },
   postActions: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderTopWidth: 1,
@@ -457,7 +465,8 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 24,
+    flex: 1,
+    justifyContent: 'center',
   },
   actionText: {
     fontSize: 14,
@@ -471,8 +480,17 @@ const styles = StyleSheet.create({
     color: '#ef4444',
   },
   emptyState: {
+    backgroundColor: 'white',
     alignItems: 'center',
     paddingVertical: 64,
+    paddingHorizontal: 32,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyStateTitle: {
     fontSize: 20,
@@ -485,7 +503,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
     textAlign: 'center',
-    paddingHorizontal: 32,
+    lineHeight: 20,
+    marginBottom: 24,
   },
   // Modal Styles
   modalContainer: {
@@ -570,7 +589,8 @@ const styles = StyleSheet.create({
   },
   modalActions: {
     flexDirection: 'row',
-    gap: 24,
+    justifyContent: 'space-around',
+    alignItems: 'center',
     paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',

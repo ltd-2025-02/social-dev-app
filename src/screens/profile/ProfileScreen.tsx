@@ -409,7 +409,7 @@ export default function ProfileScreen({ navigation }: any) {
           visible={showPersonaSelector}
           onClose={() => setShowPersonaSelector(false)}
           onSelectPersona={handleSelectPersona}
-          selectedPersonaId={editedProfile.persona_id}
+          currentPersonaId={editedProfile.persona_id}
         />
       </SafeAreaView>
     );

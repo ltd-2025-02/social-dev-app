@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import {
   View,
@@ -124,6 +123,7 @@ export default function HomeScreen({ navigation }) {
                   key={job.id}
                   style={styles.jobCard}
                   onPress={() => navigation.navigate('JobDetail', { jobId: job.id })}
+                  activeOpacity={0.8}
                 >
                   <View style={styles.jobHeader}>
                     <Text style={styles.jobTitle} numberOfLines={1}>
@@ -161,6 +161,7 @@ export default function HomeScreen({ navigation }) {
             <TouchableOpacity
               style={styles.emptyStateButton}
               onPress={() => navigation.navigate('Feed')}
+              activeOpacity={0.8}
             >
               <Text style={styles.emptyStateButtonText}>Explorar Feed</Text>
             </TouchableOpacity>
@@ -259,13 +260,20 @@ const styles = StyleSheet.create({
   quickActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   actionCard: {
-    width: (width - 52) / 2,
+    width: '48%',
     padding: 20,
     borderRadius: 16,
     alignItems: 'center',
+    backgroundColor: 'white',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   actionIcon: {
     width: 48,

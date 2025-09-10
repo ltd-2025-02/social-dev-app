@@ -4,17 +4,22 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { Animated, Platform } from 'react-native';
 
 // Screens
 import HomeScreen from '../screens/main/HomeScreen';
 import FeedScreen from '../screens/main/FeedScreen';
 import JobsScreen from '../screens/jobs/JobsScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
+import ProfileScreen from '../screens/profile/ModernProfileScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import PostDetailScreen from '../screens/main/PostDetailScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
 import JobDetailScreen from '../screens/jobs/JobDetailScreen';
+
+// Components
+import CustomTabBar from '../components/CustomTabBar';
+import TabScreenWrapper from '../components/TabScreenWrapper';
 
 // MainTabParamList type removed for JavaScript compatibility
 
@@ -23,66 +28,68 @@ import JobDetailScreen from '../screens/jobs/JobDetailScreen';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
-function MainTabs() {
-  const theme = useTheme();
+// Wrapper components for each screen to add transition effects
+const HomeScreenWithTransition = () => (
+  <TabScreenWrapper>
+    <HomeScreen />
+  </TabScreenWrapper>
+);
 
+const FeedScreenWithTransition = () => (
+  <TabScreenWrapper>
+    <FeedScreen />
+  </TabScreenWrapper>
+);
+
+const JobsScreenWithTransition = () => (
+  <TabScreenWrapper>
+    <JobsScreen />
+  </TabScreenWrapper>
+);
+
+const ChatScreenWithTransition = () => (
+  <TabScreenWrapper>
+    <ChatScreen />
+  </TabScreenWrapper>
+);
+
+const ProfileScreenWithTransition = () => (
+  <TabScreenWrapper>
+    <ProfileScreen />
+  </TabScreenWrapper>
+);
+
+function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Feed') {
-            iconName = focused ? 'newspaper' : 'newspaper-outline';
-          } else if (route.name === 'Jobs') {
-            iconName = focused ? 'briefcase' : 'briefcase-outline';
-          } else if (route.name === 'Chat') {
-            iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          } else {
-            iconName = 'help-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.outline,
-        },
-        headerStyle: {
-          backgroundColor: theme.colors.surface,
-        },
-        headerTintColor: theme.colors.onSurface,
-      })}
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Tab.Screen 
         name="Home" 
-        component={HomeScreen} 
+        component={HomeScreenWithTransition} 
         options={{ title: 'Início' }}
       />
       <Tab.Screen 
         name="Feed" 
-        component={FeedScreen} 
+        component={FeedScreenWithTransition} 
         options={{ title: 'Feed' }}
       />
       <Tab.Screen 
         name="Jobs" 
-        component={JobsScreen} 
+        component={JobsScreenWithTransition} 
         options={{ title: 'Vagas' }}
       />
       <Tab.Screen 
         name="Chat" 
-        component={ChatScreen} 
+        component={ChatScreenWithTransition} 
         options={{ title: 'Chat' }}
       />
       <Tab.Screen 
         name="Profile" 
-        component={ProfileScreen} 
+        component={ProfileScreenWithTransition} 
         options={{ title: 'Perfil' }}
       />
     </Tab.Navigator>
@@ -91,7 +98,30 @@ function MainTabs() {
 
 export default function MainNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: 'white',
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 4,
+        },
+        headerTintColor: '#1f2937',
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: 18,
+        },
+        headerBackTitleVisible: false,
+        // Enhanced animations
+        animation: 'slide_from_right',
+        animationDuration: 300,
+      }}
+    >
       <Stack.Screen 
         name="MainTabs" 
         component={MainTabs} 
@@ -100,27 +130,42 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="PostDetail" 
         component={PostDetailScreen} 
-        options={{ title: 'Post' }}
+        options={{ 
+          title: 'Post',
+          animation: 'slide_from_bottom',
+        }}
       />
       <Stack.Screen 
         name="ChatDetail" 
         component={ChatDetailScreen} 
-        options={{ title: 'Chat' }}
+        options={{ 
+          title: 'Chat',
+          animation: 'slide_from_right',
+        }}
       />
       <Stack.Screen 
         name="JobDetail" 
         component={JobDetailScreen} 
-        options={{ title: 'Detalhes da Vaga' }}
+        options={{ 
+          title: 'Detalhes da Vaga',
+          animation: 'slide_from_bottom',
+        }}
       />
       <Stack.Screen 
         name="Settings" 
         component={SettingsScreen} 
-        options={{ title: 'Configurações' }}
+        options={{ 
+          title: 'Configurações',
+          animation: 'slide_from_right',
+        }}
       />
       <Stack.Screen 
         name="UserProfile" 
         component={ProfileScreen} 
-        options={{ title: 'Perfil' }}
+        options={{ 
+          title: 'Perfil',
+          animation: 'slide_from_right',
+        }}
       />
     </Stack.Navigator>
   );
