@@ -25,37 +25,37 @@ import TabScreenWrapper from '../components/TabScreenWrapper';
 
 // MainStackParamList type removed for JavaScript compatibility
 
-const Tab = createBottomTabNavigator<MainTabParamList>();
-const Stack = createNativeStackNavigator<MainStackParamList>();
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 // Wrapper components for each screen to add transition effects
-const HomeScreenWithTransition = () => (
+const HomeScreenWithTransition = (props) => (
   <TabScreenWrapper>
-    <HomeScreen />
+    <HomeScreen {...props} />
   </TabScreenWrapper>
 );
 
-const FeedScreenWithTransition = () => (
+const FeedScreenWithTransition = (props) => (
   <TabScreenWrapper>
-    <FeedScreen />
+    <FeedScreen {...props} />
   </TabScreenWrapper>
 );
 
-const JobsScreenWithTransition = () => (
+const JobsScreenWithTransition = (props) => (
   <TabScreenWrapper>
-    <JobsScreen />
+    <JobsScreen {...props} />
   </TabScreenWrapper>
 );
 
-const ChatScreenWithTransition = () => (
+const ChatScreenWithTransition = (props) => (
   <TabScreenWrapper>
-    <ChatScreen />
+    <ChatScreen {...props} />
   </TabScreenWrapper>
 );
 
-const ProfileScreenWithTransition = () => (
+const ProfileScreenWithTransition = (props) => (
   <TabScreenWrapper>
-    <ProfileScreen />
+    <ProfileScreen {...props} />
   </TabScreenWrapper>
 );
 

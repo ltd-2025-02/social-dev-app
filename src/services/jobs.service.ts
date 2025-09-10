@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const SERP_API_KEY = '32c2077982745b4e01ebd5bd31b71d0b515e394647a09e0bbfa9ee0911802b0d';
-const SERP_API_BASE_URL = 'https://serpapi.com/search';
+const SERP_API_BASE_URL = 'https://serpapi.com/search.json';
 
 export interface JobFilters {
   search?: string;
@@ -38,11 +38,11 @@ class JobsService {
   async testAPI(): Promise<boolean> {
     try {
       const params = {
-        api_key: SERP_API_KEY,
         engine: 'google_jobs',
-        q: 'developer',
-        location: 'United States',
-        num: 1
+        q: 'desenvolvedor',
+        location: 'Brazil',
+        hl: 'en',
+        api_key: SERP_API_KEY
       };
 
       const response = await axios.get(SERP_API_BASE_URL, { params });
@@ -56,33 +56,37 @@ class JobsService {
   }
   async searchJobs(filters: JobFilters = {}, page = 1): Promise<Job[]> {
     try {
-      // Build simpler search query
-      let query = filters.search || 'developer';
+      // Build tech-focused search query
+      let query = filters.search || 'desenvolvedor';
 
-      // Add level to query more simply
+      // Add level to query
       if (filters.level) {
         const levelMap = {
           'junior': 'junior',
-          'pleno': 'mid-level',
+          'pleno': 'pleno',
           'senior': 'senior',
-          'lead': 'lead'
+          'lead': 'tech lead'
         };
         query = `${levelMap[filters.level]} ${query}`;
       }
 
-      // Add remote preference more simply
+      // Add tech keywords to improve results
+      const techKeywords = ['react', 'javascript', 'python', 'java', 'mobile', 'frontend', 'backend', 'fullstack'];
+      if (!techKeywords.some(keyword => query.toLowerCase().includes(keyword))) {
+        query += ' tecnologia programação';
+      }
+
+      // Add remote preference
       if (filters.type === 'remote') {
-        query += ' remote';
+        query += ' remoto';
       }
 
       const params = {
-        api_key: SERP_API_KEY,
         engine: 'google_jobs',
         q: query,
         location: filters.location || 'Brazil',
-        num: 10,
         hl: 'en',
-        gl: 'br'
+        api_key: SERP_API_KEY
       };
 
       console.log('SerpAPI Request params:', params);
@@ -116,11 +120,11 @@ class JobsService {
   async getFeaturedJobs(): Promise<Job[]> {
     try {
       const params = {
-        api_key: SERP_API_KEY,
         engine: 'google_jobs',
-        q: 'developer react native flutter mobile remote',
+        q: 'desenvolvedor',
         location: 'Brazil',
-        num: 5
+        hl: 'en',
+        api_key: SERP_API_KEY
       };
 
       console.log('SerpAPI Featured Jobs Request params:', params);
@@ -153,11 +157,10 @@ class JobsService {
   async getJobById(jobId: string): Promise<Job | null> {
     try {
       const params = {
-        api_key: SERP_API_KEY,
         engine: 'google_jobs',
         job_id: jobId,
-        hl: 'pt-BR',
-        gl: 'BR'
+        hl: 'en',
+        api_key: SERP_API_KEY
       };
 
       const response = await axios.get(SERP_API_BASE_URL, { params });

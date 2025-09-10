@@ -90,7 +90,7 @@ export default function TabScreenWrapper({ children, focused = true }: TabScreen
 
   const rotateInterpolate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '2deg'],
+    outputRange: ['0deg', '0deg'],
   });
 
   return (

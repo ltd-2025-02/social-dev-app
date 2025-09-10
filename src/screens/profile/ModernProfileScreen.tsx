@@ -77,10 +77,25 @@ export default function ModernProfileScreen({ navigation }: any) {
 
   // Função para obter imagem de perfil
   const getProfileImage = (profile?: any, fallbackName?: string) => {
+    // First check if persona_id is available (local state)
     if (profile?.persona_id) {
       const personaImage = getPersonaImage(profile.persona_id);
       if (personaImage) return personaImage;
     }
+    
+    // Then check if avatar contains persona data (from database)
+    if (profile?.avatar && profile.avatar.startsWith('persona:')) {
+      const personaId = profile.avatar.replace('persona:', '');
+      const personaImage = getPersonaImage(personaId);
+      if (personaImage) return personaImage;
+    }
+    
+    // If avatar is a regular URL
+    if (profile?.avatar && !profile.avatar.startsWith('persona:')) {
+      return { uri: profile.avatar };
+    }
+    
+    // Default fallback
     return { 
       uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName || 'User')}&background=2563eb&color=fff` 
     };
@@ -90,13 +105,24 @@ export default function ModernProfileScreen({ navigation }: any) {
     if (!user?.id) return;
 
     try {
+      // Convert persona_id to avatar URL - the database expects avatar, not persona_id
+      let avatarUrl = null;
+      if (editedProfile.persona_id) {
+        const personaImage = getPersonaImage(editedProfile.persona_id);
+        if (personaImage) {
+          // Since personas are local images, we'll store the persona_id as the avatar value
+          // The frontend will handle converting it back to the image
+          avatarUrl = `persona:${editedProfile.persona_id}`;
+        }
+      }
+
       const profileUpdate = {
         name: editedProfile.name,
         occupation: editedProfile.occupation,
         company: editedProfile.company,
         location: editedProfile.location,
         bio: editedProfile.bio,
-        persona_id: editedProfile.persona_id,
+        avatar: avatarUrl, // Save as avatar, not persona_id
       };
 
       await dispatch(updateUserProfile({ 
@@ -104,7 +130,11 @@ export default function ModernProfileScreen({ navigation }: any) {
         profileData: profileUpdate 
       })).unwrap();
 
-      await dispatch(updateProfile(profileUpdate)).unwrap();
+      // Also update auth state to keep them in sync (include both avatar and persona_id)
+      dispatch(updateProfile({
+        ...editedProfile,
+        avatar: avatarUrl,
+      }));
 
       Alert.alert('Sucesso!', 'Perfil atualizado com sucesso!');
       setEditMode(false);
