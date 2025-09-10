@@ -8,6 +8,7 @@ import conversationsSlice from './slices/conversationsSlice';
 import connectionsSlice from './slices/connectionsSlice';
 import notificationsSlice from './slices/notificationsSlice';
 import profileSlice from './slices/profileSlice';
+import onboardingSlice from './slices/onboardingSlice';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     connections: connectionsSlice,
     notifications: notificationsSlice,
     profile: profileSlice,
+    onboarding: onboardingSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
