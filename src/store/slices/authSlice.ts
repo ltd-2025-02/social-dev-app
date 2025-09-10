@@ -1,6 +1,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { supabase } from '../../services/supabase';
+import { checkNetworkConnection, retryWithExponentialBackoff, isNetworkError } from '../../utils/networkUtils';
 
 interface User {
   id: string;
@@ -32,33 +33,101 @@ const initialState: AuthState = {
 // Async thunks
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async ({ email, password }: { email: string; password: string }) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      console.log('🔐 Tentando fazer login...');
+      
+      // Verifica conectividade antes de tentar login
+      const isConnected = await checkNetworkConnection();
+      if (!isConnected) {
+        return rejectWithValue('Sem conexão com a internet. Verifique sua rede e tente novamente.');
+      }
+      
+      const { data, error } = await retryWithExponentialBackoff(async () => {
+        const result = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (result.error) throw result.error;
+        return result;
+      }, 2);
 
-    if (error) throw error;
 
-    // Get user profile
-    const { data: profile } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', data.user.id)
-      .single();
+      console.log('✅ Login bem-sucedido, buscando perfil...');
 
-    return {
-      id: data.user.id,
-      email: data.user.email!,
-      name: profile?.name || data.user.email!.split('@')[0],
-      avatar: profile?.avatar,
-      persona_id: profile?.persona_id,
-      occupation: profile?.occupation,
-      company: profile?.company,
-      bio: profile?.bio,
-      skills: profile?.skills,
-      location: profile?.location,
-    };
+      // Get user profile with retry mechanism
+      let profile = null;
+      let retries = 3;
+      
+      while (retries > 0) {
+        try {
+          const { data: profileData, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', data.user.id)
+            .single();
+
+          if (profileError) {
+            console.warn(`⚠️  Erro ao buscar perfil (tentativas restantes: ${retries - 1}):`, profileError);
+            if (retries === 1) {
+              // Se é a última tentativa e ainda há erro, continua sem perfil
+              console.log('⚠️  Continuando sem dados do perfil');
+              break;
+            }
+            retries--;
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+            continue;
+          }
+
+          profile = profileData;
+          console.log('✅ Perfil carregado com sucesso');
+          break;
+        } catch (profileErr) {
+          console.warn(`⚠️  Erro de rede ao buscar perfil (tentativas restantes: ${retries - 1}):`, profileErr);
+          retries--;
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+          }
+        }
+      }
+
+      const userData = {
+        id: data.user.id,
+        email: data.user.email!,
+        name: profile?.name || data.user.email!.split('@')[0],
+        avatar: profile?.avatar,
+        persona_id: profile?.persona_id,
+        occupation: profile?.occupation,
+        company: profile?.company,
+        bio: profile?.bio,
+        skills: profile?.skills,
+        location: profile?.location,
+      };
+
+      console.log('✅ Login completo:', userData);
+      return userData;
+
+    } catch (error: any) {
+      console.error('❌ Erro geral no login:', error);
+      
+      // Tratamento específico para diferentes tipos de erro
+      let errorMessage = 'Erro ao fazer login';
+      
+      if (isNetworkError(error)) {
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      } else if (error?.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Email ou senha incorretos.';
+      } else if (error?.message?.includes('Email not confirmed')) {
+        errorMessage = 'Por favor, confirme seu email antes de fazer login.';
+      } else if (error?.message?.includes('Too many requests')) {
+        errorMessage = 'Muitas tentativas. Tente novamente em alguns minutos.';
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      return rejectWithValue(errorMessage);
+    }
   }
 );
 
