@@ -24,6 +24,9 @@ import AIChatScreen from '../screens/menu/AIChatScreen';
 import SupportScreen from '../screens/menu/SupportScreen';
 import AboutScreen from '../screens/menu/AboutScreen';
 
+// Notification Screens
+import NotificationsScreen from '../screens/notifications/NotificationsScreen';
+
 // Components
 import CustomTabBar from '../components/CustomTabBar';
 import TabScreenWrapper from '../components/TabScreenWrapper';
@@ -211,6 +214,14 @@ export default function MainNavigator() {
         component={AboutScreen} 
         options={{ 
           title: 'Sobre',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Notifications" 
+        component={NotificationsScreen} 
+        options={{ 
+          title: 'Notificações',
           animation: 'slide_from_right',
         }}
       />
