@@ -123,53 +123,22 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
     const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
     const showAvatar = !isMyMessage && (!nextMessage || nextMessage.sender_id !== item.sender_id);
 
-    const animatedValue = new Animated.Value(0);
-    
-    useEffect(() => {
-      Animated.timing(animatedValue, {
-        toValue: 1,
-        duration: 300,
-        delay: index * 50,
-        useNativeDriver: true,
-      }).start();
-    }, []);
-
-    const translateY = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [30, 0],
-    });
-
-    const opacity = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    });
-
     return (
-      <Animated.View style={[
+      <View style={[
         styles.messageContainer,
         isMyMessage ? styles.myMessageContainer : styles.otherMessageContainer,
-        {
-          opacity,
-          transform: [{ translateY }],
-        }
       ]}>
         {showAvatar && (
-          <Animated.View style={{ opacity }}>
-            <Image
-              source={getProfileImage(otherUser)}
-              style={styles.messageAvatar}
-            />
-          </Animated.View>
+          <Image
+            source={getProfileImage(otherUser)}
+            style={styles.messageAvatar}
+          />
         )}
         
-        <Animated.View style={[
+        <View style={[
           styles.messageBubble,
           isMyMessage ? styles.myMessageBubble : styles.otherMessageBubble,
           !showAvatar && !isMyMessage ? styles.messageWithoutAvatar : null,
-          {
-            opacity,
-            transform: [{ translateY }],
-          }
         ]}>
           <Text style={[
             styles.messageText,
@@ -183,8 +152,8 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
           ]}>
             {formatMessageTime(item.created_at)}
           </Text>
-        </Animated.View>
-      </Animated.View>
+        </View>
+      </View>
     );
   };
 
