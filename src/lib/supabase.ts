@@ -23,6 +23,7 @@ export type Database = {
           name: string | null;
           email: string | null;
           avatar: string | null;
+          persona_id: string | null;
           occupation: string | null;
           company: string | null;
           bio: string | null;
@@ -42,6 +43,7 @@ export type Database = {
           name?: string | null;
           email?: string | null;
           avatar?: string | null;
+          persona_id?: string | null;
           occupation?: string | null;
           company?: string | null;
           bio?: string | null;
@@ -61,6 +63,7 @@ export type Database = {
           name?: string | null;
           email?: string | null;
           avatar?: string | null;
+          persona_id?: string | null;
           occupation?: string | null;
           company?: string | null;
           bio?: string | null;

@@ -20,7 +20,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { updateProfile, signOut } from '../../store/slices/authSlice';
 import { fetchProfile, fetchProfileStats, updateProfile as updateUserProfile, updateCurrentProfile } from '../../store/slices/profileSlice';
-import * as ImagePicker from 'expo-image-picker';
+import PersonaSelector from '../../components/PersonaSelector';
+import { PERSONAS, Persona, getPersonaById, getPersonaImage } from '../../utils/personas';
 
 const { width } = Dimensions.get('window');
 
@@ -36,13 +37,14 @@ export default function ProfileScreen({ navigation }: any) {
 
   const [editMode, setEditMode] = useState(false);
   const [showSkillModal, setShowSkillModal] = useState(false);
+  const [showPersonaSelector, setShowPersonaSelector] = useState(false);
   const [editedProfile, setEditedProfile] = useState({
     name: user?.name || '',
     occupation: user?.occupation || '',
     company: user?.company || '',
     location: user?.location || '',
     bio: user?.bio || '',
-    avatar: user?.avatar || '',
+    persona_id: user?.persona_id || null,
     skills: user?.skills || [],
   });
 
@@ -65,7 +67,7 @@ export default function ProfileScreen({ navigation }: any) {
         company: currentProfile.company || '',
         location: currentProfile.location || '',
         bio: currentProfile.bio || '',
-        avatar: currentProfile.avatar || '',
+        persona_id: currentProfile.persona_id || null,
         skills: currentProfile.skills?.map(skill => ({
           name: skill.name,
           level: skill.level === 'beginner' ? 'Iniciante' :
@@ -149,7 +151,7 @@ export default function ProfileScreen({ navigation }: any) {
         company: editedProfile.company,
         location: editedProfile.location,
         bio: editedProfile.bio,
-        avatar: editedProfile.avatar,
+        persona_id: editedProfile.persona_id,
       };
 
       await dispatch(updateUserProfile({ userId: user.id, updates: profileUpdate })).unwrap();
@@ -179,17 +181,12 @@ export default function ProfileScreen({ navigation }: any) {
     );
   };
 
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
+  const handleSelectPersona = (persona: Persona) => {
+    setEditedProfile({ 
+      ...editedProfile, 
+      persona_id: persona.id
     });
-
-    if (!result.canceled) {
-      setEditedProfile({ ...editedProfile, avatar: result.assets[0].uri });
-    }
+    setShowPersonaSelector(false);
   };
 
   const addSkill = () => {
@@ -220,6 +217,20 @@ export default function ProfileScreen({ navigation }: any) {
     }
   };
 
+  // Função para obter a imagem de perfil (usa apenas personas)
+  const getProfileImage = (profile?: any, fallbackName?: string) => {
+    if (profile?.persona_id) {
+      const personaImage = getPersonaImage(profile.persona_id);
+      if (personaImage) {
+        return personaImage;
+      }
+    }
+    // Fallback para avatar gerado quando não há persona selecionada
+    return { 
+      uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName || 'User')}&background=2563eb&color=fff` 
+    };
+  };
+
   if (editMode) {
     return (
       <SafeAreaView style={styles.container}>
@@ -236,16 +247,29 @@ export default function ProfileScreen({ navigation }: any) {
         <ScrollView style={styles.editContent}>
           {/* Avatar */}
           <View style={styles.editAvatarSection}>
-            <TouchableOpacity onPress={pickImage} style={styles.editAvatarContainer}>
+            <TouchableOpacity onPress={() => setShowPersonaSelector(true)} style={styles.editAvatarContainer}>
               <Image
-                source={{ 
-                  uri: editedProfile.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(editedProfile.name)}&background=2563eb&color=fff` 
-                }}
+                source={getProfileImage(editedProfile, editedProfile.name)}
                 style={styles.editAvatar}
               />
               <View style={styles.editAvatarOverlay}>
-                <Ionicons name="camera" size={24} color="white" />
+                <Ionicons name="happy-outline" size={24} color="white" />
               </View>
+            </TouchableOpacity>
+            
+            <Text style={styles.avatarSectionTitle}>Persona do Perfil</Text>
+            <Text style={styles.avatarSectionSubtitle}>
+              Selecione uma persona animal para representar seu perfil
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.selectPersonaButton} 
+              onPress={() => setShowPersonaSelector(true)}
+            >
+              <Ionicons name="happy-outline" size={20} color="#10b981" />
+              <Text style={styles.selectPersonaText}>
+                {editedProfile.persona_id ? 'Alterar Persona' : 'Escolher Persona'}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -379,6 +403,14 @@ export default function ProfileScreen({ navigation }: any) {
             </View>
           </View>
         </Modal>
+
+        {/* Persona Selector */}
+        <PersonaSelector
+          visible={showPersonaSelector}
+          onClose={() => setShowPersonaSelector(false)}
+          onSelectPersona={handleSelectPersona}
+          selectedPersonaId={editedProfile.persona_id}
+        />
       </SafeAreaView>
     );
   }
@@ -409,9 +441,7 @@ export default function ProfileScreen({ navigation }: any) {
             ) : (
               <>
                 <Image
-                  source={{ 
-                    uri: currentProfile?.avatar || user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentProfile?.name || user?.name || 'User')}&background=ffffff&color=000000` 
-                  }}
+                  source={getProfileImage(currentProfile || user, currentProfile?.name || user?.name || 'User')}
                   style={styles.profileAvatar}
                 />
                 <Text style={styles.profileName}>{currentProfile?.name || user?.name}</Text>
@@ -745,6 +775,37 @@ const styles = StyleSheet.create({
     padding: 32,
     backgroundColor: 'white',
     marginBottom: 16,
+  },
+  avatarSectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginTop: 16,
+    marginBottom: 4,
+  },
+  avatarSectionSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  selectPersonaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#f0fdf4',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#10b981',
+    gap: 8,
+    marginTop: 8,
+  },
+  selectPersonaText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10b981',
   },
   editAvatarContainer: {
     position: 'relative',

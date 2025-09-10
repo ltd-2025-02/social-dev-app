@@ -6,6 +6,7 @@ export interface UserProfile {
   name: string | null;
   email: string | null;
   avatar: string | null;
+  persona_id: string | null;
   occupation: string | null;
   company: string | null;
   bio: string | null;

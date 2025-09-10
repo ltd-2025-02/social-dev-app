@@ -7,6 +7,7 @@ interface User {
   email: string;
   name: string;
   avatar?: string | null;
+  persona_id?: string | null;
   occupation?: string | null;
   company?: string | null;
   bio?: string | null;
@@ -51,6 +52,7 @@ export const signIn = createAsyncThunk(
       email: data.user.email!,
       name: profile?.name || data.user.email!.split('@')[0],
       avatar: profile?.avatar,
+      persona_id: profile?.persona_id,
       occupation: profile?.occupation,
       company: profile?.company,
       bio: profile?.bio,
@@ -106,6 +108,7 @@ export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async () =
     email: session.user.email!,
     name: profile?.name || session.user.email!.split('@')[0],
     avatar: profile?.avatar,
+    persona_id: profile?.persona_id,
     occupation: profile?.occupation,
     company: profile?.company,
     bio: profile?.bio,
