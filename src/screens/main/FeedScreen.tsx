@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchPosts, createPost, toggleLike, setRefreshing } from '../../store/slices/feedSlice';
 import * as ImagePicker from 'expo-image-picker';
+import { useNotificationHelpers } from '../../hooks/useNotifications';
 
 const { width } = Dimensions.get('window');
 
@@ -40,6 +41,9 @@ export default function FeedScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const { posts, loading, refreshing, error } = useSelector((state: RootState) => state.feed);
   const { user } = useSelector((state: RootState) => state.auth);
+
+  // Usar helpers de notificação
+  const { notifyNewPost, notifyLike, notifyComment } = useNotificationHelpers(user?.id || '');
 
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
@@ -87,6 +91,11 @@ export default function FeedScreen({ navigation }: any) {
         userId: user.id, 
         liked: post.liked_by_user 
       })).unwrap();
+
+      // Criar notificação se curtiu (não descurtiu) e não é próprio post
+      if (!post.liked_by_user && post.user.id && post.user.id !== user.id) {
+        await notifyLike(post.user.id, user.id, postId);
+      }
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Erro ao curtir post');
     }

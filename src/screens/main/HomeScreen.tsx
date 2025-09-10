@@ -12,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchFeaturedJobs } from '../../store/slices/jobsSlice';
+import { useNotifications } from '../../hooks/useNotifications';
+import NotificationBadge from '../../components/NotificationBadge';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +21,9 @@ export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { featuredJobs } = useSelector((state) => state.jobs);
+
+  // Configurar notificações em tempo real
+  useNotifications(user?.id);
 
   useEffect(() => {
     dispatch(fetchFeaturedJobs());
@@ -64,12 +69,21 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0]}! 👋</Text>
             <Text style={styles.subtitle}>Bem-vindo ao SocialDev</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.notificationButton}
-            onPress={() => navigation.navigate('Settings')}
-          >
-            <Ionicons name="settings-outline" size={24} color="#333" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity 
+              style={styles.notificationButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Ionicons name="notifications-outline" size={24} color="#333" />
+              <NotificationBadge />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.settingsButton}
+              onPress={() => navigation.navigate('Settings')}
+            >
+              <Ionicons name="settings-outline" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Stats Cards */}
@@ -197,7 +211,29 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginTop: 4,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   notificationButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
