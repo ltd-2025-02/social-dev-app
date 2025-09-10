@@ -48,6 +48,11 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Drop triggers if they exist before creating
+DROP TRIGGER IF EXISTS update_conversations_updated_at ON public.conversations;
+DROP TRIGGER IF EXISTS update_messages_updated_at ON public.messages;
+
+-- Create triggers
 CREATE TRIGGER update_conversations_updated_at 
     BEFORE UPDATE ON public.conversations 
     FOR EACH ROW 
