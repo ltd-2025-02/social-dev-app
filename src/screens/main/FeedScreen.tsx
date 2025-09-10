@@ -65,10 +65,15 @@ export default function FeedScreen({ navigation }: any) {
     }
 
     try {
-      await dispatch(createPost({
+      const result = await dispatch(createPost({
         content: newPostContent,
         imageUrl: selectedImage
       })).unwrap();
+      
+      // Notificar seguidores sobre novo post
+      if (result?.id && user?.id) {
+        await notifyNewPost(user.id, result.id, newPostContent);
+      }
       
       setNewPostContent('');
       setSelectedImage(null);
