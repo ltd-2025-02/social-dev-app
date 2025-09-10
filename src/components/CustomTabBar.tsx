@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   },
   hamburgerContainer: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? -35 : -25,
+    top: Platform.OS === 'ios' ? -50 : -40,
     right: 20,
     zIndex: 1000,
     backgroundColor: '#fff',

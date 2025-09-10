@@ -190,6 +190,10 @@ class ProfileService {
 
   async updateProfile(userId: string, updates: Partial<UserProfile>): Promise<UserProfile> {
     try {
+      console.log('🔧 ProfileService.updateProfile chamado');
+      console.log('📍 User ID:', userId);
+      console.log('📝 Updates:', updates);
+
       const { data: profile, error } = await supabase
         .from('users')
         .update({
@@ -200,14 +204,17 @@ class ProfileService {
         .select('*')
         .single();
 
+      console.log('💾 Supabase response:', { profile, error });
+
       if (error) throw error;
 
       // Calculate and update profile completion percentage
       await this.updateProfileCompletion(userId);
 
+      console.log('✅ Profile atualizado com sucesso:', profile);
       return profile;
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('❌ Error updating profile:', error);
       throw error;
     }
   }

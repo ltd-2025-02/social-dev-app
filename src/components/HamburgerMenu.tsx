@@ -16,6 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
 import { signOut } from '../store/slices/authSlice';
+import { getPersonaImage } from '../utils/personas';
 
 const { width, height } = Dimensions.get('window');
 
@@ -39,6 +40,7 @@ interface MenuItem {
 export default function HamburgerMenu({ isVisible, onClose, navigation }: HamburgerMenuProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { currentProfile } = useSelector((state: RootState) => state.profile);
   
   const slideAnim = useRef(new Animated.Value(-width)).current;
   const overlayAnim = useRef(new Animated.Value(0)).current;
@@ -108,14 +110,30 @@ export default function HamburgerMenu({ isVisible, onClose, navigation }: Hambur
   };
 
   const getProfileImage = () => {
-    if (user?.avatar?.startsWith('persona:')) {
-      // Handle persona avatars - for now return a default
-      return { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=3b82f6&color=fff` };
+    const profile = currentProfile || user;
+    
+    // First check if persona_id is available (local state)
+    if (profile?.persona_id) {
+      const personaImage = getPersonaImage(profile.persona_id);
+      if (personaImage) return personaImage;
     }
-    if (user?.avatar) {
-      return { uri: user.avatar };
+    
+    // Then check if avatar contains persona data (from database)
+    if (profile?.avatar && profile.avatar.startsWith('persona:')) {
+      const personaId = profile.avatar.replace('persona:', '');
+      const personaImage = getPersonaImage(personaId);
+      if (personaImage) return personaImage;
     }
-    return { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=3b82f6&color=fff` };
+    
+    // If avatar is a regular URL
+    if (profile?.avatar && !profile.avatar.startsWith('persona:')) {
+      return { uri: profile.avatar };
+    }
+    
+    // Default fallback
+    return { 
+      uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'User')}&background=3b82f6&color=fff` 
+    };
   };
 
   const menuItems: MenuItem[] = [
@@ -142,7 +160,7 @@ export default function HamburgerMenu({ isVisible, onClose, navigation }: Hambur
       badge: 'Novo',
     },
     {
-      icon: 'chatbot-outline',
+      icon: 'chatbubble-ellipses-outline',
       title: 'IA Assistant',
       subtitle: 'Seu guia pessoal',
       color: '#8b5cf6',
@@ -214,9 +232,9 @@ export default function HamburgerMenu({ isVisible, onClose, navigation }: Hambur
                   <View style={styles.onlineIndicator} />
                 </View>
                 <View style={styles.profileInfo}>
-                  <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
-                  <Text style={styles.userEmail}>{user?.email || 'email@exemplo.com'}</Text>
-                  <Text style={styles.userOccupation}>{user?.occupation || 'Desenvolvedor'}</Text>
+                  <Text style={styles.userName}>{(currentProfile?.name || user?.name) || 'Usuário'}</Text>
+                  <Text style={styles.userEmail}>{(currentProfile?.email || user?.email) || 'email@exemplo.com'}</Text>
+                  <Text style={styles.userOccupation}>{(currentProfile?.occupation || user?.occupation) || 'Desenvolvedor'}</Text>
                 </View>
               </View>
               

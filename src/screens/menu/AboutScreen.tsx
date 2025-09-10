@@ -54,7 +54,7 @@ export default function AboutScreen({ navigation }: any) {
             { icon: 'briefcase-outline', title: 'Vagas', desc: 'Encontre oportunidades de emprego' },
             { icon: 'chatbubbles-outline', title: 'Chat', desc: 'Conecte-se com outros devs' },
             { icon: 'person-outline', title: 'Perfil', desc: 'Mostre suas habilidades' },
-            { icon: 'chatbot-outline', title: 'IA Assistant', desc: 'Seu guia pessoal' },
+            { icon: 'chatbubble-ellipses-outline', title: 'IA Assistant', desc: 'Seu guia pessoal' },
           ].map((feature, index) => (
             <View key={index} style={styles.featureItem}>
               <Ionicons name={feature.icon as any} size={24} color="#3b82f6" />

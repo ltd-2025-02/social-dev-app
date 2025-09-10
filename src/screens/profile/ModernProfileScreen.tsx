@@ -116,9 +116,16 @@ export default function ModernProfileScreen({ navigation }: any) {
   };
 
   const handleSaveProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      Alert.alert('Erro', 'Usuário não encontrado');
+      return;
+    }
 
     try {
+      console.log('🔄 Iniciando salvamento do perfil...');
+      console.log('📝 Dados editados:', editedProfile);
+      console.log('👤 User ID:', user.id);
+
       // Convert persona_id to avatar URL - the database expects avatar, not persona_id
       let avatarUrl = null;
       if (editedProfile.persona_id) {
@@ -139,10 +146,14 @@ export default function ModernProfileScreen({ navigation }: any) {
         avatar: avatarUrl, // Save as avatar, not persona_id
       };
 
-      await dispatch(updateUserProfile({ 
+      console.log('📦 Dados para salvar:', profileUpdate);
+
+      const result = await dispatch(updateUserProfile({ 
         userId: user.id, 
-        profileData: profileUpdate 
+        updates: profileUpdate 
       })).unwrap();
+
+      console.log('✅ Perfil salvo no banco:', result);
 
       // Also update auth state to keep them in sync (include both avatar and persona_id)
       dispatch(updateProfile({
@@ -153,6 +164,7 @@ export default function ModernProfileScreen({ navigation }: any) {
       Alert.alert('Sucesso!', 'Perfil atualizado com sucesso!');
       setEditMode(false);
     } catch (error: any) {
+      console.error('❌ Erro ao salvar perfil:', error);
       Alert.alert('Erro', error.message || 'Erro ao atualizar perfil');
     }
   };
