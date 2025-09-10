@@ -22,6 +22,7 @@ import {
   fetchPostComments,
   createComment,
   toggleLike,
+  toggleCommentLike,
   clearCurrentPost,
 } from '../../store/slices/feedSlice';
 import { getPersonaImage } from '../../utils/personas';
@@ -93,6 +94,44 @@ export default function PostDetailScreen({ route, navigation }: PostDetailScreen
     }
   };
 
+  const handleCommentLike = async (commentId: string, liked: boolean) => {
+    if (!user) return;
+    
+    try {
+      await dispatch(toggleCommentLike({
+        commentId,
+        userId: user.id,
+        liked
+      })).unwrap();
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Erro ao curtir comentário');
+    }
+  };
+
+  // Function to get profile image (handles both personas and regular avatars)
+  const getProfileImage = (userProfile?: any) => {
+    if (userProfile?.persona_id) {
+      const personaImage = getPersonaImage(userProfile.persona_id);
+      if (personaImage) return personaImage;
+    }
+    
+    if (userProfile?.avatar) {
+      // Handle persona: format
+      if (userProfile.avatar.startsWith('persona:')) {
+        const personaId = userProfile.avatar.replace('persona:', '');
+        const personaImage = getPersonaImage(personaId);
+        if (personaImage) return personaImage;
+      }
+      // Regular URL
+      return { uri: userProfile.avatar };
+    }
+    
+    // Default fallback
+    return { 
+      uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=2563eb&color=fff` 
+    };
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -104,19 +143,6 @@ export default function PostDetailScreen({ route, navigation }: PostDetailScreen
     if (minutes < 60) return `${minutes}min`;
     if (hours < 24) return `${hours}h`;
     return `${days}d`;
-  };
-
-  const getProfileImage = (userProfile: any) => {
-    if (userProfile?.persona_id) {
-      const personaImage = getPersonaImage(userProfile.persona_id);
-      if (personaImage) return personaImage;
-    }
-    if (userProfile?.avatar) {
-      return { uri: userProfile.avatar };
-    }
-    return { 
-      uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=2563eb&color=fff` 
-    };
   };
 
   const renderComment = (comment: any) => (
@@ -132,7 +158,10 @@ export default function PostDetailScreen({ route, navigation }: PostDetailScreen
         </View>
         <Text style={styles.commentText}>{comment.content}</Text>
         <View style={styles.commentActions}>
-          <TouchableOpacity style={styles.commentAction}>
+          <TouchableOpacity 
+            style={styles.commentAction}
+            onPress={() => handleCommentLike(comment.id, comment.liked_by_user || false)}
+          >
             <Ionicons 
               name={comment.liked_by_user ? "heart" : "heart-outline"} 
               size={16} 

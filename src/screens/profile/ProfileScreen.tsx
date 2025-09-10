@@ -38,14 +38,22 @@ export default function ProfileScreen({ navigation }: any) {
   const [editMode, setEditMode] = useState(false);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [showPersonaSelector, setShowPersonaSelector] = useState(false);
-  const [editedProfile, setEditedProfile] = useState({
-    name: user?.name || '',
-    occupation: user?.occupation || '',
-    company: user?.company || '',
-    location: user?.location || '',
-    bio: user?.bio || '',
-    persona_id: user?.persona_id || null,
-    skills: user?.skills || [],
+  const [editedProfile, setEditedProfile] = useState(() => {
+    // Extract persona_id from user avatar if it's in persona: format
+    let personaId = user?.persona_id;
+    if (!personaId && user?.avatar && user.avatar.startsWith('persona:')) {
+      personaId = user.avatar.replace('persona:', '');
+    }
+
+    return {
+      name: user?.name || '',
+      occupation: user?.occupation || '',
+      company: user?.company || '',
+      location: user?.location || '',
+      bio: user?.bio || '',
+      persona_id: personaId || null,
+      skills: user?.skills || [],
+    };
   });
 
   const [newSkill, setNewSkill] = useState({ name: '', level: 'Intermediário' as const });
@@ -61,13 +69,19 @@ export default function ProfileScreen({ navigation }: any) {
   // Update editedProfile when currentProfile changes
   useEffect(() => {
     if (currentProfile) {
+      // Extract persona_id from avatar field if it's in persona: format
+      let personaId = currentProfile.persona_id;
+      if (!personaId && currentProfile.avatar && currentProfile.avatar.startsWith('persona:')) {
+        personaId = currentProfile.avatar.replace('persona:', '');
+      }
+
       setEditedProfile({
         name: currentProfile.name || '',
         occupation: currentProfile.occupation || '',
         company: currentProfile.company || '',
         location: currentProfile.location || '',
         bio: currentProfile.bio || '',
-        persona_id: currentProfile.persona_id || null,
+        persona_id: personaId || null,
         skills: currentProfile.skills?.map(skill => ({
           name: skill.name,
           level: skill.level === 'beginner' ? 'Iniciante' :

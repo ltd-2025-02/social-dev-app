@@ -102,6 +102,21 @@ export const sharePost = createAsyncThunk(
   }
 );
 
+export const toggleCommentLike = createAsyncThunk(
+  'feed/toggleCommentLike',
+  async (params: { commentId: string; userId: string; liked: boolean }) => {
+    const { commentId, userId, liked } = params;
+    
+    if (liked) {
+      await postsService.unlikeComment(commentId, userId);
+    } else {
+      await postsService.likeComment(commentId, userId);
+    }
+    
+    return { commentId, liked: !liked };
+  }
+);
+
 const feedSlice = createSlice({
   name: 'feed',
   initialState,
@@ -233,6 +248,19 @@ const feedSlice = createSlice({
       .addCase(sharePost.fulfilled, (state, action) => {
         // Could update share count if we track that
         console.log('Post shared:', action.payload);
+      })
+      
+      // Toggle comment like
+      .addCase(toggleCommentLike.fulfilled, (state, action) => {
+        const { commentId, liked } = action.payload;
+        
+        // Update comment in postComments
+        const commentIndex = state.postComments.findIndex(comment => comment.id === commentId);
+        if (commentIndex !== -1) {
+          state.postComments[commentIndex].liked_by_user = liked;
+          const currentCount = state.postComments[commentIndex].likes_count || 0;
+          state.postComments[commentIndex].likes_count = liked ? currentCount + 1 : Math.max(0, currentCount - 1);
+        }
       });
   },
 });

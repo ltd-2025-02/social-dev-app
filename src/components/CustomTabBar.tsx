@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import AnimatedHamburgerButton from './AnimatedHamburgerButton';
+import HamburgerMenu from './HamburgerMenu';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +25,7 @@ interface CustomTabBarProps {
 export default function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
   const indicatorAnim = useRef(new Animated.Value(0)).current;
   const tabWidth = width / state.routes.length;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     Animated.spring(indicatorAnim, {
@@ -75,7 +78,15 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
   };
 
   return (
-    <View style={styles.container}>
+    <>
+      <View style={styles.container}>
+      {/* Hamburger Menu Button */}
+      <View style={styles.hamburgerContainer}>
+        <AnimatedHamburgerButton 
+          isOpen={isMenuOpen}
+          onPress={() => setIsMenuOpen(!isMenuOpen)}
+        />
+      </View>
       {/* Animated indicator */}
       <Animated.View
         style={[
@@ -147,6 +158,13 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
         );
       })}
     </View>
+      
+      <HamburgerMenu 
+        isVisible={isMenuOpen}
+        onClose={() => setIsMenuOpen(false)}
+        navigation={navigation}
+      />
+    </>
   );
 }
 
@@ -352,5 +370,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#667eea',
     top: -4,
     left: -4,
+  },
+  hamburgerContainer: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? -35 : -25,
+    right: 20,
+    zIndex: 1000,
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

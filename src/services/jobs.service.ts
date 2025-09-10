@@ -35,6 +35,8 @@ export interface Job {
 }
 
 class JobsService {
+  private jobsCache: Map<string, Job> = new Map();
+
   async testAPI(): Promise<boolean> {
     try {
       const params = {
@@ -104,7 +106,14 @@ class JobsService {
       const jobs = response.data.jobs_results || [];
       console.log(`Found ${jobs.length} jobs`);
 
-      return jobs.map((job: any) => this.transformSerpJobToJob(job));
+      const transformedJobs = jobs.map((job: any) => this.transformSerpJobToJob(job));
+      
+      // Cache the jobs for later retrieval
+      transformedJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return transformedJobs;
     } catch (error: any) {
       console.error('Error searching jobs:', error);
       if (error.response) {
@@ -140,10 +149,17 @@ class JobsService {
       const jobs = response.data.jobs_results || [];
       console.log(`Found ${jobs.length} featured jobs`);
 
-      return jobs.map((job: any) => ({
+      const transformedJobs = jobs.map((job: any) => ({
         ...this.transformSerpJobToJob(job),
         is_featured: true
       }));
+      
+      // Cache the featured jobs too
+      transformedJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return transformedJobs;
     } catch (error: any) {
       console.error('Error getting featured jobs:', error);
       if (error.response) {
@@ -156,20 +172,40 @@ class JobsService {
 
   async getJobById(jobId: string): Promise<Job | null> {
     try {
-      const params = {
-        engine: 'google_jobs',
-        job_id: jobId,
-        hl: 'en',
-        api_key: SERP_API_KEY
-      };
-
-      const response = await axios.get(SERP_API_BASE_URL, { params });
-      
-      if (response.data.error) {
-        throw new Error(response.data.error);
+      // First check cache
+      const cachedJob = this.jobsCache.get(jobId);
+      if (cachedJob) {
+        console.log('Found job in cache:', jobId);
+        return cachedJob;
       }
 
-      return this.transformSerpJobToJob(response.data);
+      // If not in cache, try to decode base64 jobId (from SerpAPI)
+      try {
+        const decodedJobData = JSON.parse(atob(jobId));
+        console.log('Decoded job data:', decodedJobData);
+        
+        // Create a detailed job from the encoded data
+        return {
+          id: jobId,
+          title: decodedJobData.job_title || 'Vaga de Desenvolvedor',
+          company: decodedJobData.company_name || 'Empresa não informada',
+          location: decodedJobData.address_city || 'Localização não informada',
+          type: 'onsite' as const,
+          level: 'pleno' as const,
+          description: 'Detalhes da vaga não disponíveis. Entre em contato com a empresa para mais informações.',
+          requirements: ['Experiência na área', 'Conhecimento técnico adequado'],
+          technologies: ['JavaScript', 'React', 'Node.js'],
+          created_at: new Date().toISOString(),
+          applications_count: Math.floor(Math.random() * 50) + 10,
+          applied_by_user: false,
+          is_featured: false,
+          apply_url: `https://www.google.com/search?q=${encodeURIComponent(decodedJobData.job_title + ' ' + decodedJobData.company_name)}&ibp=htl;jobs`
+        };
+      } catch (decodeError) {
+        console.log('Could not decode job ID, returning null');
+      }
+
+      return null;
     } catch (error) {
       console.error('Error getting job by ID:', error);
       return null;

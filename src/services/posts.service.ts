@@ -380,6 +380,39 @@ class PostsService {
     }
   }
 
+  async likeComment(commentId: string, userId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('comment_likes')
+        .insert([
+          {
+            comment_id: commentId,
+            user_id: userId
+          }
+        ]);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error liking comment:', error);
+      throw error;
+    }
+  }
+
+  async unlikeComment(commentId: string, userId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('comment_likes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('user_id', userId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error unliking comment:', error);
+      throw error;
+    }
+  }
+
   private async createNotification(postId: string, userId: string, type: 'like' | 'comment'): Promise<void> {
     try {
       // Get post owner

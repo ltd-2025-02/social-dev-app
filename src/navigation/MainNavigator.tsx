@@ -17,6 +17,13 @@ import PostDetailScreen from '../screens/main/PostDetailScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
 import JobDetailScreen from '../screens/jobs/JobDetailScreen';
 
+// Menu Screens
+import CareerScreen from '../screens/menu/CareerScreen';
+import LearningScreen from '../screens/menu/LearningScreen';
+import AIChatScreen from '../screens/menu/AIChatScreen';
+import SupportScreen from '../screens/menu/SupportScreen';
+import AboutScreen from '../screens/menu/AboutScreen';
+
 // Components
 import CustomTabBar from '../components/CustomTabBar';
 import TabScreenWrapper from '../components/TabScreenWrapper';
@@ -164,6 +171,46 @@ export default function MainNavigator() {
         component={ProfileScreen} 
         options={{ 
           title: 'Perfil',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Career" 
+        component={CareerScreen} 
+        options={{ 
+          title: 'Carreira',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Learning" 
+        component={LearningScreen} 
+        options={{ 
+          title: 'Aprenda Tecnologias',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="AIChat" 
+        component={AIChatScreen} 
+        options={{ 
+          title: 'IA Assistant',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Support" 
+        component={SupportScreen} 
+        options={{ 
+          title: 'Suporte',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="About" 
+        component={AboutScreen} 
+        options={{ 
+          title: 'Sobre',
           animation: 'slide_from_right',
         }}
       />
