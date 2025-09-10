@@ -8,14 +8,14 @@ export interface Persona {
 const personaImages: { [key: string]: any } = {
   a: require('../../assets/personas/a/arara.png'),
   b: require('../../assets/personas/b/baleia.png'),
-  c: require('../../assets/personas/c/cobra.png'),
-  d: require('../../assets/personas/d/dragao.png'),
+  c: require('../../assets/personas/c/cachorro.png'),
+  d: require('../../assets/personas/d/dinossauro.png'),
   e: require('../../assets/personas/e/elefante.png'),
   f: require('../../assets/personas/f/flamingo.png'),
   g: require('../../assets/personas/g/girafa.png'),
   h: require('../../assets/personas/h/hipopotamo.png'),
   i: require('../../assets/personas/i/iguana.png'),
-  j: require('../../assets/personas/j/jaguar.png'),
+  j: require('../../assets/personas/j/jacare.png'),
   k: require('../../assets/personas/k/koala.png'),
   l: require('../../assets/personas/l/leao.png'),
   m: require('../../assets/personas/m/macaco.png'),
@@ -29,23 +29,23 @@ const personaImages: { [key: string]: any } = {
   u: require('../../assets/personas/u/urso.png'),
   v: require('../../assets/personas/v/vaca.png'),
   w: require('../../assets/personas/w/wallaby.png'),
-  x: require('../../assets/personas/x/xingu.png'),
+  x: require('../../assets/personas/x/xenops.png'),
   y: require('../../assets/personas/y/yak.png'),
   z: require('../../assets/personas/z/zebra.png'),
 };
 
-// Nomes dos animais para cada letra (todas as letras do alfabeto)
+// Nomes dos animais para cada letra (baseado nas imagens realmente disponíveis)
 const animalNames: { [key: string]: string } = {
   a: 'Arara',
   b: 'Baleia',
-  c: 'Cobra',
-  d: 'Dragão',
+  c: 'Cachorro',
+  d: 'Dinossauro',
   e: 'Elefante',
   f: 'Flamingo',
   g: 'Girafa',
   h: 'Hipopótamo',
   i: 'Iguana',
-  j: 'Jaguar',
+  j: 'Jacaré',
   k: 'Koala',
   l: 'Leão',
   m: 'Macaco',
@@ -59,7 +59,7 @@ const animalNames: { [key: string]: string } = {
   u: 'Urso',
   v: 'Vaca',
   w: 'Wallaby',
-  x: 'Xingu',
+  x: 'Xenops',
   y: 'Yak',
   z: 'Zebra'
 };

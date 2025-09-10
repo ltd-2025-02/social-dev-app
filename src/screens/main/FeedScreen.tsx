@@ -52,7 +52,7 @@ export default function FeedScreen({ navigation }: any) {
 
   const onRefresh = useCallback(() => {
     dispatch(setRefreshing(true));
-    dispatch(fetchPosts());
+    dispatch(fetchPosts({ refresh: true }));
   }, [dispatch]);
 
   const handleCreatePost = async () => {
@@ -95,7 +95,7 @@ export default function FeedScreen({ navigation }: any) {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,

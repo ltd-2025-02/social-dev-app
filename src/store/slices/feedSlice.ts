@@ -27,17 +27,29 @@ const initialState: FeedState = {
 // Async thunks
 export const fetchPosts = createAsyncThunk(
   'feed/fetchPosts',
-  async (params: { userId?: string; refresh?: boolean } = {}) => {
-    const { userId, refresh = false } = params;
-    const offset = refresh ? 0 : initialState.page * 20;
+  async (params: { userId?: string; refresh?: boolean } = {}, { getState }) => {
+    const state = getState() as any;
+    const currentUserId = state.auth.user?.id;
+    
+    const { userId = currentUserId, refresh = false } = params;
+    const currentPage = refresh ? 0 : state.feed.page;
+    const offset = currentPage * 20;
+    
     return await postsService.getFeedPosts(userId, 20, offset);
   }
 );
 
 export const createPost = createAsyncThunk(
   'feed/createPost',
-  async (params: { userId: string; content: string; imageUrl?: string }) => {
-    const { userId, content, imageUrl } = params;
+  async (params: { content: string; imageUrl?: string }, { getState }) => {
+    const state = getState() as any;
+    const userId = state.auth.user?.id;
+    
+    if (!userId) {
+      throw new Error('Usuário não autenticado');
+    }
+    
+    const { content, imageUrl } = params;
     return await postsService.createPost(userId, content, imageUrl);
   }
 );
@@ -122,14 +134,18 @@ const feedSlice = createSlice({
         state.loading = false;
         state.refreshing = false;
         
-        if (state.page === 0) {
+        // Check if this is a refresh
+        const isRefresh = action.meta.arg?.refresh;
+        
+        if (isRefresh || state.page === 0) {
           state.posts = action.payload;
+          state.page = 1;
         } else {
           state.posts = [...state.posts, ...action.payload];
+          state.page += 1;
         }
         
         state.hasMore = action.payload.length === 20;
-        state.page += 1;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
