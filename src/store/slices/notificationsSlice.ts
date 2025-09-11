@@ -11,7 +11,6 @@ interface NotificationsState {
   loading: boolean;
   error: string | null;
   settings: NotificationSettings | null;
-  realtimeSubscription: any;
 }
 
 const initialState: NotificationsState = {
@@ -20,7 +19,6 @@ const initialState: NotificationsState = {
   loading: false,
   error: null,
   settings: null,
-  realtimeSubscription: null,
 };
 
 // Async thunks
@@ -117,15 +115,6 @@ const notificationsSlice = createSlice({
       // Update unread count if the notification is unread
       if (!action.payload.is_read) {
         state.unreadCount += 1;
-      }
-    },
-    setRealtimeSubscription: (state, action: PayloadAction<any>) => {
-      state.realtimeSubscription = action.payload;
-    },
-    clearRealtimeSubscription: (state) => {
-      if (state.realtimeSubscription) {
-        state.realtimeSubscription.unsubscribe();
-        state.realtimeSubscription = null;
       }
     },
     updateSettings: (state, action: PayloadAction<Partial<NotificationSettings>>) => {
@@ -252,8 +241,6 @@ const notificationsSlice = createSlice({
 export const {
   clearError,
   addNotification,
-  setRealtimeSubscription,
-  clearRealtimeSubscription,
   updateSettings,
 } = notificationsSlice.actions;
 

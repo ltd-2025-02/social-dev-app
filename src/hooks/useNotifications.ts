@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store';
@@ -7,8 +7,6 @@ import {
   fetchNotifications,
   fetchUnreadCount,
   addNotification,
-  setRealtimeSubscription,
-  clearRealtimeSubscription,
 } from '../store/slices/notificationsSlice';
 import { Notification } from '../services/notifications.service';
 import * as Notifications from 'expo-notifications';
@@ -18,6 +16,7 @@ export const useNotifications = (userId?: string) => {
   const { notifications, unreadCount, loading, error } = useSelector(
     (state: RootState) => state.notifications
   );
+  const subscriptionRef = useRef<any>(null);
 
   // Configurar notificações push
   useEffect(() => {
@@ -28,6 +27,8 @@ export const useNotifications = (userId?: string) => {
           shouldShowAlert: true,
           shouldPlaySound: true,
           shouldSetBadge: true,
+          shouldShowBanner: true,
+          shouldShowList: true,
         }),
       });
 
@@ -102,12 +103,14 @@ export const useNotifications = (userId?: string) => {
       )
       .subscribe();
 
-    dispatch(setRealtimeSubscription(channel));
+    subscriptionRef.current = channel;
 
     return () => {
       console.log('🔕 Desconectando notificações em tempo real');
-      channel.unsubscribe();
-      dispatch(clearRealtimeSubscription());
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
     };
   }, [userId, dispatch]);
 

@@ -19,23 +19,10 @@ import { AppDispatch, RootState } from '../../store';
 import { fetchPosts, createPost, toggleLike, setRefreshing } from '../../store/slices/feedSlice';
 import * as ImagePicker from 'expo-image-picker';
 import { useNotificationHelpers } from '../../hooks/useNotifications';
+import { getPersonaImage } from '../../utils/personas';
+import { Post } from '../../services/posts.service';
 
 const { width } = Dimensions.get('window');
-
-interface Post {
-  id: string;
-  content: string;
-  image_url?: string;
-  created_at: string;
-  user: {
-    name: string;
-    avatar?: string;
-    occupation?: string;
-  };
-  likes_count: number;
-  comments_count: number;
-  liked_by_user: boolean;
-}
 
 export default function FeedScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
@@ -50,7 +37,7 @@ export default function FeedScreen({ navigation }: any) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(fetchPosts());
+    dispatch(fetchPosts({}));
   }, [dispatch]);
 
   const onRefresh = useCallback(() => {
@@ -67,7 +54,7 @@ export default function FeedScreen({ navigation }: any) {
     try {
       const result = await dispatch(createPost({
         content: newPostContent,
-        imageUrl: selectedImage
+        imageUrl: selectedImage || undefined
       })).unwrap();
       
       // Notificar seguidores sobre novo post
@@ -94,11 +81,11 @@ export default function FeedScreen({ navigation }: any) {
       await dispatch(toggleLike({ 
         postId, 
         userId: user.id, 
-        liked: post.liked_by_user 
+        liked: post.liked_by_user || false
       })).unwrap();
 
       // Criar notificação se curtiu (não descurtiu) e não é próprio post
-      if (!post.liked_by_user && post.user.id && post.user.id !== user.id) {
+      if (!post.liked_by_user && post.user?.id && post.user.id !== user.id) {
         await notifyLike(post.user.id, user.id, postId);
       }
     } catch (error: any) {
@@ -108,7 +95,7 @@ export default function FeedScreen({ navigation }: any) {
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaType.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -132,15 +119,33 @@ export default function FeedScreen({ navigation }: any) {
     return `${days}d`;
   };
 
-  const renderPost = (post: Post) => (
+  const getAvatarSource = (avatar: string | null | undefined, name: string) => {
+    if (avatar?.startsWith('persona:')) {
+      const personaId = avatar.replace('persona:', '');
+      const personaImage = getPersonaImage(personaId);
+      if (personaImage) {
+        return personaImage;
+      }
+    }
+    
+    // Fallback para URL ou avatar gerado
+    return { 
+      uri: avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2563eb&color=fff` 
+    };
+  };
+
+  const renderPost = (post: Post) => {
+    if (!post.user) {
+      return null; // Skip posts without user data
+    }
+    
+    return (
     <View key={post.id} style={styles.postCard}>
       {/* Post Header */}
       <View style={styles.postHeader}>
         <TouchableOpacity style={styles.userInfo}>
           <Image
-            source={{ 
-              uri: post.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user.name)}&background=2563eb&color=fff` 
-            }}
+            source={getAvatarSource(post.user.avatar, post.user.name)}
             style={styles.avatar}
           />
           <View style={styles.userDetails}>
@@ -201,7 +206,8 @@ export default function FeedScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
     </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -224,9 +230,7 @@ export default function FeedScreen({ navigation }: any) {
         onPress={() => setShowCreatePost(true)}
       >
         <Image
-          source={{ 
-            uri: user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=2563eb&color=fff` 
-          }}
+          source={getAvatarSource(user?.avatar, user?.name || 'User')}
           style={styles.createPostAvatar}
         />
         <Text style={styles.createPostText}>O que você está pensando?</Text>
@@ -244,9 +248,10 @@ export default function FeedScreen({ navigation }: any) {
       >
         {posts
           .filter((post, index, self) => 
-            index === self.findIndex(p => p.id === post.id)
+            index === self.findIndex(p => p.id === post.id) && post.user
           )
           .map(renderPost)
+          .filter(Boolean)
         }
         
         {posts.length === 0 && !loading && (
@@ -280,9 +285,7 @@ export default function FeedScreen({ navigation }: any) {
           <View style={styles.modalContent}>
             <View style={styles.modalUserInfo}>
               <Image
-                source={{ 
-                  uri: user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=2563eb&color=fff` 
-                }}
+                source={getAvatarSource(user?.avatar, user?.name || 'User')}
                 style={styles.modalAvatar}
               />
               <View>
