@@ -9,46 +9,47 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GeminiService } from '../../services/geminiService';
+import MarkdownRenderer from '../../components/MarkdownRenderer';
 
 interface Message {
   id: string;
   text: string;
   isUser: boolean;
   timestamp: Date;
+  hasCode?: boolean;
+  parsedContent?: Array<{ type: 'text' | 'code'; content: string; language?: string }>;
 }
 
 interface AIChatScreenProps {
   navigation: any;
 }
 
-const AI_RESPONSES = [
-  "Olá! Sou seu assistente de IA aqui no SocialDev. Como posso ajudá-lo hoje?",
-  "Ótima pergunta! Como desenvolvedor, você pode começar focando em uma linguagem específica.",
-  "Para carreira em tecnologia, recomendo começar com fundamentos sólidos em programação.",
-  "React Native é uma excelente escolha para desenvolvimento mobile! Quer dicas de onde começar?",
-  "Python é muito versátil - web, IA, ciência de dados. Qual área mais te interessa?",
-  "JavaScript é essencial para web. Recomendo estudar ES6+, async/await e frameworks modernos.",
-  "Para portfolio, foque em projetos que demonstrem suas habilidades práticas.",
-  "Git é fundamental! Comece com comandos básicos: add, commit, push, pull.",
-  "Para entrevistas técnicas, pratique algoritmos e estruturas de dados no LeetCode.",
-  "Networking é crucial! Participe de eventos, contribua em open source, seja ativo no LinkedIn.",
-];
 
 export default function AIChatScreen({ navigation }: AIChatScreenProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Olá! Sou seu assistente de IA aqui no SocialDev. Como posso ajudá-lo hoje? 🤖',
+      text: 'Olá! Sou seu assistente de IA especializado em desenvolvimento e carreira tech aqui no SocialDev. Como posso ajudá-lo hoje? 🤖\n\nPosso ajudar com:\n• **Programação** e desenvolvimento\n• **Carreira** em TI e tecnologia\n• **Trilhas de aprendizado** do app\n• **Códigos** com preview formatado\n• **Dicas profissionais** e mercado',
       isUser: false,
       timestamp: new Date(),
+      hasCode: false,
+      parsedContent: [
+        {
+          type: 'text',
+          content: 'Olá! Sou seu assistente de IA especializado em desenvolvimento e carreira tech aqui no SocialDev. Como posso ajudá-lo hoje? 🤖\n\nPosso ajudar com:\n• **Programação** e desenvolvimento\n• **Carreira** em TI e tecnologia\n• **Trilhas de aprendizado** do app\n• **Códigos** com preview formatado\n• **Dicas profissionais** e mercado'
+        }
+      ]
     },
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
   const typingAnim = useRef(new Animated.Value(0)).current;
 
@@ -77,7 +78,7 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
   };
 
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -86,25 +87,54 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
       timestamp: new Date(),
     };
 
+    const currentMessage = inputText.trim();
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
+    setIsLoading(true);
 
-    // Simulate AI typing
+    // Start typing animation
     startTypingAnimation();
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      stopTypingAnimation();
+    try {
+      // Call Gemini AI
+      const aiResponseText = await GeminiService.sendMessage(currentMessage);
+      
+      // Parse the response for code blocks
+      const parsedContent = GeminiService.extractCodeBlocks(aiResponseText);
+      const hasCode = parsedContent.some(block => block.type === 'code');
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)],
+        text: aiResponseText,
         isUser: false,
         timestamp: new Date(),
+        hasCode,
+        parsedContent,
       };
 
       setMessages(prev => [...prev, aiResponse]);
-    }, 1500);
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente em alguns instantes.',
+        isUser: false,
+        timestamp: new Date(),
+        hasCode: false,
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+      
+      Alert.alert(
+        'Erro de Conexão',
+        'Não foi possível conectar ao assistente IA. Verifique sua conexão e tente novamente.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      stopTypingAnimation();
+      setIsLoading(false);
+    }
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
@@ -126,13 +156,22 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
       <View style={[
         styles.messageBubble,
         item.isUser ? styles.userBubble : styles.aiBubble,
+        item.hasCode && styles.codeBubble,
       ]}>
-        <Text style={[
-          styles.messageText,
-          item.isUser ? styles.userText : styles.aiText,
-        ]}>
-          {item.text}
-        </Text>
+        {item.isUser ? (
+          <Text style={[styles.messageText, styles.userText]}>
+            {item.text}
+          </Text>
+        ) : (
+          item.parsedContent ? (
+            <MarkdownRenderer content={item.parsedContent} />
+          ) : (
+            <Text style={[styles.messageText, styles.aiText]}>
+              {item.text}
+            </Text>
+          )
+        )}
+        
         <Text style={[
           styles.timestamp,
           item.isUser ? styles.userTimestamp : styles.aiTimestamp,
@@ -183,12 +222,7 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
     </View>
   );
 
-  const quickQuestions = [
-    "Como começar na programação?",
-    "Dicas para portfolio",
-    "Linguagens mais demandadas",
-    "Como conseguir primeiro emprego?",
-  ];
+  const [quickQuestions] = useState(() => GeminiService.getSmartQuestions());
 
   return (
     <SafeAreaView style={styles.container}>
@@ -277,12 +311,12 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
                 inputText.trim() ? styles.sendButtonActive : null,
               ]}
               onPress={sendMessage}
-              disabled={!inputText.trim() || isTyping}
+              disabled={!inputText.trim() || isLoading || isTyping}
             >
               <Ionicons 
                 name="send" 
                 size={20} 
-                color={inputText.trim() ? "#fff" : "#9ca3af"} 
+                color={inputText.trim() && !isLoading ? "#fff" : "#9ca3af"} 
               />
             </TouchableOpacity>
           </View>
@@ -381,6 +415,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
     borderWidth: 1,
     borderColor: '#e5e7eb',
+  },
+  codeBubble: {
+    maxWidth: '90%',
+    padding: 8,
   },
   messageText: {
     fontSize: 15,

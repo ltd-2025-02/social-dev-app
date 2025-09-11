@@ -25,6 +25,12 @@ import SupportScreen from '../screens/menu/SupportScreen';
 import AboutScreen from '../screens/menu/AboutScreen';
 import TermsOfUseScreen from '../screens/menu/TermsOfUseScreen';
 import PrivacyPolicyScreen from '../screens/menu/PrivacyPolicyScreen';
+import FAQScreen from '../screens/menu/FAQScreen';
+import LiveChatScreen from '../screens/menu/LiveChatScreen';
+import BugReportScreen from '../screens/menu/BugReportScreen';
+import FeatureSuggestionScreen from '../screens/menu/FeatureSuggestionScreen';
+import LearningTrailScreen from '../screens/menu/LearningTrailScreen';
+import LearningModuleScreen from '../screens/menu/LearningModuleScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
@@ -240,6 +246,54 @@ export default function MainNavigator() {
         component={PrivacyPolicyScreen} 
         options={{ 
           title: 'Política de Privacidade',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="FAQ" 
+        component={FAQScreen} 
+        options={{ 
+          title: 'FAQ',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="LiveChat" 
+        component={LiveChatScreen} 
+        options={{ 
+          title: 'Chat ao Vivo',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="BugReport" 
+        component={BugReportScreen} 
+        options={{ 
+          title: 'Reportar Bug',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="FeatureSuggestion" 
+        component={FeatureSuggestionScreen} 
+        options={{ 
+          title: 'Sugerir Funcionalidade',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="LearningTrail" 
+        component={LearningTrailScreen} 
+        options={{ 
+          title: 'Trilha de Aprendizado',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="LearningModule" 
+        component={LearningModuleScreen} 
+        options={{ 
+          title: 'Módulo',
           animation: 'slide_from_right',
         }}
       />
