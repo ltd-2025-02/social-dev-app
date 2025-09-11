@@ -16,3 +16,21 @@ Em inicio, na parte de Atividade recente, deve pegar os posts que o usuario do p
 ---
 
 Com base no nivel do usuario, puxar apenas vagas relacionada com o perfil dele.
+
+---
+
+Deve mudar agora a versao do SDK de 53 para 54
+ ERROR  Project is incompatible with this version of Expo Go
+
+• The installed version of Expo Go is for SDK 54.0.0.
+• The project you opened uses SDK 53.
+
+How to fix this error:
+
+Either upgrade this project to SDK 54.0.0, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.
+
+[Learn how to upgrade to SDK 54.](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/)
+
+[https://expo.dev/go?sdkVersion=53&platform=ios&device=false](Learn how to install Expo Go for SDK 53 in an iOS Simulator.
+
+a versao se encontra em package.json e tem que ver se nao vai quebrar o codigo do app
