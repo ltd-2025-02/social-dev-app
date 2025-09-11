@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/post.png" alt="SocialDev Mobile App" width="800">
+  <img src="assets/app.png" alt="SocialDev Mobile App" width="300">
   
   <h1>📱 SocialDev Mobile App</h1>
   
