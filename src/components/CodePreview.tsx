@@ -185,21 +185,27 @@ export default function CodePreview({ code, language = 'javascript' }: CodePrevi
         showsHorizontalScrollIndicator={false}
       >
         <View style={styles.codeContent}>
-          {highlightedLines.map((line, index) => (
-            <View key={line.key} style={styles.codeLine}>
-              <Text style={styles.lineNumber}>{index + 1}</Text>
-              <View style={styles.lineContent}>
-                {line.content.map((token, tokenIndex) => (
-                  <Text 
-                    key={tokenIndex}
-                    style={[styles.codeText, { color: token.style }]}
-                  >
-                    {token.text}
-                  </Text>
-                ))}
+          {highlightedLines.map((line, index) => {
+            const lineKey = `code-line-${line.key}-${index}`;
+            return (
+              <View key={lineKey} style={styles.codeLine}>
+                <Text style={styles.lineNumber}>{index + 1}</Text>
+                <View style={styles.lineContent}>
+                  {line.content.map((token, tokenIndex) => {
+                    const tokenKey = `${lineKey}-token-${tokenIndex}-${token.text.length}`;
+                    return (
+                      <Text 
+                        key={tokenKey}
+                        style={[styles.codeText, { color: token.style }]}
+                      >
+                        {token.text}
+                      </Text>
+                    );
+                  })}
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
     </View>

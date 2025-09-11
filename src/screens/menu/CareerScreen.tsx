@@ -145,7 +145,10 @@ export default function CareerScreen({ navigation }: CareerScreenProps) {
           <Text style={styles.sectionTitle}>Ações Rápidas</Text>
           
           <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionCard}>
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('ResumeBuilder')}
+            >
               <View style={[styles.actionIcon, { backgroundColor: '#ddd6fe' }]}>
                 <Ionicons name="document-text-outline" size={24} color="#8b5cf6" />
               </View>

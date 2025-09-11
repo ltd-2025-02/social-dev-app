@@ -13,33 +13,34 @@ interface MarkdownRendererProps {
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
-  const renderTextContent = (text: string) => {
+  const renderTextContent = (text: string, blockIndex: number = 0) => {
     // Simple markdown parsing for basic formatting
     const lines = text.split('\n');
     
     return lines.map((line, index) => {
+      const uniqueKey = `line-${blockIndex}-${index}-${line.length}`;
       if (!line.trim()) {
-        return <View key={index} style={styles.spacer} />;
+        return <View key={uniqueKey} style={styles.spacer} />;
       }
 
       // Headers
       if (line.startsWith('### ')) {
         return (
-          <Text key={index} style={styles.h3}>
+          <Text key={uniqueKey} style={styles.h3}>
             {line.replace('### ', '')}
           </Text>
         );
       }
       if (line.startsWith('## ')) {
         return (
-          <Text key={index} style={styles.h2}>
+          <Text key={uniqueKey} style={styles.h2}>
             {line.replace('## ', '')}
           </Text>
         );
       }
       if (line.startsWith('# ')) {
         return (
-          <Text key={index} style={styles.h1}>
+          <Text key={uniqueKey} style={styles.h1}>
             {line.replace('# ', '')}
           </Text>
         );
@@ -48,10 +49,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       // Lists
       if (line.startsWith('- ') || line.startsWith('* ')) {
         return (
-          <View key={index} style={styles.listItem}>
+          <View key={uniqueKey} style={styles.listItem}>
             <Text style={styles.listBullet}>•</Text>
             <Text style={styles.listText}>
-              {formatInlineText(line.replace(/^[*-]\s/, ''))}
+              {formatInlineText(line.replace(/^[*-]\s/, ''), `${uniqueKey}-text`)}
             </Text>
           </View>
         );
@@ -61,10 +62,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       const numberedMatch = line.match(/^\d+\.\s(.+)$/);
       if (numberedMatch) {
         return (
-          <View key={index} style={styles.listItem}>
+          <View key={uniqueKey} style={styles.listItem}>
             <Text style={styles.listNumber}>{line.match(/^\d+/)?.[0]}.</Text>
             <Text style={styles.listText}>
-              {formatInlineText(numberedMatch[1])}
+              {formatInlineText(numberedMatch[1], `${uniqueKey}-text`)}
             </Text>
           </View>
         );
@@ -72,14 +73,14 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
       // Regular paragraph
       return (
-        <Text key={index} style={styles.paragraph}>
-          {formatInlineText(line)}
+        <Text key={uniqueKey} style={styles.paragraph}>
+          {formatInlineText(line, `${uniqueKey}-text`)}
         </Text>
       );
     });
   };
 
-  const formatInlineText = (text: string) => {
+  const formatInlineText = (text: string, keyPrefix: string = '') => {
     // This is a simplified inline formatter
     // In a real app, you'd want to use a more robust markdown parser
     const parts = [];
@@ -111,17 +112,18 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     const segments = currentText.split(/(__[A-Z]+_\d+__)/);
     
     return segments.map((segment, index) => {
+      const segmentKey = `${keyPrefix}-seg-${index}`;
       const match = segment.match(/__([A-Z]+)_(\d+)__/);
       if (match) {
         const part = parts.find(p => p.key.toString() === match[2]);
         if (part) {
           switch (part.type) {
             case 'bold':
-              return <Text key={index} style={styles.bold}>{part.content}</Text>;
+              return <Text key={segmentKey} style={styles.bold}>{part.content}</Text>;
             case 'italic':
-              return <Text key={index} style={styles.italic}>{part.content}</Text>;
+              return <Text key={segmentKey} style={styles.italic}>{part.content}</Text>;
             case 'code':
-              return <Text key={index} style={styles.inlineCode}>{part.content}</Text>;
+              return <Text key={segmentKey} style={styles.inlineCode}>{part.content}</Text>;
           }
         }
       }
@@ -132,18 +134,19 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
     <View style={styles.container}>
       {content.map((block, index) => {
+        const blockKey = `block-${index}-${block.type}-${block.content.length}`;
         if (block.type === 'code') {
           return (
             <CodePreview
-              key={index}
+              key={blockKey}
               code={block.content}
               language={block.language}
             />
           );
         } else {
           return (
-            <View key={index} style={styles.textBlock}>
-              {renderTextContent(block.content)}
+            <View key={blockKey} style={styles.textBlock}>
+              {renderTextContent(block.content, index)}
             </View>
           );
         }

@@ -31,6 +31,7 @@ import BugReportScreen from '../screens/menu/BugReportScreen';
 import FeatureSuggestionScreen from '../screens/menu/FeatureSuggestionScreen';
 import LearningTrailScreen from '../screens/menu/LearningTrailScreen';
 import LearningModuleScreen from '../screens/menu/LearningModuleScreen';
+import ResumeBuilderScreen from '../screens/menu/ResumeBuilderScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
@@ -294,6 +295,14 @@ export default function MainNavigator() {
         component={LearningModuleScreen} 
         options={{ 
           title: 'Módulo',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="ResumeBuilder" 
+        component={ResumeBuilderScreen} 
+        options={{ 
+          title: 'Criar Currículo',
           animation: 'slide_from_right',
         }}
       />
