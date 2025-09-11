@@ -45,6 +45,13 @@ export default function HomeScreen({ navigation }) {
       onPress: () => navigation.navigate('Jobs'),
     },
     {
+      icon: 'people-outline',
+      title: 'Usuários',
+      subtitle: 'Buscar pessoas',
+      color: '#e11d48',
+      onPress: () => navigation.navigate('UserSearch'),
+    },
+    {
       icon: 'chatbubbles-outline',
       title: 'Chat',
       subtitle: 'Conversas',

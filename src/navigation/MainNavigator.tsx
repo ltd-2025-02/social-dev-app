@@ -16,6 +16,8 @@ import SettingsScreen from '../screens/main/SettingsScreen';
 import PostDetailScreen from '../screens/main/PostDetailScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
 import JobDetailScreen from '../screens/jobs/JobDetailScreen';
+import UserProfileScreen from '../screens/profile/UserProfileScreen';
+import UserSearchScreen from '../screens/users/UserSearchScreen';
 
 // Menu Screens
 import CareerScreen from '../screens/menu/CareerScreen';
@@ -330,6 +332,22 @@ export default function MainNavigator() {
         component={InterviewSimulatorScreen} 
         options={{ 
           title: 'Simulador de Entrevista',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="OtherUserProfile" 
+        component={UserProfileScreen} 
+        options={{ 
+          title: 'Perfil do Usuário',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="UserSearch" 
+        component={UserSearchScreen} 
+        options={{ 
+          title: 'Buscar Usuários',
           animation: 'slide_from_right',
         }}
       />
