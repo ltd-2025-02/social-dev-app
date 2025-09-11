@@ -23,3 +23,11 @@ Colocar uma nova interface para analisar o curriculo para ver se esta bom,
 colocar graficos, indicar para vagas de tecnologia com base no curriculo e
 uma outra tela de preparacao para vagas de emprego, tipo um tutor de IA, no
 final da entrevista simulado, ira aparecer o nivel do candidato
+
+---
+
+Houve um erro ao acessar Vagas:
+
+LOG  Found 10 jobs
+LOG  SerpAPI Featured Response status: 200
+ERROR  SerpAPI Featured Error: Google hasn't returned any results for this query.
