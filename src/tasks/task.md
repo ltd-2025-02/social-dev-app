@@ -74,3 +74,31 @@ Apos 21 horas, escrever "Continuar" para ele concluir a implementacao das config
 ---
 
 Utilizar a nova api de vagas (https://theirstack.com/en/job-lookup) em conjunto com a API de vagas de emprego do SerpiAPI
+
+API:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlc3RldmFtc291emFsYXVyZXRoQGdtYWlsLmNvbSIsInBlcm1pc3Npb25zIjoidXNlciIsImNyZWF0ZWRfYXQiOiIyMDI1LTA5LTExVDIxOjU4OjI1LjYzMDYxOCswMDowMCJ9.SKQDWXfibhyfsMmtlkHgTa8-nA4NNq4uu7dAZ-NWKgo
+
+URL: curl --request POST \
+--url "https://api.theirstack.com/v1/jobs/search" \
+--header "Accept: application/json" \
+--header "Content-Type: application/json" \
+--header "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlc3RldmFtc291emFsYXVyZXRoQGdtYWlsLmNvbSIsInBlcm1pc3Npb25zIjoidXNlciIsImNyZWF0ZWRfYXQiOiIyMDI1LTA5LTExVDIxOjU4OjI1LjYzMDYxOCswMDowMCJ9.SKQDWXfibhyfsMmtlkHgTa8-nA4NNq4uu7dAZ-NWKgo" \
+-d "{
+  \"page\": 0,
+  \"limit\": 10,
+  \"posted_at_max_age_days\": 15,
+  \"blur_company_data\": false,
+  \"order_by\": [
+    {
+      \"desc\": true,
+      \"field\": \"date_posted\"
+    }
+  ],
+  \"job_country_code_or\": [
+    \"BR\"
+  ],
+  \"include_total_results\": false
+}"
+
+Utilizando essa API, sera possivel buscar vagas no Linkedin, Indeed, Google
+Esta tudo na documentacao: https://api.theirstack.com/
