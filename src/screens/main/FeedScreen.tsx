@@ -35,6 +35,8 @@ export default function FeedScreen({ navigation }: any) {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPosts({}));
@@ -134,6 +136,54 @@ export default function FeedScreen({ navigation }: any) {
     };
   };
 
+  const handleUserMenuPress = (post: Post) => {
+    setSelectedPost(post);
+    setShowUserMenu(true);
+  };
+
+  const handleFollowUser = async (userId: string) => {
+    try {
+      // Aqui você implementaria a lógica de seguir/desseguir
+      // Por enquanto, vamos apenas mostrar um alert
+      Alert.alert('Seguir Usuário', 'Funcionalidade de seguir será implementada em breve');
+      setShowUserMenu(false);
+    } catch (error: any) {
+      Alert.alert('Erro', 'Não foi possível seguir o usuário');
+    }
+  };
+
+  const handleShareProfile = async (user: any) => {
+    try {
+      // Simular compartilhamento do perfil
+      Alert.alert(
+        'Compartilhar Perfil',
+        `Compartilhar perfil de ${user.name}?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Compartilhar', onPress: () => {
+            Alert.alert('Sucesso', 'Perfil compartilhado!');
+            setShowUserMenu(false);
+          }}
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert('Erro', 'Não foi possível compartilhar o perfil');
+    }
+  };
+
+  const handleSendMessage = (userId: string, userName: string) => {
+    setShowUserMenu(false);
+    // Navegar para o chat com o usuário
+    navigation.navigate('ChatDetail', {
+      conversationId: `temp-${userId}`, // ID temporário da conversa
+      otherUser: {
+        id: userId,
+        name: userName,
+        avatar: selectedPost?.user?.avatar
+      }
+    });
+  };
+
   const renderPost = (post: Post) => {
     if (!post.user) {
       return null; // Skip posts without user data
@@ -143,7 +193,10 @@ export default function FeedScreen({ navigation }: any) {
     <View key={post.id} style={styles.postCard}>
       {/* Post Header */}
       <View style={styles.postHeader}>
-        <TouchableOpacity style={styles.userInfo}>
+        <TouchableOpacity 
+          style={styles.userInfo}
+          onPress={() => navigation.navigate('OtherUserProfile', { userId: post.user.id })}
+        >
           <Image
             source={getAvatarSource(post.user.avatar, post.user.name)}
             style={styles.avatar}
@@ -156,7 +209,10 @@ export default function FeedScreen({ navigation }: any) {
             <Text style={styles.postTime}>{formatDate(post.created_at)}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.moreButton}>
+        <TouchableOpacity 
+          style={styles.moreButton}
+          onPress={() => handleUserMenuPress(post)}
+        >
           <Ionicons name="ellipsis-horizontal" size={20} color="#666" />
         </TouchableOpacity>
       </View>
@@ -331,6 +387,76 @@ export default function FeedScreen({ navigation }: any) {
             </View>
           </View>
         </SafeAreaView>
+      </Modal>
+
+      {/* User Menu Modal */}
+      <Modal
+        visible={showUserMenu}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowUserMenu(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowUserMenu(false)}
+        >
+          <View style={styles.userMenuContainer}>
+            {selectedPost?.user && (
+              <>
+                <View style={styles.userMenuHeader}>
+                  <Image
+                    source={getAvatarSource(selectedPost.user.avatar, selectedPost.user.name)}
+                    style={styles.userMenuAvatar}
+                  />
+                  <View>
+                    <Text style={styles.userMenuName}>{selectedPost.user.name}</Text>
+                    <Text style={styles.userMenuOccupation}>
+                      {selectedPost.user.occupation || 'Desenvolvedor'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.userMenuActions}>
+                  <TouchableOpacity 
+                    style={styles.userMenuAction}
+                    onPress={() => {
+                      setShowUserMenu(false);
+                      navigation.navigate('OtherUserProfile', { userId: selectedPost.user.id });
+                    }}
+                  >
+                    <Ionicons name="person-outline" size={20} color="#3b82f6" />
+                    <Text style={styles.userMenuActionText}>Ver Perfil</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={styles.userMenuAction}
+                    onPress={() => handleFollowUser(selectedPost.user.id)}
+                  >
+                    <Ionicons name="person-add-outline" size={20} color="#10b981" />
+                    <Text style={styles.userMenuActionText}>Seguir</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={styles.userMenuAction}
+                    onPress={() => handleSendMessage(selectedPost.user.id, selectedPost.user.name)}
+                  >
+                    <Ionicons name="chatbubble-outline" size={20} color="#8b5cf6" />
+                    <Text style={styles.userMenuActionText}>Enviar Mensagem</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity 
+                    style={styles.userMenuAction}
+                    onPress={() => handleShareProfile(selectedPost.user)}
+                  >
+                    <Ionicons name="share-outline" size={20} color="#f59e0b" />
+                    <Text style={styles.userMenuActionText}>Compartilhar Perfil</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </TouchableOpacity>
       </Modal>
     </SafeAreaView>
   );
@@ -620,5 +746,66 @@ const styles = StyleSheet.create({
     color: '#3b82f6',
     marginTop: 4,
     fontWeight: '500',
+  },
+  // User Menu Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userMenuContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    margin: 20,
+    minWidth: 280,
+    maxWidth: 320,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  userMenuHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  userMenuAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
+  },
+  userMenuName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1f2937',
+  },
+  userMenuOccupation: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 2,
+  },
+  userMenuActions: {
+    gap: 12,
+  },
+  userMenuAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#f8fafc',
+  },
+  userMenuActionText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginLeft: 12,
   },
 });

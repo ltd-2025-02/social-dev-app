@@ -16,3 +16,5 @@ Houve um erro ao acessar Vagas:
 LOG  Found 10 jobs
 LOG  SerpAPI Featured Response status: 200
 ERROR  SerpAPI Featured Error: Google hasn't returned any results for this query.
+
+---
