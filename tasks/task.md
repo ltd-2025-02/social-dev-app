@@ -34,3 +34,8 @@ Either upgrade this project to SDK 54.0.0, or launch it in an iOS simulator. It 
 [https://expo.dev/go?sdkVersion=53&platform=ios&device=false](Learn how to install Expo Go for SDK 53 in an iOS Simulator.
 
 a versao se encontra em package.json e tem que ver se nao vai quebrar o codigo do app
+
+---
+
+LOG  SerpAPI Featured Response status: 200
+ERROR  SerpAPI Featured Error: Google hasn't returned any results for this query.
