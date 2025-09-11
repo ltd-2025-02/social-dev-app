@@ -106,6 +106,12 @@ class JobsService {
       const jobs = response.data.jobs_results || [];
       console.log(`Found ${jobs.length} jobs`);
 
+      // If no jobs found, return mock data instead of continuing with empty array
+      if (jobs.length === 0) {
+        console.log('No jobs found from API, returning mock data');
+        return this.getMockJobs(filters);
+      }
+
       const transformedJobs = jobs.map((job: any) => this.transformSerpJobToJob(job));
       
       // Cache the jobs for later retrieval
@@ -143,11 +149,18 @@ class JobsService {
       
       if (response.data.error) {
         console.error('SerpAPI Featured Error:', response.data.error);
+        console.log('Returning mock featured jobs due to API error');
         return this.getMockFeaturedJobs();
       }
       
       const jobs = response.data.jobs_results || [];
       console.log(`Found ${jobs.length} featured jobs`);
+      
+      // If no jobs found, return mock data instead of continuing with empty array
+      if (jobs.length === 0) {
+        console.log('No featured jobs found from API, returning mock data');
+        return this.getMockFeaturedJobs();
+      }
 
       const transformedJobs = jobs.map((job: any) => ({
         ...this.transformSerpJobToJob(job),
@@ -363,7 +376,66 @@ class JobsService {
     return undefined;
   }
 
-  // Mock data methods for fallback
+  // Mock data methods for fallback (public for external access)
+  getMockFeaturedJobs(): Job[] {
+    return [
+      {
+        id: 'featured-1',
+        title: 'Senior React Native Developer',
+        company: 'Nubank',
+        location: 'São Paulo, SP',
+        type: 'hybrid' as const,
+        level: 'senior' as const,
+        salary_range: 'R$ 10.000 - R$ 15.000',
+        description: 'Desenvolvimento de features para o app do Nubank com React Native. Trabalhe com uma das maiores fintechs da América Latina, criando soluções inovadoras que impactam milhões de usuários. Você será responsável por desenvolver e manter funcionalidades do aplicativo, trabalhando em squads ágeis e multidisciplinares.',
+        requirements: ['React Native', 'TypeScript', 'Redux', 'Experiência com fintech', 'Testes automatizados'],
+        technologies: ['React Native', 'TypeScript', 'Redux', 'GraphQL', 'Jest', 'Detox'],
+        created_at: new Date().toISOString(),
+        applications_count: 156,
+        applied_by_user: false,
+        is_featured: true,
+        company_logo: 'https://logo.clearbit.com/nubank.com.br',
+        apply_url: 'https://boards.greenhouse.io/nubank'
+      },
+      {
+        id: 'featured-2',
+        title: 'Flutter Developer',
+        company: 'iFood',
+        location: 'Remote',
+        type: 'remote' as const,
+        level: 'pleno' as const,
+        salary_range: 'R$ 8.000 - R$ 12.000',
+        description: 'Desenvolvimento mobile com Flutter para o iFood. Junte-se ao time que conecta milhões de pessoas à comida que elas amam. Você trabalhará no desenvolvimento de features para nossos apps de delivery, criando experiências incríveis para consumidores e parceiros.',
+        requirements: ['Flutter', 'Dart', 'Firebase', 'API REST', 'Clean Architecture'],
+        technologies: ['Flutter', 'Dart', 'Firebase', 'REST API', 'GraphQL', 'BLoC'],
+        created_at: new Date().toISOString(),
+        applications_count: 89,
+        applied_by_user: false,
+        is_featured: true,
+        company_logo: 'https://logo.clearbit.com/ifood.com.br',
+        apply_url: 'https://carreiras.ifood.com.br/'
+      },
+      {
+        id: 'featured-3',
+        title: 'Mobile Engineer',
+        company: 'Stone',
+        location: 'Rio de Janeiro, RJ',
+        type: 'hybrid' as const,
+        level: 'senior' as const,
+        salary_range: 'R$ 9.000 - R$ 14.000',
+        description: 'Desenvolvimento de soluções móveis para pagamentos na Stone. Trabalhe com tecnologias de ponta no desenvolvimento de aplicações que revolucionam o mercado de pagamentos no Brasil. Você fará parte de uma equipe que desenvolve produtos que facilitam a vida de milhares de empreendedores.',
+        requirements: ['iOS', 'Android', 'React Native', 'Kotlin', 'Swift', 'Arquitetura MVVM'],
+        technologies: ['Swift', 'Kotlin', 'React Native', 'Firebase', 'REST API', 'Clean Architecture'],
+        created_at: new Date().toISOString(),
+        applications_count: 67,
+        applied_by_user: false,
+        is_featured: true,
+        company_logo: 'https://logo.clearbit.com/stone.com.br',
+        apply_url: 'https://stone.com.br/carreiras/'
+      }
+    ];
+  }
+
   private getMockJobs(filters: JobFilters): Job[] {
     const mockJobs = [
       {
@@ -381,6 +453,7 @@ class JobsService {
         applications_count: 25,
         applied_by_user: false,
         is_featured: false,
+        apply_url: 'https://linkedin.com/jobs/search/?keywords=react%20native%20developer',
       },
       {
         id: 'mock-2',
@@ -478,61 +551,6 @@ class JobsService {
     return filteredJobs;
   }
 
-  private getMockFeaturedJobs(): Job[] {
-    return [
-      {
-        id: 'featured-1',
-        title: 'Senior React Native Developer',
-        company: 'Nubank',
-        location: 'São Paulo, SP',
-        type: 'hybrid' as const,
-        level: 'senior' as const,
-        salary_range: 'R$ 10.000 - R$ 15.000',
-        description: 'Desenvolvimento de features para o app do Nubank...',
-        requirements: ['React Native', 'TypeScript', 'Redux'],
-        technologies: ['React Native', 'TypeScript', 'Redux', 'GraphQL'],
-        created_at: new Date().toISOString(),
-        applications_count: 156,
-        applied_by_user: false,
-        is_featured: true,
-        company_logo: 'https://logo.clearbit.com/nubank.com.br'
-      },
-      {
-        id: 'featured-2',
-        title: 'Flutter Developer',
-        company: 'iFood',
-        location: 'Remote',
-        type: 'remote' as const,
-        level: 'pleno' as const,
-        salary_range: 'R$ 8.000 - R$ 12.000',
-        description: 'Desenvolvimento mobile com Flutter para delivery...',
-        requirements: ['Flutter', 'Dart', 'Firebase'],
-        technologies: ['Flutter', 'Dart', 'Firebase', 'REST API'],
-        created_at: new Date().toISOString(),
-        applications_count: 89,
-        applied_by_user: false,
-        is_featured: true,
-        company_logo: 'https://logo.clearbit.com/ifood.com.br'
-      },
-      {
-        id: 'featured-3',
-        title: 'Mobile Engineer',
-        company: 'Stone',
-        location: 'Rio de Janeiro, RJ',
-        type: 'hybrid' as const,
-        level: 'senior' as const,
-        salary_range: 'R$ 9.000 - R$ 14.000',
-        description: 'Desenvolvimento de soluções móveis para pagamentos...',
-        requirements: ['iOS', 'Android', 'React Native'],
-        technologies: ['Swift', 'Kotlin', 'React Native', 'Firebase'],
-        created_at: new Date().toISOString(),
-        applications_count: 67,
-        applied_by_user: false,
-        is_featured: true,
-        company_logo: 'https://logo.clearbit.com/stone.com.br'
-      }
-    ];
-  }
 }
 
 export const jobsService = new JobsService();

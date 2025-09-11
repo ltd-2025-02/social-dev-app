@@ -7,4 +7,4 @@ Nessa parte, tem a imagem em cima e uma descricao abaixo explicando do que se tr
 
 ---
 
-Faltou fazer o download ou compartilhar o curriculo. Ai na tela inicial, vai ter um novo botao de meus curriculos e deve salvar no banco de dados do supabase e criar um novo script sql com a estrutura completa da tabela
+Faltou fazer o download ou compartilhar o curriculo. Ai na tela inicial, vai ter um novo botao de meus curriculos e deve salvar no banco de dados do supabase e criar um novo script sql com a estrutura completa da tabela.

@@ -288,8 +288,32 @@ export default function JobDetailScreen({ route, navigation }: any) {
         </View>
       </ScrollView>
 
-      {/* Apply Button */}
+      {/* Action Buttons */}
       <View style={styles.footer}>
+        {/* Ver no Site Button - Always visible if apply_url exists */}
+        {job.apply_url && (
+          <TouchableOpacity
+            style={styles.siteButton}
+            onPress={() => {
+              Alert.alert(
+                'Ver no Site',
+                'Você será redirecionado para a página oficial da vaga.',
+                [
+                  { text: 'Cancelar', style: 'cancel' },
+                  {
+                    text: 'Abrir Site',
+                    onPress: () => Linking.openURL(job.apply_url!),
+                  },
+                ]
+              );
+            }}
+          >
+            <Ionicons name="globe-outline" size={20} color="#8b5cf6" />
+            <Text style={styles.siteButtonText}>Ver no Site</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Apply Button */}
         {job.applied_by_user ? (
           <View style={styles.appliedButton}>
             <Ionicons name="checkmark-circle" size={20} color="#10b981" />
@@ -297,10 +321,12 @@ export default function JobDetailScreen({ route, navigation }: any) {
           </View>
         ) : (
           <TouchableOpacity
-            style={styles.applyButton}
+            style={[styles.applyButton, job.apply_url && styles.applyButtonSecondary]}
             onPress={handleApplyJob}
           >
-            <Text style={styles.applyButtonText}>Candidatar-se à vaga</Text>
+            <Text style={styles.applyButtonText}>
+              {job.apply_url ? 'Candidatar-se Rápido' : 'Candidatar-se à vaga'}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -529,12 +555,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
+    gap: 12,
+  },
+  siteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8fafc',
+    borderWidth: 2,
+    borderColor: '#8b5cf6',
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  siteButtonText: {
+    fontSize: 16,
+    color: '#8b5cf6',
+    fontWeight: '600',
+    marginLeft: 8,
   },
   applyButton: {
     backgroundColor: '#3b82f6',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
+  },
+  applyButtonSecondary: {
+    backgroundColor: '#10b981',
   },
   applyButtonText: {
     fontSize: 16,

@@ -137,31 +137,80 @@ export default function JobsScreen({ navigation }: any) {
       style={[styles.featuredCard, index === 0 && styles.featuredCardFirst]}
       onPress={() => navigation.navigate('JobDetail', { jobId: job.id })}
     >
+      {/* Premium Badge */}
       <View style={styles.featuredBadgeContainer}>
         <View style={styles.featuredBadgeSmall}>
-          <Ionicons name="star" size={10} color="#fff" />
-          <Text style={[styles.featuredTextSmall, { marginLeft: 3 }]}>Destaque</Text>
+          <Ionicons name="diamond" size={12} color="#fff" />
+          <Text style={[styles.featuredTextSmall, { marginLeft: 4 }]}>Premium</Text>
         </View>
       </View>
 
+      {/* Company Logo */}
+      {job.company_logo && (
+        <View style={styles.featuredLogoContainer}>
+          <Image 
+            source={{ uri: job.company_logo }} 
+            style={styles.featuredLogo}
+            resizeMode="contain"
+          />
+        </View>
+      )}
+
+      {/* Job Title */}
       <Text style={styles.featuredJobTitle} numberOfLines={2}>
         {job.title}
       </Text>
+      
+      {/* Company Name */}
       <Text style={styles.featuredJobCompany}>{job.company}</Text>
       
+      {/* Location and Type */}
       <View style={styles.featuredJobMeta}>
         <View style={styles.featuredMetaItem}>
-          <Ionicons name="location-outline" size={12} color="#6b7280" />
-          <Text style={[styles.featuredMetaText, { marginLeft: 4 }]}>{job.location}</Text>
+          <Ionicons name="location-outline" size={14} color={colors.textMuted} />
+          <Text style={[styles.featuredMetaText, { marginLeft: 4, color: colors.textMuted }]}>
+            {job.location}
+          </Text>
         </View>
         <View style={[styles.featuredTypeBadge, { backgroundColor: getJobTypeColor(job.type) }]}>
           <Text style={styles.featuredTypeText}>{getJobTypeLabel(job.type)}</Text>
         </View>
       </View>
 
-      {job.salary_range && (
-        <Text style={styles.featuredSalary}>{job.salary_range}</Text>
+      {/* Technologies */}
+      {job.technologies && job.technologies.length > 0 && (
+        <View style={styles.featuredTechSection}>
+          <View style={styles.featuredTechList}>
+            {job.technologies.slice(0, 3).map((tech, techIndex) => (
+              <View key={techIndex} style={styles.featuredTechTag}>
+                <Text style={styles.featuredTechText}>{tech}</Text>
+              </View>
+            ))}
+            {job.technologies.length > 3 && (
+              <Text style={styles.featuredMoreTech}>+{job.technologies.length - 3}</Text>
+            )}
+          </View>
+        </View>
       )}
+
+      {/* Salary and Application Count */}
+      <View style={styles.featuredFooter}>
+        {job.salary_range && (
+          <View style={styles.featuredSalaryContainer}>
+            <Ionicons name="card-outline" size={14} color="#059669" />
+            <Text style={styles.featuredSalary}>{job.salary_range}</Text>
+          </View>
+        )}
+        <Text style={styles.featuredApplications}>
+          {job.applications_count} candidatos
+        </Text>
+      </View>
+
+      {/* Action Button */}
+      <TouchableOpacity style={styles.featuredActionButton}>
+        <Text style={styles.featuredActionText}>Ver Detalhes</Text>
+        <Ionicons name="arrow-forward" size={14} color="#fff" />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
@@ -999,85 +1048,170 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   featuredCard: {
-    width: '75%',
+    width: width * 0.8,
     backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    marginRight: 12,
-    borderWidth: 1,
-    borderColor: '#f59e0b',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    borderRadius: 20,
+    padding: 20,
+    marginRight: 16,
+    borderWidth: 2,
+    borderColor: '#8b5cf6',
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    minHeight: 280,
   },
   featuredCardFirst: {
-    marginLeft: 0,
+    marginLeft: 20,
   },
   featuredBadgeContainer: {
     position: 'absolute',
     top: -2,
-    right: 12,
+    right: 16,
+    zIndex: 10,
   },
   featuredBadgeSmall: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: '#8b5cf6',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   featuredTextSmall: {
-    fontSize: 9,
+    fontSize: 11,
     color: 'white',
-    fontWeight: '700',
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
-  featuredJobTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 6,
+  featuredLogoContainer: {
+    alignSelf: 'flex-start',
+    marginBottom: 12,
     marginTop: 8,
   },
+  featuredLogo: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  featuredJobTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 8,
+    lineHeight: 24,
+  },
   featuredJobCompany: {
-    fontSize: 13,
-    color: '#3b82f6',
-    fontWeight: '600',
-    marginBottom: 12,
+    fontSize: 14,
+    color: '#8b5cf6',
+    fontWeight: '700',
+    marginBottom: 16,
   },
   featuredJobMeta: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   featuredMetaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
     flex: 1,
   },
   featuredMetaText: {
-    fontSize: 11,
-    color: '#6b7280',
+    fontSize: 12,
+    fontWeight: '500',
   },
   featuredTypeBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   featuredTypeText: {
-    fontSize: 9,
+    fontSize: 10,
     color: 'white',
+    fontWeight: '700',
+  },
+  featuredTechSection: {
+    marginBottom: 16,
+  },
+  featuredTechList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  featuredTechTag: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 6,
+    marginBottom: 4,
+  },
+  featuredTechText: {
+    fontSize: 10,
+    color: '#475569',
     fontWeight: '600',
+  },
+  featuredMoreTech: {
+    fontSize: 10,
+    color: '#8b5cf6',
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  featuredFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f1f5f9',
+  },
+  featuredSalaryContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   featuredSalary: {
     fontSize: 12,
     color: '#059669',
-    fontWeight: '600',
+    fontWeight: '700',
+    marginLeft: 4,
+  },
+  featuredApplications: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  featuredActionButton: {
+    backgroundColor: '#8b5cf6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  featuredActionText: {
+    fontSize: 14,
+    color: 'white',
+    fontWeight: '700',
+    marginRight: 6,
   },
 });
