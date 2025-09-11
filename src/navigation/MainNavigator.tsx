@@ -23,6 +23,8 @@ import LearningScreen from '../screens/menu/LearningScreen';
 import AIChatScreen from '../screens/menu/AIChatScreen';
 import SupportScreen from '../screens/menu/SupportScreen';
 import AboutScreen from '../screens/menu/AboutScreen';
+import TermsOfUseScreen from '../screens/menu/TermsOfUseScreen';
+import PrivacyPolicyScreen from '../screens/menu/PrivacyPolicyScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
@@ -222,6 +224,22 @@ export default function MainNavigator() {
         component={NotificationsScreen} 
         options={{ 
           title: 'Notificações',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="TermsOfUse" 
+        component={TermsOfUseScreen} 
+        options={{ 
+          title: 'Termos de Uso',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="PrivacyPolicy" 
+        component={PrivacyPolicyScreen} 
+        options={{ 
+          title: 'Política de Privacidade',
           animation: 'slide_from_right',
         }}
       />

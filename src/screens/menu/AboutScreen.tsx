@@ -76,18 +76,24 @@ export default function AboutScreen({ navigation }: any) {
 
         {/* Legal */}
         <View style={styles.legalSection}>
-          <TouchableOpacity style={styles.legalItem}>
+          <TouchableOpacity 
+            style={styles.legalItem}
+            onPress={() => navigation.navigate('TermsOfUse')}
+          >
             <Text style={styles.legalText}>Termos de Uso</Text>
             <Ionicons name="chevron-forward" size={16} color="#6b7280" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.legalItem}>
+          <TouchableOpacity 
+            style={styles.legalItem}
+            onPress={() => navigation.navigate('PrivacyPolicy')}
+          >
             <Text style={styles.legalText}>Política de Privacidade</Text>
             <Ionicons name="chevron-forward" size={16} color="#6b7280" />
           </TouchableOpacity>
         </View>
 
         <Text style={styles.copyright}>
-          © 2024 SocialDev. Todos os direitos reservados.
+          © 2025 SocialDev. Todos os direitos reservados.
         </Text>
       </ScrollView>
     </SafeAreaView>
