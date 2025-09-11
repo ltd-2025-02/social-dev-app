@@ -155,7 +155,7 @@ export default function MainNavigator() {
         name="PostDetail" 
         component={PostDetailScreen} 
         options={{ 
-          title: 'Post',
+          headerShown: false,
           animation: 'slide_from_bottom',
         }}
       />
@@ -163,7 +163,7 @@ export default function MainNavigator() {
         name="ChatDetail" 
         component={ChatDetailScreen} 
         options={{ 
-          title: 'Chat',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -171,7 +171,7 @@ export default function MainNavigator() {
         name="JobDetail" 
         component={JobDetailScreen} 
         options={{ 
-          title: 'Detalhes da Vaga',
+          headerShown: false,
           animation: 'slide_from_bottom',
         }}
       />
@@ -195,7 +195,7 @@ export default function MainNavigator() {
         name="Career" 
         component={CareerScreen} 
         options={{ 
-          title: 'Carreira',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -203,7 +203,7 @@ export default function MainNavigator() {
         name="Learning" 
         component={LearningScreen} 
         options={{ 
-          title: 'Aprenda Tecnologias',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -211,7 +211,7 @@ export default function MainNavigator() {
         name="AIChat" 
         component={AIChatScreen} 
         options={{ 
-          title: 'IA Assistant',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -219,7 +219,7 @@ export default function MainNavigator() {
         name="Support" 
         component={SupportScreen} 
         options={{ 
-          title: 'Suporte',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -227,7 +227,7 @@ export default function MainNavigator() {
         name="About" 
         component={AboutScreen} 
         options={{ 
-          title: 'Sobre',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -243,7 +243,7 @@ export default function MainNavigator() {
         name="TermsOfUse" 
         component={TermsOfUseScreen} 
         options={{ 
-          title: 'Termos de Uso',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -251,7 +251,7 @@ export default function MainNavigator() {
         name="PrivacyPolicy" 
         component={PrivacyPolicyScreen} 
         options={{ 
-          title: 'Política de Privacidade',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -259,7 +259,7 @@ export default function MainNavigator() {
         name="FAQ" 
         component={FAQScreen} 
         options={{ 
-          title: 'FAQ',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -267,7 +267,7 @@ export default function MainNavigator() {
         name="LiveChat" 
         component={LiveChatScreen} 
         options={{ 
-          title: 'Chat ao Vivo',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -275,7 +275,7 @@ export default function MainNavigator() {
         name="BugReport" 
         component={BugReportScreen} 
         options={{ 
-          title: 'Reportar Bug',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -283,7 +283,7 @@ export default function MainNavigator() {
         name="FeatureSuggestion" 
         component={FeatureSuggestionScreen} 
         options={{ 
-          title: 'Sugerir Funcionalidade',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -291,7 +291,7 @@ export default function MainNavigator() {
         name="LearningTrail" 
         component={LearningTrailScreen} 
         options={{ 
-          title: 'Trilha de Aprendizado',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -299,7 +299,7 @@ export default function MainNavigator() {
         name="LearningModule" 
         component={LearningModuleScreen} 
         options={{ 
-          title: 'Módulo',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -307,7 +307,7 @@ export default function MainNavigator() {
         name="ResumeBuilder" 
         component={ResumeBuilderScreen} 
         options={{ 
-          title: 'Criar Currículo',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -315,7 +315,7 @@ export default function MainNavigator() {
         name="ResumeSelection" 
         component={ResumeSelectionScreen} 
         options={{ 
-          title: 'Assistente de Currículo',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -323,7 +323,7 @@ export default function MainNavigator() {
         name="ResumeAnalysis" 
         component={ResumeAnalysisScreen} 
         options={{ 
-          title: 'Análise do Currículo',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -331,7 +331,7 @@ export default function MainNavigator() {
         name="InterviewSimulator" 
         component={InterviewSimulatorScreen} 
         options={{ 
-          title: 'Simulador de Entrevista',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -339,7 +339,7 @@ export default function MainNavigator() {
         name="OtherUserProfile" 
         component={UserProfileScreen} 
         options={{ 
-          title: 'Perfil do Usuário',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -347,7 +347,7 @@ export default function MainNavigator() {
         name="UserSearch" 
         component={UserSearchScreen} 
         options={{ 
-          title: 'Buscar Usuários',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />

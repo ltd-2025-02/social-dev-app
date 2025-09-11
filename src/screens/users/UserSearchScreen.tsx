@@ -207,7 +207,16 @@ export default function UserSearchScreen() {
         colors={['#667eea', '#764ba2']}
         style={styles.header}
       >
-        <Text style={styles.headerTitle}>Buscar Usuários</Text>
+        <View style={styles.headerTop}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Buscar Usuários</Text>
+          <View style={styles.headerSpacer} />
+        </View>
         
         {/* Campo de busca por nome/ocupação */}
         <View style={styles.searchContainer}>
@@ -304,12 +313,24 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 8,
+  },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 20,
+    flex: 1,
     textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40, // Same width as back button to center title
   },
   searchContainer: {
     gap: 12,

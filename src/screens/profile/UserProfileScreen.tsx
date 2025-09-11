@@ -146,6 +146,12 @@ export default function UserProfileScreen() {
           style={styles.headerGradient}
         >
           <View style={styles.headerContent}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
             <View style={styles.avatarContainer}>
               <Image
                 source={
@@ -274,6 +280,14 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: 'center',
+    position: 'relative',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    padding: 8,
+    zIndex: 1,
   },
   avatarContainer: {
     position: 'relative',
