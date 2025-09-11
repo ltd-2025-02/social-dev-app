@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 export default function SupportScreen({ navigation }: any) {
+  const { colors } = useTheme();
   const supportOptions = [
     { 
       id: 'faq',
@@ -125,14 +128,8 @@ export default function SupportScreen({ navigation }: any) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Suporte</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <UniversalHeader title="Suporte" showBackButton={true} />
 
       <ScrollView style={styles.content}>
         <View style={styles.section}>

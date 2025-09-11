@@ -23,6 +23,7 @@ import { useNotificationHelpers } from '../../hooks/useNotifications';
 import { getPersonaImage } from '../../utils/personas';
 import { Post } from '../../services/posts.service';
 import { useTheme, createAnimatedStyle } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -293,43 +294,7 @@ export default function FeedScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <Animated.View style={[styles.header, { backgroundColor: colors.headerBackground, borderBottomColor: colors.border }]}>
-        <Text style={[styles.headerTitle, { color: colors.headerText }]}>Feed</Text>
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="search-outline" size={24} color={colors.headerText} />
-          </TouchableOpacity>
-          
-          {/* Theme Toggle Button */}
-          <TouchableOpacity 
-            style={[styles.headerButton, styles.themeButton]}
-            onPress={toggleTheme}
-          >
-            <Animated.View style={{
-              transform: [{
-                rotate: animatedValue.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '180deg'],
-                })
-              }]
-            }}>
-              <Ionicons 
-                name={isDark ? "sunny-outline" : "moon-outline"} 
-                size={24} 
-                color={colors.headerText} 
-              />
-            </Animated.View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <Ionicons name="notifications-outline" size={24} color={colors.headerText} />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+      <UniversalHeader title="Feed" />
 
       {/* Create Post Button */}
       <TouchableOpacity

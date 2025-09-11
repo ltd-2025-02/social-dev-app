@@ -20,6 +20,8 @@ import { updateProfile, signOut } from '../../store/slices/authSlice';
 import { fetchProfile, fetchProfileStats, updateProfile as updateUserProfile } from '../../store/slices/profileSlice';
 import PersonaSelector from '../../components/PersonaSelector';
 import { PERSONAS, Persona, getPersonaById, getPersonaImage } from '../../utils/personas';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -32,6 +34,7 @@ export default function ModernProfileScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { currentProfile, profileStats, loading, updating } = useSelector((state: RootState) => state.profile);
+  const { colors } = useTheme();
 
   const [editMode, setEditMode] = useState(false);
   const [showSkillModal, setShowSkillModal] = useState(false);
@@ -222,57 +225,48 @@ export default function ModernProfileScreen({ navigation }: any) {
 
   if (loading && !currentProfile) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Perfil</Text>
-            <Text style={styles.subtitle}>Carregando perfil...</Text>
-          </View>
-        </View>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3b82f6" />
-          <Text style={styles.loadingText}>Carregando perfil...</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <UniversalHeader title="Perfil" />
+        <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Carregando perfil...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Perfil</Text>
-          <Text style={styles.subtitle}>
-            {currentProfile?.name || 'Meu perfil'}
-          </Text>
-        </View>
-        <View style={styles.headerActions}>
-          {editMode && (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <UniversalHeader 
+        title="Perfil" 
+        rightActions={
+          <View style={styles.headerActions}>
+            {editMode && (
+              <TouchableOpacity 
+                style={styles.saveButton}
+                onPress={handleSaveProfile}
+                disabled={updating}
+              >
+                {updating ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <Ionicons name="checkmark" size={24} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
             <TouchableOpacity 
-              style={styles.saveButton}
-              onPress={handleSaveProfile}
-              disabled={updating}
+              style={styles.settingsButton}
+              onPress={editMode ? () => setEditMode(false) : () => setEditMode(true)}
             >
-              {updating ? (
-                <ActivityIndicator size="small" color="#3b82f6" />
-              ) : (
-                <Ionicons name="checkmark" size={24} color="#3b82f6" />
-              )}
+              <Ionicons 
+                name={editMode ? "close" : "settings-outline"} 
+                size={24} 
+                color={colors.text} 
+              />
             </TouchableOpacity>
-          )}
-          <TouchableOpacity 
-            style={styles.settingsButton}
-            onPress={editMode ? () => setEditMode(false) : () => setEditMode(true)}
-          >
-            <Ionicons 
-              name={editMode ? "close" : "settings-outline"} 
-              size={24} 
-              color="#333" 
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+          </View>
+        } 
+      />
 
       <ScrollView
         style={styles.scrollView}

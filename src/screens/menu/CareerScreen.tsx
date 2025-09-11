@@ -9,12 +9,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 interface CareerScreenProps {
   navigation: any;
 }
 
 export default function CareerScreen({ navigation }: CareerScreenProps) {
+  const { colors } = useTheme();
   const careerPaths = [
     {
       title: 'Frontend Developer',
@@ -69,20 +72,8 @@ export default function CareerScreen({ navigation }: CareerScreenProps) {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Carreira</Text>
-        <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <UniversalHeader title="Carreira (Assistente de Currículo)" showBackButton={true} />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Progress Overview */}

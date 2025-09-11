@@ -16,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GeminiService } from '../../services/geminiService';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 interface Message {
   id: string;
@@ -32,6 +34,7 @@ interface AIChatScreenProps {
 
 
 export default function AIChatScreen({ navigation }: AIChatScreenProps) {
+  const { colors } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -225,35 +228,16 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
   const [quickQuestions] = useState(() => GeminiService.getSmartQuestions());
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
-        </TouchableOpacity>
-        
-        <View style={styles.headerInfo}>
-          <View style={styles.aiHeaderAvatar}>
-            <LinearGradient
-              colors={['#8b5cf6', '#3b82f6']}
-              style={styles.headerAvatarGradient}
-            >
-              <Ionicons name="chatbot" size={20} color="#fff" />
-            </LinearGradient>
-          </View>
-          <View>
-            <Text style={styles.headerTitle}>IA Assistant</Text>
-            <Text style={styles.headerSubtitle}>Seu guia pessoal</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={20} color="#6b7280" />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <UniversalHeader 
+        title="IA Assistant" 
+        showBackButton={true}
+        rightActions={
+          <TouchableOpacity style={styles.moreButton}>
+            <Ionicons name="ellipsis-vertical" size={20} color={colors.textMuted} />
+          </TouchableOpacity>
+        }
+      />
 
       <KeyboardAvoidingView 
         style={styles.chatContainer}

@@ -19,6 +19,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchConversations, clearError } from '../../store/slices/conversationsSlice';
 import { getPersonaImage } from '../../utils/personas';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 interface ChatScreenProps {
   navigation: any;
@@ -28,6 +30,7 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
   const dispatch = useDispatch<AppDispatch>();
   const { conversations, loading, error } = useSelector((state: RootState) => state.conversations);
   const { user } = useSelector((state: RootState) => state.auth);
+  const { colors } = useTheme();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -171,19 +174,18 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
 
   if (loading && conversations.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Conversas</Text>
-            <Text style={styles.subtitle}>Carregando conversas...</Text>
-          </View>
-          <TouchableOpacity style={styles.headerButton} onPress={handleNewChat}>
-            <Ionicons name="create-outline" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3b82f6" />
-          <Text style={styles.loadingText}>Carregando conversas...</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <UniversalHeader 
+          title="Conversas" 
+          rightActions={
+            <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+              <Ionicons name="create-outline" size={24} color={colors.primary} />
+            </TouchableOpacity>
+          } 
+        />
+        <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Carregando conversas...</Text>
         </View>
       </SafeAreaView>
     );
@@ -191,21 +193,20 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Conversas</Text>
-            <Text style={styles.subtitle}>Erro ao carregar</Text>
-          </View>
-          <TouchableOpacity style={styles.headerButton} onPress={handleNewChat}>
-            <Ionicons name="create-outline" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.errorContainer}>
-          <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
-          <Text style={styles.errorText}>{error}</Text>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <UniversalHeader 
+          title="Conversas" 
+          rightActions={
+            <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+              <Ionicons name="create-outline" size={24} color={colors.primary} />
+            </TouchableOpacity>
+          } 
+        />
+        <View style={[styles.errorContainer, { backgroundColor: colors.surface }]}>
+          <Ionicons name="alert-circle-outline" size={48} color={colors.error} />
+          <Text style={[styles.errorText, { color: colors.textSecondary }]}>{error}</Text>
           <TouchableOpacity 
-            style={styles.retryButton}
+            style={[styles.retryButton, { backgroundColor: colors.primary }]}
             onPress={() => {
               dispatch(clearError());
               if (user?.id) {
@@ -213,7 +214,7 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
               }
             }}
           >
-            <Text style={styles.retryButtonText}>Tentar novamente</Text>
+            <Text style={[styles.retryButtonText, { color: colors.primaryText }]}>Tentar novamente</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -221,37 +222,30 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Conversas</Text>
-          <Text style={styles.subtitle}>
-            {conversations.length > 0 
-              ? `${conversations.length} conversa${conversations.length !== 1 ? 's' : ''}`
-              : 'Nenhuma conversa'
-            }
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.headerButton} onPress={handleNewChat}>
-          <Ionicons name="create-outline" size={24} color="#333" />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <UniversalHeader 
+        title="Conversas" 
+        rightActions={
+          <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+            <Ionicons name="create-outline" size={24} color={colors.primary} />
+          </TouchableOpacity>
+        } 
+      />
       
       {/* Search Bar */}
       <View style={styles.searchSection}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color="#9ca3af" />
+        <View style={[styles.searchContainer, { backgroundColor: colors.surface }]}>
+          <Ionicons name="search-outline" size={20} color={colors.textMuted} />
           <TextInput
-            style={[styles.searchInput, { marginHorizontal: 8 }]}
+            style={[styles.searchInput, { marginHorizontal: 8, color: colors.text }]}
             placeholder="Buscar conversas..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#9ca3af" />
+              <Ionicons name="close-circle" size={20} color={colors.textMuted} />
             </TouchableOpacity>
           )}
         </View>
@@ -268,7 +262,7 @@ export default function ChatScreen({ navigation }: ChatScreenProps) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#3b82f6"
+            tintColor={colors.primary}
           />
         }
         style={styles.conversationsList}
@@ -282,6 +276,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+  },
+  newChatButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
   },
   header: {
     flexDirection: 'row',

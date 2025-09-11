@@ -8,13 +8,3 @@ Nessa parte, tem a imagem em cima e uma descricao abaixo explicando do que se tr
 ---
 
 Faltou fazer o download ou compartilhar o curriculo. Ai na tela inicial, vai ter um novo botao de meus curriculos e deve salvar no banco de dados do supabase e criar um novo script sql com a estrutura completa da tabela
-
----
-
-Houve um erro ao acessar Vagas:
-
-LOG  Found 10 jobs
-LOG  SerpAPI Featured Response status: 200
-ERROR  SerpAPI Featured Error: Google hasn't returned any results for this query.
-
----
