@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,30 +6,53 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchFeaturedJobs } from '../../store/slices/jobsSlice';
+import { fetchUserStats, fetchGlobalStats, fetchRecentActivity } from '../../store/slices/statsSlice';
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationBadge from '../../components/NotificationBadge';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-export default function HomeScreen({ navigation }) {
-  const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { featuredJobs } = useSelector((state) => state.jobs);
+export default function HomeScreen({ navigation }: any) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { featuredJobs } = useSelector((state: RootState) => state.jobs);
+  const { userStats, globalStats, recentActivity, loading } = useSelector((state: RootState) => state.stats);
   const { colors } = useTheme();
+  
+  const [refreshing, setRefreshing] = useState(false);
 
   // Configurar notificações em tempo real
   useNotifications(user?.id);
 
+  const loadData = async () => {
+    if (user?.id) {
+      await Promise.all([
+        dispatch(fetchFeaturedJobs()),
+        dispatch(fetchUserStats(user.id)),
+        dispatch(fetchGlobalStats()),
+        dispatch(fetchRecentActivity(user.id))
+      ]);
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchFeaturedJobs());
-  }, [dispatch]);
+    loadData();
+  }, [dispatch, user?.id]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
 
   const quickActions = [
     {
@@ -71,7 +94,16 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
+        }
+      >
         {/* Header */}
         <View style={[styles.header, { backgroundColor: colors.headerBackground }]}>
           <View>
@@ -95,19 +127,71 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Stats Cards */}
+        {/* User Stats Cards */}
         <View style={styles.statsContainer}>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsNumber}>10K+</Text>
-            <Text style={styles.statsLabel}>Desenvolvedores</Text>
+          <View style={[styles.statsCard, { backgroundColor: colors.surface }]}>
+            {loading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <Text style={[styles.statsNumber, { color: colors.text }]}>
+                  {userStats?.followers || 0}
+                </Text>
+                <Text style={[styles.statsLabel, { color: colors.textMuted }]}>Seguidores</Text>
+              </>
+            )}
           </View>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsNumber}>2.5K+</Text>
-            <Text style={styles.statsLabel}>Projetos</Text>
+          <View style={[styles.statsCard, { backgroundColor: colors.surface }]}>
+            {loading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <Text style={[styles.statsNumber, { color: colors.text }]}>
+                  {userStats?.postsLikes || 0}
+                </Text>
+                <Text style={[styles.statsLabel, { color: colors.textMuted }]}>Curtidas</Text>
+              </>
+            )}
           </View>
-          <View style={styles.statsCard}>
-            <Text style={styles.statsNumber}>50+</Text>
-            <Text style={styles.statsLabel}>Linguagens</Text>
+          <View style={[styles.statsCard, { backgroundColor: colors.surface }]}>
+            {loading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <>
+                <Text style={[styles.statsNumber, { color: colors.text }]}>
+                  {userStats?.jobsFound || 0}
+                </Text>
+                <Text style={[styles.statsLabel, { color: colors.textMuted }]}>Vagas Encontradas</Text>
+              </>
+            )}
+          </View>
+        </View>
+
+        {/* Global Stats Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Estatísticas da Plataforma</Text>
+          <View style={styles.globalStatsContainer}>
+            <View style={[styles.globalStatCard, { backgroundColor: colors.surface }]}>
+              <Ionicons name="people" size={24} color="#3b82f6" />
+              <Text style={[styles.globalStatNumber, { color: colors.text }]}>
+                {loading ? '...' : `${globalStats?.totalUsers || 0}+`}
+              </Text>
+              <Text style={[styles.globalStatLabel, { color: colors.textMuted }]}>Desenvolvedores</Text>
+            </View>
+            <View style={[styles.globalStatCard, { backgroundColor: colors.surface }]}>
+              <Ionicons name="newspaper" size={24} color="#10b981" />
+              <Text style={[styles.globalStatNumber, { color: colors.text }]}>
+                {loading ? '...' : `${globalStats?.totalPosts || 0}+`}
+              </Text>
+              <Text style={[styles.globalStatLabel, { color: colors.textMuted }]}>Posts</Text>
+            </View>
+            <View style={[styles.globalStatCard, { backgroundColor: colors.surface }]}>
+              <Ionicons name="briefcase" size={24} color="#f59e0b" />
+              <Text style={[styles.globalStatNumber, { color: colors.text }]}>
+                {loading ? '...' : `${globalStats?.totalJobs || 0}+`}
+              </Text>
+              <Text style={[styles.globalStatLabel, { color: colors.textMuted }]}>Vagas</Text>
+            </View>
           </View>
         </View>
 
@@ -257,13 +341,13 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    marginBottom: 32,
+    marginBottom: 24,
     gap: 12,
   },
   statsCard: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
+    padding: 16,
     borderRadius: 16,
     alignItems: 'center',
     shadowColor: '#000',
@@ -271,14 +355,45 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
+    minHeight: 80,
+    justifyContent: 'center',
   },
   statsNumber: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#1f2937',
   },
   statsLabel: {
-    fontSize: 12,
+    fontSize: 11,
+    color: '#6b7280',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  globalStatsContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  globalStatCard: {
+    flex: 1,
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  globalStatNumber: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 8,
+    color: '#1f2937',
+  },
+  globalStatLabel: {
+    fontSize: 10,
     color: '#6b7280',
     marginTop: 4,
     textAlign: 'center',
