@@ -39,3 +39,34 @@ a versao se encontra em package.json e tem que ver se nao vai quebrar o codigo d
 
 LOG  SerpAPI Featured Response status: 200
 ERROR  SerpAPI Featured Error: Google hasn't returned any results for this query.
+
+----
+
+Na parte de perfil do usuario, deve mudar a tebela para adicionar os campos:
+
+Projetos
+Educacao
+Idiomas
+Licenças e certificados
+Competencias
+Recomendações
+Cursos
+Organizacoes
+Interesses (Pessoas famosas da area, Tecnologias Como Node, Empresas, Governos)
+Experiencias
+Servicos
+Linkar com redes sociais
+Linkar o curriculo no perfil
+Descricao do Perfil (Igual ao Linkedin (E deve colocar as copetencias abaixo da descricao do perfil igual ao linkedin))
+Redes sociais profissionais como Github, Linkedin, Indeed
+Habilidades -> Deve puxar os icones de tecnologias que estao no diretorio: assets/tecnologias e deve colocar igual ao persona, ira aparecer as tecnologias e salvar no banco de dados do supabase
+
+E deve organizar certinho a interface
+
+---
+
+Expandir/Ocupar todas a tela, na parte onde escolhe a foto de perfil. Pois, ele esta muito em baixo
+
+---
+
+Apos 21 horas, escrever "Continuar" para ele concluir a implementacao das configuracoes do App/Perfil
