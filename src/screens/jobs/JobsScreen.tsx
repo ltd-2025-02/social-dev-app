@@ -18,6 +18,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { fetchJobs, fetchFeaturedJobs, setFilters, clearFilters, applyToJob } from '../../store/slices/jobsSlice';
+import { useTheme } from '../../contexts/ThemeContext';
+import UniversalHeader from '../../components/UniversalHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -42,6 +44,7 @@ export default function JobsScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const { jobs, featuredJobs, loading, error, filters } = useSelector((state: RootState) => state.jobs);
   const { user } = useSelector((state: RootState) => state.auth);
+  const { colors } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);

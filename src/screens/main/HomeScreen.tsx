@@ -70,27 +70,27 @@ export default function HomeScreen({ navigation }) {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: colors.headerBackground }]}>
           <View>
-            <Text style={styles.greeting}>Olá, {user?.name?.split(' ')[0]}! 👋</Text>
-            <Text style={styles.subtitle}>Bem-vindo ao SocialDev</Text>
+            <Text style={[styles.greeting, { color: colors.text }]}>Olá, {user?.name?.split(' ')[0]}! 👋</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Bem-vindo ao SocialDev</Text>
           </View>
           <View style={styles.headerButtons}>
             <TouchableOpacity 
               style={styles.notificationButton}
               onPress={() => navigation.navigate('Notifications')}
             >
-              <Ionicons name="notifications-outline" size={24} color="#333" />
+              <Ionicons name="notifications-outline" size={24} color={colors.headerText} />
               <NotificationBadge />
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.settingsButton}
               onPress={() => navigation.navigate('Settings')}
             >
-              <Ionicons name="settings-outline" size={24} color="#333" />
+              <Ionicons name="settings-outline" size={24} color={colors.headerText} />
             </TouchableOpacity>
           </View>
         </View>
