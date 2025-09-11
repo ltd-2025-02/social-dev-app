@@ -14,6 +14,7 @@ import { AppDispatch, RootState } from '../../store';
 import { fetchFeaturedJobs } from '../../store/slices/jobsSlice';
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationBadge from '../../components/NotificationBadge';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -21,6 +22,7 @@ export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { featuredJobs } = useSelector((state) => state.jobs);
+  const { colors } = useTheme();
 
   // Configurar notificações em tempo real
   useNotifications(user?.id);

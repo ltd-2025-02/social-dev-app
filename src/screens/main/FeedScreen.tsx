@@ -11,6 +11,7 @@ import {
   TextInput,
   Modal,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNotificationHelpers } from '../../hooks/useNotifications';
 import { getPersonaImage } from '../../utils/personas';
 import { Post } from '../../services/posts.service';
+import { useTheme, createAnimatedStyle } from '../../contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -28,6 +30,7 @@ export default function FeedScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const { posts, loading, refreshing, error } = useSelector((state: RootState) => state.feed);
   const { user } = useSelector((state: RootState) => state.auth);
+  const { isDark, colors, toggleTheme, animatedValue } = useTheme();
 
   // Usar helpers de notificação
   const { notifyNewPost, notifyLike, notifyComment } = useNotificationHelpers(user?.id || '');
@@ -190,7 +193,17 @@ export default function FeedScreen({ navigation }: any) {
     }
     
     return (
-    <View key={post.id} style={styles.postCard}>
+    <Animated.View 
+      key={post.id} 
+      style={[
+        styles.postCard, 
+        { 
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          shadowColor: colors.shadow,
+        }
+      ]}
+    >
       {/* Post Header */}
       <View style={styles.postHeader}>
         <TouchableOpacity 
@@ -202,18 +215,18 @@ export default function FeedScreen({ navigation }: any) {
             style={styles.avatar}
           />
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>{post.user.name}</Text>
+            <Text style={[styles.userName, { color: colors.text }]}>{post.user.name}</Text>
             {post.user.occupation && (
-              <Text style={styles.userOccupation}>{post.user.occupation}</Text>
+              <Text style={[styles.userOccupation, { color: colors.textSecondary }]}>{post.user.occupation}</Text>
             )}
-            <Text style={styles.postTime}>{formatDate(post.created_at)}</Text>
+            <Text style={[styles.postTime, { color: colors.textMuted }]}>{formatDate(post.created_at)}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.moreButton}
           onPress={() => handleUserMenuPress(post)}
         >
-          <Ionicons name="ellipsis-horizontal" size={20} color="#666" />
+          <Ionicons name="ellipsis-horizontal" size={20} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
 
@@ -222,14 +235,14 @@ export default function FeedScreen({ navigation }: any) {
         style={styles.postContent}
         onPress={() => navigation.navigate('PostDetail', { postId: post.id })}
       >
-        <Text style={styles.postText}>{post.content}</Text>
+        <Text style={[styles.postText, { color: colors.text }]}>{post.content}</Text>
         {post.image_url && (
           <Image source={{ uri: post.image_url }} style={styles.postImage} />
         )}
       </TouchableOpacity>
 
       {/* Post Actions */}
-      <View style={styles.postActions}>
+      <View style={[styles.postActions, { borderTopColor: colors.border }]}>
         <TouchableOpacity
           style={[styles.actionButton, post.liked_by_user && styles.likedButton]}
           onPress={() => handleLike(post.id)}
@@ -237,9 +250,13 @@ export default function FeedScreen({ navigation }: any) {
           <Ionicons 
             name={post.liked_by_user ? "heart" : "heart-outline"} 
             size={20} 
-            color={post.liked_by_user ? "#ef4444" : "#666"} 
+            color={post.liked_by_user ? colors.error : colors.textMuted} 
           />
-          <Text style={[styles.actionText, post.liked_by_user && styles.likedText]}>
+          <Text style={[
+            styles.actionText, 
+            { color: post.liked_by_user ? colors.error : colors.textMuted },
+            post.liked_by_user && styles.likedText
+          ]}>
             {post.likes_count}
           </Text>
         </TouchableOpacity>
@@ -248,49 +265,83 @@ export default function FeedScreen({ navigation }: any) {
           style={styles.actionButton}
           onPress={() => navigation.navigate('PostDetail', { postId: post.id })}
         >
-          <Ionicons name="chatbubble-outline" size={20} color="#666" />
-          <Text style={styles.actionText}>{post.comments_count}</Text>
+          <Ionicons name="chatbubble-outline" size={20} color={colors.textMuted} />
+          <Text style={[styles.actionText, { color: colors.textMuted }]}>{post.comments_count}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="share-outline" size={20} color="#666" />
-          <Text style={styles.actionText}>Compartilhar</Text>
+          <Ionicons name="share-outline" size={20} color={colors.textMuted} />
+          <Text style={[styles.actionText, { color: colors.textMuted }]}>Compartilhar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="bookmark-outline" size={20} color="#666" />
+          <Ionicons name="bookmark-outline" size={20} color={colors.textMuted} />
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
     );
   };
 
+  // Create animated styles
+  const animatedContainerStyle = {
+    backgroundColor: createAnimatedStyle(animatedValue, colors.background, colors.background),
+  };
+
+  const animatedHeaderStyle = {
+    backgroundColor: createAnimatedStyle(animatedValue, colors.headerBackground, colors.headerBackground),
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Feed</Text>
+      <Animated.View style={[styles.header, { backgroundColor: colors.headerBackground, borderBottomColor: colors.border }]}>
+        <Text style={[styles.headerTitle, { color: colors.headerText }]}>Feed</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="search-outline" size={24} color="#333" />
+            <Ionicons name="search-outline" size={24} color={colors.headerText} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="notifications-outline" size={24} color="#333" />
+          
+          {/* Theme Toggle Button */}
+          <TouchableOpacity 
+            style={[styles.headerButton, styles.themeButton]}
+            onPress={toggleTheme}
+          >
+            <Animated.View style={{
+              transform: [{
+                rotate: animatedValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0deg', '180deg'],
+                })
+              }]
+            }}>
+              <Ionicons 
+                name={isDark ? "sunny-outline" : "moon-outline"} 
+                size={24} 
+                color={colors.headerText} 
+              />
+            </Animated.View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.headerButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
+            <Ionicons name="notifications-outline" size={24} color={colors.headerText} />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Create Post Button */}
       <TouchableOpacity
-        style={styles.createPostButton}
+        style={[styles.createPostButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
         onPress={() => setShowCreatePost(true)}
       >
         <Image
           source={getAvatarSource(user?.avatar, user?.name || 'User')}
           style={styles.createPostAvatar}
         />
-        <Text style={styles.createPostText}>O que você está pensando?</Text>
-        <Ionicons name="image-outline" size={20} color="#666" />
+        <Text style={[styles.createPostText, { color: colors.textMuted }]}>O que você está pensando?</Text>
+        <Ionicons name="image-outline" size={20} color={colors.textMuted} />
       </TouchableOpacity>
 
       {/* Feed Posts */}
@@ -312,9 +363,9 @@ export default function FeedScreen({ navigation }: any) {
         
         {posts.length === 0 && !loading && (
           <View style={styles.emptyState}>
-            <Ionicons name="newspaper-outline" size={64} color="#94a3b8" />
-            <Text style={styles.emptyStateTitle}>Nenhum post ainda</Text>
-            <Text style={styles.emptyStateText}>
+            <Ionicons name="newspaper-outline" size={64} color={colors.textMuted} />
+            <Text style={[styles.emptyStateTitle, { color: colors.text }]}>Nenhum post ainda</Text>
+            <Text style={[styles.emptyStateText, { color: colors.textMuted }]}>
               Comece seguindo outros desenvolvedores para ver seus posts aqui
             </Text>
           </View>
@@ -495,6 +546,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 12,
+  },
+  themeButton: {
+    backgroundColor: 'rgba(103, 126, 234, 0.1)',
   },
   createPostButton: {
     flexDirection: 'row',
