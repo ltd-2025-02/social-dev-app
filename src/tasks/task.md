@@ -70,3 +70,7 @@ Expandir/Ocupar todas a tela, na parte onde escolhe a foto de perfil. Pois, ele 
 ---
 
 Apos 21 horas, escrever "Continuar" para ele concluir a implementacao das configuracoes do App/Perfil
+
+---
+
+Utilizar a nova api de vagas (https://theirstack.com/en/job-lookup) em conjunto com a API de vagas de emprego do SerpiAPI
