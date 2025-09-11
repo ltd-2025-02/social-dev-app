@@ -102,3 +102,5 @@ URL: curl --request POST \
 
 Utilizando essa API, sera possivel buscar vagas no Linkedin, Indeed, Google
 Esta tudo na documentacao: https://api.theirstack.com/
+
+O nome do Site que oferece esse servico de API de Vaga, seria: "TheirStack"
