@@ -4,6 +4,9 @@
 node_modules/
 package-lock.json
 
+.env
+.vscode
+
 # Expo
 .expo/
 dist/
