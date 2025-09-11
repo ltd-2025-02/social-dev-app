@@ -9,7 +9,7 @@
   
   <p align="center">
     <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.79.6-61DAFB?style=flat-square&logo=react">
-    <img alt="Expo" src="https://img.shields.io/badge/Expo-53.0.22-000020?style=flat-square&logo=expo">
+    <img alt="Expo" src="https://img.shields.io/badge/Expo-54.0.0-000020?style=flat-square&logo=expo">
     <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.3.3-3178C6?style=flat-square&logo=typescript">
     <img alt="Redux" src="https://img.shields.io/badge/Redux-Toolkit-764ABC?style=flat-square&logo=redux">
     <img alt="Gemini AI" src="https://img.shields.io/badge/Google_Gemini-AI_Powered-4285F4?style=flat-square&logo=google">
