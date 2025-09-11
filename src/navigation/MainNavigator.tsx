@@ -32,6 +32,9 @@ import FeatureSuggestionScreen from '../screens/menu/FeatureSuggestionScreen';
 import LearningTrailScreen from '../screens/menu/LearningTrailScreen';
 import LearningModuleScreen from '../screens/menu/LearningModuleScreen';
 import ResumeBuilderScreen from '../screens/menu/ResumeBuilderScreen';
+import ResumeSelectionScreen from '../screens/menu/ResumeSelectionScreen';
+import ResumeAnalysisScreen from '../screens/menu/ResumeAnalysisScreen';
+import InterviewSimulatorScreen from '../screens/menu/InterviewSimulatorScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
@@ -303,6 +306,30 @@ export default function MainNavigator() {
         component={ResumeBuilderScreen} 
         options={{ 
           title: 'Criar Currículo',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="ResumeSelection" 
+        component={ResumeSelectionScreen} 
+        options={{ 
+          title: 'Assistente de Currículo',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="ResumeAnalysis" 
+        component={ResumeAnalysisScreen} 
+        options={{ 
+          title: 'Análise do Currículo',
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="InterviewSimulator" 
+        component={InterviewSimulatorScreen} 
+        options={{ 
+          title: 'Simulador de Entrevista',
           animation: 'slide_from_right',
         }}
       />
