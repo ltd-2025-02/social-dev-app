@@ -1,12 +1,9 @@
 <div align="center">
   <img src="assets/app.png" alt="SocialDev Mobile App" width="500">
-  
   <h1>📱 SocialDev Mobile App</h1>
-  
   <p align="center">
     <strong>A plataforma completa para desenvolvedores na palma da sua mão</strong>
   </p>
-  
   <p align="center">
     <img alt="React Native" src="https://img.shields.io/badge/React%20Native-0.79.6-61DAFB?style=flat-square&logo=react">
     <img alt="Expo" src="https://img.shields.io/badge/Expo-54.0.0-000020?style=flat-square&logo=expo">
