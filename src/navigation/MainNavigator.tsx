@@ -10,6 +10,7 @@ import { Animated, Platform } from 'react-native';
 import HomeScreen from '../screens/main/HomeScreen';
 import FeedScreen from '../screens/main/FeedScreen';
 import JobsScreen from '../screens/jobs/JobsScreen';
+import IntelligentJobsScreen from '../screens/jobs/IntelligentJobsScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
 import ProfileScreen from '../screens/profile/EnhancedProfileScreenSimple';
 import SettingsScreen from '../screens/main/SettingsScreen';
@@ -406,6 +407,14 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="MetricsDashboard" 
         component={MetricsDashboard} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="IntelligentJobs" 
+        component={IntelligentJobsScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { theirStackService, TheirStackJobFilters } from './theirstack.service';
+import { alternativeJobsService } from './jobs-alternative.service';
 import { profileMatchingService, UserProfileAnalysis, JobMatchScore, ProfileBasedFilters } from './profile-matching.service';
 import { ExtendedUserProfile, ExtendedProfileSkill } from './profile.service.enhanced';
 
@@ -42,18 +43,24 @@ class JobsService {
   private userProfileAnalysis: UserProfileAnalysis | null = null;
   private lastProfileUpdate: number = 0;
 
-  async testAPI(): Promise<{ theirStack: boolean; serpAPI: boolean }> {
+  async testAPI(): Promise<{ theirStack: boolean; serpAPI: boolean; theirStackError?: string }> {
     const results = {
       theirStack: false,
-      serpAPI: false
+      serpAPI: false,
+      theirStackError: undefined as string | undefined
     };
 
     // Test TheirStack API
     try {
-      results.theirStack = await theirStackService.testConnection();
-      console.log('TheirStack API Test:', results.theirStack ? 'SUCCESS' : 'FAILED');
+      const connectionTest = await theirStackService.testConnection();
+      results.theirStack = connectionTest.success;
+      if (!connectionTest.success) {
+        results.theirStackError = connectionTest.error;
+      }
+      console.log('TheirStack API Test:', results.theirStack ? 'SUCCESS' : `FAILED - ${connectionTest.error}`);
     } catch (error) {
       console.error('TheirStack API Test Failed:', error);
+      results.theirStackError = error instanceof Error ? error.message : 'Unknown error';
     }
 
     // Test SerpAPI
@@ -253,7 +260,47 @@ class JobsService {
 
       return transformedJobs;
     } catch (error: any) {
-      console.error('TheirStack search failed:', error);
+      console.error('TheirStack search failed:', error.message);
+      
+      // Handle specific error cases
+      if (error.message === 'THEIRSTACK_QUOTA_EXCEEDED') {
+        console.log('TheirStack quota exceeded, using alternative job service...');
+        return this.searchFromAlternativeService(filters);
+      } else if (error.message === 'THEIRSTACK_AUTH_FAILED') {
+        console.log('TheirStack authentication failed, using alternative job service...');
+        return this.searchFromAlternativeService(filters);
+      } else if (error.message.includes('THEIRSTACK_')) {
+        console.log('TheirStack service error, using alternative job service...');
+        return this.searchFromAlternativeService(filters);
+      }
+      
+      throw error;
+    }
+  }
+
+  private async searchFromAlternativeService(filters: JobFilters): Promise<Job[]> {
+    try {
+      console.log('Using alternative job service with realistic Brazilian job data');
+      
+      // Generate realistic jobs from alternative service
+      const alternativeJobs = alternativeJobsService.generateRealisticJobs(20, {
+        search: filters.search,
+        location: filters.location,
+        type: filters.type,
+        level: filters.level,
+        company: filters.company
+      });
+
+      console.log(`Generated ${alternativeJobs.length} jobs from alternative service`);
+      
+      // Cache the jobs
+      alternativeJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return alternativeJobs;
+    } catch (error: any) {
+      console.error('Alternative service failed:', error);
       throw error;
     }
   }
@@ -360,7 +407,7 @@ class JobsService {
 
       const theirStackJobs = await theirStackService.searchJobs(seniorFilters);
       
-      const featuredJobs = theirStackJobs.map(job => ({
+      const featuredJobs = theirStackJobs.map((job: any) => ({
         ...theirStackService.transformToInternalJob(job),
         is_featured: true
       }));
@@ -372,7 +419,32 @@ class JobsService {
 
       return featuredJobs;
     } catch (error: any) {
-      console.error('TheirStack featured jobs failed:', error);
+      console.error('TheirStack featured jobs failed:', error.message);
+      
+      // Handle specific error cases with alternative service
+      if (error.message?.includes('THEIRSTACK_')) {
+        console.log('TheirStack error in featured jobs, using alternative service...');
+        return this.getFeaturedFromAlternativeService();
+      }
+      
+      throw error;
+    }
+  }
+
+  private async getFeaturedFromAlternativeService(): Promise<Job[]> {
+    try {
+      console.log('Getting featured jobs from alternative service');
+      
+      const featuredJobs = alternativeJobsService.getFeaturedJobs();
+      
+      // Cache the featured jobs
+      featuredJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return featuredJobs;
+    } catch (error: any) {
+      console.error('Alternative service featured jobs failed:', error);
       throw error;
     }
   }
@@ -689,6 +761,8 @@ class JobsService {
   }
 
   private getMockJobs(filters: JobFilters): Job[] {
+    console.log('Using mock data due to API failure - applying filters:', filters);
+    
     const mockJobs = [
       {
         id: 'mock-1',

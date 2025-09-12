@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { updateProfile, signOut } from '../../store/slices/authSlice';
 import { fetchProfile, fetchProfileStats, updateProfile as updateUserProfile } from '../../store/slices/profileSlice';
+import { profileService } from '../../services/profile.service';
 import PersonaSelector from '../../components/PersonaSelector';
 import { PERSONAS, Persona, getPersonaById, getPersonaImage } from '../../utils/personas';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -119,15 +120,22 @@ export default function ModernProfileScreen({ navigation }: any) {
   };
 
   const handleSaveProfile = async () => {
+    console.log('🔄 handleSaveProfile chamado');
+    console.log('👤 User do Redux:', user);
+    console.log('🆔 User ID:', user?.id);
+    console.log('✅ User existe?', !!user);
+    console.log('✅ User tem ID?', !!user?.id);
+
     if (!user?.id) {
-      Alert.alert('Erro', 'Usuário não encontrado');
+      console.error('❌ Usuário não encontrado - abortando salvamento');
+      Alert.alert('Erro', 'Usuário não encontrado. Faça login novamente.');
       return;
     }
 
     try {
       console.log('🔄 Iniciando salvamento do perfil...');
-      console.log('📝 Dados editados:', editedProfile);
-      console.log('👤 User ID:', user.id);
+      console.log('📝 Dados editados:', JSON.stringify(editedProfile, null, 2));
+      console.log('👤 User ID confirmado:', user.id);
 
       // Convert persona_id to avatar URL - the database expects avatar, not persona_id
       let avatarUrl = null;
@@ -149,14 +157,15 @@ export default function ModernProfileScreen({ navigation }: any) {
         avatar: avatarUrl, // Save as avatar, not persona_id
       };
 
-      console.log('📦 Dados para salvar:', profileUpdate);
-
+      console.log('📦 Dados para salvar:', JSON.stringify(profileUpdate, null, 2));
+      console.log('🚀 Chamando dispatch updateUserProfile...');
+      
       const result = await dispatch(updateUserProfile({ 
         userId: user.id, 
         updates: profileUpdate 
       })).unwrap();
 
-      console.log('✅ Perfil salvo no banco:', result);
+      console.log('✅ Perfil salvo no banco:', JSON.stringify(result, null, 2));
 
       // Also update auth state to keep them in sync (include both avatar and persona_id)
       dispatch(updateProfile({
@@ -168,7 +177,37 @@ export default function ModernProfileScreen({ navigation }: any) {
       setEditMode(false);
     } catch (error: any) {
       console.error('❌ Erro ao salvar perfil:', error);
-      Alert.alert('Erro', error.message || 'Erro ao atualizar perfil');
+      console.error('❌ Stack trace:', error.stack);
+      Alert.alert(
+        'Erro ao Salvar', 
+        `Detalhes: ${error.message || 'Erro desconhecido'}\n\nVerifique os logs do console para mais detalhes.`
+      );
+    }
+  };
+
+  // Debug function for testing
+  const handleDebugSave = async () => {
+    console.log('🐛 DEBUG: Testando salvamento direto...');
+    try {
+      if (!user?.id) {
+        Alert.alert('Debug', 'User ID não encontrado no Redux');
+        return;
+      }
+
+      // Test direct profile service call
+      const testUpdate = {
+        name: 'Debug Test ' + Date.now(),
+        bio: 'Teste de debug ' + new Date().toLocaleString()
+      };
+
+      console.log('🐛 Chamando profileService diretamente...');
+      const result = await profileService.updateProfile(user.id, testUpdate);
+      console.log('🐛 Resultado:', result);
+
+      Alert.alert('Debug Sucesso', 'Verifique os logs do console');
+    } catch (error: any) {
+      console.error('🐛 Debug erro:', error);
+      Alert.alert('Debug Erro', error.message);
     }
   };
 
@@ -423,6 +462,15 @@ export default function ModernProfileScreen({ navigation }: any) {
             <TouchableOpacity style={styles.actionButton}>
               <Ionicons name="download-outline" size={20} color="#3b82f6" />
               <Text style={styles.actionButtonText}>Exportar CV</Text>
+            </TouchableOpacity>
+            
+            {/* Debug button - temporary for troubleshooting */}
+            <TouchableOpacity 
+              style={[styles.actionButton, { backgroundColor: '#f0f9ff', borderColor: '#0ea5e9' }]} 
+              onPress={handleDebugSave}
+            >
+              <Ionicons name="bug-outline" size={20} color="#0ea5e9" />
+              <Text style={[styles.actionButtonText, { color: '#0ea5e9' }]}>Debug Save</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.actionButton, styles.logoutButton]} onPress={handleLogout}>

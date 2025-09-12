@@ -332,12 +332,21 @@ export default function JobsScreen({ navigation }: any) {
               }
             </Text>
           </View>
-          <TouchableOpacity 
-            style={styles.notificationButton}
-            onPress={() => setShowFilters(true)}
-          >
-            <Ionicons name="filter-outline" size={24} color="#333" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity 
+              style={styles.intelligentButton}
+              onPress={() => navigation.navigate('IntelligentJobs')}
+            >
+              <Ionicons name="sparkles" size={20} color="white" />
+              <Text style={styles.intelligentButtonText}>IA</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.filterButton}
+              onPress={() => setShowFilters(true)}
+            >
+              <Ionicons name="filter-outline" size={24} color="#333" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Search */}
@@ -1229,5 +1238,42 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '700',
     marginRight: 6,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  intelligentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#8b5cf6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  intelligentButtonText: {
+    fontSize: 12,
+    color: 'white',
+    fontWeight: '700',
+  },
+  filterButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
 });

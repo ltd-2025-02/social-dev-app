@@ -192,21 +192,49 @@ class ProfileService {
     try {
       console.log('🔧 ProfileService.updateProfile chamado');
       console.log('📍 User ID:', userId);
-      console.log('📝 Updates:', updates);
+      console.log('📝 Updates recebidos:', JSON.stringify(updates, null, 2));
+      
+      // Validate userId
+      if (!userId || typeof userId !== 'string') {
+        throw new Error('User ID inválido: ' + userId);
+      }
+
+      // Prepare update data
+      const updateData = {
+        ...updates,
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('📦 Dados preparados para update:', JSON.stringify(updateData, null, 2));
+      console.log('🗃️  Executando query no Supabase...');
 
       const { data: profile, error } = await supabase
         .from('users')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', userId)
         .select('*')
         .single();
 
-      console.log('💾 Supabase response:', { profile, error });
+      console.log('💾 Supabase response detalhado:');
+      console.log('  - Profile:', JSON.stringify(profile, null, 2));
+      console.log('  - Error:', error);
+      console.log('  - Tem erro?', !!error);
+      console.log('  - Tem profile?', !!profile);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Erro do Supabase:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+
+      if (!profile) {
+        console.error('❌ Profile não foi retornado após update');
+        throw new Error('Profile não foi atualizado - nenhum dado retornado');
+      }
 
       // Calculate and update profile completion percentage
       await this.updateProfileCompletion(userId);

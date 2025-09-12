@@ -68,11 +68,12 @@ class TheirStackService {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.apiKey}`
-          }
+          },
+          timeout: 10000
         }
       );
 
-      console.log('TheirStack API Response:', response.data);
+      console.log('TheirStack API Response:', response.status, response.data);
       
       if (response.data && response.data.data) {
         return response.data.data as TheirStackJob[];
@@ -80,8 +81,32 @@ class TheirStackService {
 
       return [];
     } catch (error: any) {
-      console.error('TheirStack API Error:', error.response?.data || error.message);
-      throw new Error(`TheirStack API Error: ${error.response?.data?.message || error.message}`);
+      const status = error.response?.status;
+      const statusText = error.response?.statusText;
+      
+      console.error('TheirStack API Error:', {
+        status,
+        statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+
+      // Handle specific error cases
+      if (status === 402) {
+        console.warn('TheirStack API: Payment Required - API quota exceeded');
+        throw new Error('THEIRSTACK_QUOTA_EXCEEDED');
+      } else if (status === 401) {
+        console.warn('TheirStack API: Unauthorized - Invalid API key');
+        throw new Error('THEIRSTACK_AUTH_FAILED');
+      } else if (status >= 500) {
+        console.warn('TheirStack API: Server Error');
+        throw new Error('THEIRSTACK_SERVER_ERROR');
+      } else if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND') {
+        console.warn('TheirStack API: Network Error');
+        throw new Error('THEIRSTACK_NETWORK_ERROR');
+      }
+      
+      throw new Error(`THEIRSTACK_UNKNOWN_ERROR: ${error.message}`);
     }
   }
 
@@ -226,16 +251,21 @@ class TheirStackService {
     return requirements.slice(0, 5);
   }
 
-  async testConnection(): Promise<boolean> {
+  async testConnection(): Promise<{ success: boolean; error?: string }> {
     try {
       const response = await this.searchJobs({ 
         limit: 1, 
         posted_at_max_age_days: 7 
       });
-      return response.length > 0;
-    } catch (error) {
-      console.error('TheirStack connection test failed:', error);
-      return false;
+      return { success: true };
+    } catch (error: any) {
+      console.error('TheirStack connection test failed:', error.message);
+      
+      // Return specific error information for handling
+      return { 
+        success: false, 
+        error: error.message 
+      };
     }
   }
 }
