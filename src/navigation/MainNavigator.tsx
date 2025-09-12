@@ -43,6 +43,9 @@ import ResumeAnalysisScreen from '../screens/menu/ResumeAnalysisScreen';
 import InterviewSimulatorScreen from '../screens/menu/InterviewSimulatorScreen';
 import HireScreen from '../screens/menu/HireScreen';
 
+// News Screens
+import NewsScreen from '../screens/news/NewsScreen';
+
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
 
@@ -231,6 +234,14 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="About" 
         component={AboutScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="News" 
+        component={NewsScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

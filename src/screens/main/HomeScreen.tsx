@@ -19,6 +19,7 @@ import { useNotifications } from '../../hooks/useNotifications';
 import NotificationBadge from '../../components/NotificationBadge';
 import { useTheme } from '../../contexts/ThemeContext';
 import { resumeDraftService } from '../../services/resumeDraft.service';
+import NewsBanner from '../../components/NewsBanner';
 
 const { width } = Dimensions.get('window');
 
@@ -309,6 +310,9 @@ export default function HomeScreen({ navigation }: any) {
             </ScrollView>
           </View>
         )}
+
+        {/* News Banner */}
+        <NewsBanner navigation={navigation} />
 
         {/* Recent Activity & Metrics */}
         <View style={styles.section}>

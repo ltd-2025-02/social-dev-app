@@ -1,3 +1,26 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Image,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import UniversalHeader from '../../components/UniversalHeader';
+import { usersService } from '../../services/users.service';
+import { UserSearchResult } from '../../types/user.types';
+import { getPersonaImage } from '../../components/PersonaSelector';
+
+interface HireScreenProps {
+  navigation: any;
+}
+
+export default function HireScreen({ navigation }: HireScreenProps) {
   const [selectedTab, setSelectedTab] = useState('find'); // 'find' or 'offer'
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -173,6 +196,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -184,7 +209,6 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginRight: 16,
-    alignSelf: 'center',
   },
   userInfo: {
     flex: 1,
