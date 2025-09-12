@@ -1,26 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import UniversalHeader from '../../components/UniversalHeader';
-import { usersService, UserSearchResult } from '../../services/users.service';
-
-interface HireScreenProps {
-  navigation: any;
-}
-
-export default function HireScreen({ navigation }: HireScreenProps) {
   const [selectedTab, setSelectedTab] = useState('find'); // 'find' or 'offer'
   const [users, setUsers] = useState<UserSearchResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (selectedTab === 'find') {
@@ -28,16 +9,28 @@ export default function HireScreen({ navigation }: HireScreenProps) {
     }
   }, [selectedTab]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (query: string = '') => {
     try {
       setLoading(true);
-      const popularUsers = await usersService.getPopularUsers(20);
-      setUsers(popularUsers);
+      const results = await usersService.searchUsers({ query });
+      setUsers(results);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    fetchUsers(searchQuery);
+  };
+
+  const getAvatarSource = (avatar: string | null) => {
+    if (avatar?.startsWith('persona:')) {
+      const personaId = avatar.split(':')[1];
+      return getPersonaImage(personaId);
+    }
+    return { uri: avatar || undefined };
   };
 
   const renderFindProfessionals = () => {
@@ -51,10 +44,11 @@ export default function HireScreen({ navigation }: HireScreenProps) {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.userCard}>
-            <Image source={{ uri: item.avatar || undefined }} style={styles.avatar} />
+            <Image source={getAvatarSource(item.avatar)} style={styles.avatar} />
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{item.name}</Text>
-              <Text style={styles.userOccupation}>{item.occupation}</Text>
+              <Text style={styles.userHeadline}>{item.headline}</Text>
+              <Text style={styles.userLocation}>{item.location}</Text>
             </View>
             <View style={styles.actions}>
               <TouchableOpacity 
@@ -108,6 +102,20 @@ export default function HireScreen({ navigation }: HireScreenProps) {
           </Text>
         </TouchableOpacity>
       </View>
+      {selectedTab === 'find' && (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar por nome, cargo ou habilidade..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+          />
+          <TouchableOpacity onPress={handleSearch}>
+            <Ionicons name="search" size={24} color="#8b5cf6" />
+          </TouchableOpacity>
+        </View>
+      )}
       {selectedTab === 'find' ? renderFindProfessionals() : renderOfferServices()}
     </SafeAreaView>
   );
@@ -142,9 +150,25 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#fff',
   },
-  userCard: {
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+  },
+  userCard: {
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 12,
@@ -156,25 +180,33 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginRight: 16,
+    alignSelf: 'center',
   },
   userInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 4,
   },
-  userOccupation: {
+  userHeadline: {
     fontSize: 14,
     color: '#6b7280',
+    marginBottom: 4,
+  },
+  userLocation: {
+    fontSize: 12,
+    color: '#9ca3af',
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'space-around',
   },
   viewProfileButton: {
     paddingHorizontal: 12,
@@ -182,7 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#8b5cf6',
-    marginRight: 8,
+    marginBottom: 8,
   },
   viewProfileButtonText: {
     color: '#8b5cf6',

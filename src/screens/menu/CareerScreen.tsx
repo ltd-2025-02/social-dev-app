@@ -181,6 +181,17 @@ export default function CareerScreen({ navigation }: CareerScreenProps) {
               <Text style={styles.actionTitle}>Contrate</Text>
               <Text style={styles.actionSubtitle}>Ofereça serviços</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('Hire')}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: '#e0f2fe' }]}>
+                <Ionicons name="chatbubbles-outline" size={24} color="#0ea5e9" />
+              </View>
+              <Text style={styles.actionTitle}>Consultoria</Text>
+              <Text style={styles.actionSubtitle}>Contate um profissional</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
