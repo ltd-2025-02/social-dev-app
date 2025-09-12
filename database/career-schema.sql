@@ -166,7 +166,7 @@ CREATE TABLE user_career_profiles (
   target_path_id UUID REFERENCES career_paths(id),
   experience_level VARCHAR(20) CHECK (experience_level IN ('entry', 'junior', 'mid', 'senior', 'lead')),
   years_of_experience INTEGER DEFAULT 0,
-  current_role VARCHAR(100),
+  "current_role" VARCHAR(100),
   completed_milestones JSONB DEFAULT '[]',
   location VARCHAR(100),
   remote_preference VARCHAR(20) CHECK (remote_preference IN ('full-remote', 'hybrid', 'office', 'no-preference')),

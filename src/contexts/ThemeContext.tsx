@@ -77,36 +77,44 @@ const lightTheme: ThemeColors = {
 };
 
 const darkTheme: ThemeColors = {
-  background: '#0f172a',
-  surface: '#1e293b',
-  card: '#334155',
+  // Dracula-inspired backgrounds
+  background: '#282a36',
+  surface: '#44475a',
+  card: '#44475a',
   
-  text: '#f8fafc',
-  textSecondary: '#e2e8f0',
-  textMuted: '#94a3b8',
+  // Dracula-inspired text colors
+  text: '#f8f8f2',
+  textSecondary: '#f8f8f2',
+  textMuted: '#6272a4',
   
-  primary: '#8b5cf6',
-  primaryText: '#ffffff',
+  // Dracula purple as primary
+  primary: '#bd93f9',
+  primaryText: '#282a36',
   
-  success: '#22c55e',
-  warning: '#eab308',
-  error: '#f87171',
-  info: '#60a5fa',
+  // Dracula status colors
+  success: '#50fa7b',
+  warning: '#f1fa8c',
+  error: '#ff5555',
+  info: '#8be9fd',
   
-  border: '#475569',
+  // Dracula UI elements
+  border: '#6272a4',
   shadow: '#000000',
-  overlay: 'rgba(0, 0, 0, 0.7)',
+  overlay: 'rgba(40, 42, 54, 0.8)',
   
-  headerBackground: '#1e293b',
-  headerText: '#f8fafc',
+  // Dracula header
+  headerBackground: '#282a36',
+  headerText: '#f8f8f2',
   
-  buttonBackground: '#8b5cf6',
-  buttonText: '#ffffff',
+  // Dracula button
+  buttonBackground: '#bd93f9',
+  buttonText: '#282a36',
   
-  inputBackground: '#334155',
-  inputBorder: '#475569',
-  inputText: '#f8fafc',
-  placeholder: '#64748b',
+  // Dracula input
+  inputBackground: '#44475a',
+  inputBorder: '#6272a4',
+  inputText: '#f8f8f2',
+  placeholder: '#6272a4',
 };
 
 interface ThemeContextType {

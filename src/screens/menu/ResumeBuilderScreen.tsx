@@ -303,7 +303,35 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
 
               } catch (error) {
                 console.error('Erro ao salvar currículo:', error);
-                Alert.alert('Erro', 'Não foi possível salvar o currículo. Tente novamente.');
+                Alert.alert(
+                  'Erro ao Salvar',
+                  `Não foi possível salvar o currículo no banco de dados. ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+                  [
+                    {
+                      text: 'Tentar Novamente',
+                      onPress: async () => {
+                        // Retry the save operation
+                        try {
+                          const title = resumeTitle?.trim() || defaultTitle;
+                          const savedResume = await savedResumeService.saveResume(
+                            user.id, 
+                            conversationState.resumeData as any, 
+                            title
+                          );
+                          Alert.alert('Sucesso!', 'Currículo salvo com sucesso!');
+                          navigation.navigate('MyResumes');
+                        } catch (retryError) {
+                          console.error('Retry failed:', retryError);
+                          Alert.alert('Erro', 'Falha na segunda tentativa. Por favor, verifique sua conexão e tente mais tarde.');
+                        }
+                      }
+                    },
+                    {
+                      text: 'Cancelar',
+                      style: 'cancel'
+                    }
+                  ]
+                );
               }
             }
           }

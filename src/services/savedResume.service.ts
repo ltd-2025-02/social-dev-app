@@ -131,16 +131,26 @@ class SavedResumeService {
         user_id: userId,
         template_id: templateId,
         title,
-        personal_info: resumeData.personalInfo,
-        summary: resumeData.summary,
-        objective: resumeData.objective,
-        experience: resumeData.experience,
-        education: resumeData.education,
-        technical_skills: resumeData.skills.filter(s => s.category !== 'soft'),
-        soft_skills: resumeData.skills.filter(s => s.category === 'soft'),
-        projects: resumeData.projects,
-        certifications: resumeData.certificates,
-        languages: resumeData.languages,
+        personal_info: resumeData.personalInfo || {
+          fullName: '',
+          email: '',
+          phone: '',
+          address: ''
+        },
+        summary: resumeData.summary || null,
+        objective: resumeData.objective || null,
+        experience: resumeData.experience || [],
+        education: resumeData.education || [],
+        technical_skills: Array.isArray(resumeData.skills) ? 
+          resumeData.skills.map(skill => typeof skill === 'string' ? { 
+            name: skill, 
+            level: 'intermediate' as const, 
+            category: 'technical' 
+          } : skill) : [],
+        soft_skills: [],
+        projects: resumeData.projects || [],
+        certifications: resumeData.certificates || [],
+        languages: resumeData.languages || [],
         awards: [],
         publications: [],
         volunteer_work: [],
@@ -152,7 +162,10 @@ class SavedResumeService {
           layout: 'traditional',
           sectionOrder: ['personal', 'summary', 'experience', 'education', 'skills', 'projects']
         },
-        status: 'completed' as const
+        status: 'completed' as const,
+        is_public: false,
+        download_count: 0,
+        share_count: 0
       };
 
       console.log('Object being sent to Supabase:', JSON.stringify(resumeToSave, null, 2));

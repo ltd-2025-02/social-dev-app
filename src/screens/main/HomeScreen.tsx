@@ -8,6 +8,7 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -313,6 +314,82 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* News Banner */}
         <NewsBanner navigation={navigation} />
+
+        {/* Benefits Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Benefícios</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textMuted }]}>
+            O apoio ao desenvolvedor
+          </Text>
+          
+          <View style={styles.benefitsContainer}>
+            <View style={[styles.benefitCard, { backgroundColor: colors.surface }]}>
+              <Image 
+                source={require('../../../assets/app.png')} 
+                style={styles.benefitImage}
+                resizeMode="cover"
+              />
+              <View style={styles.benefitContent}>
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>
+                  Comunidade Ativa
+                </Text>
+                <Text style={[styles.benefitDescription, { color: colors.textMuted }]}>
+                  Faça parte de uma comunidade vibrante de desenvolvedores, compartilhe conhecimento e cresça junto com profissionais de todo o Brasil.
+                </Text>
+                <TouchableOpacity 
+                  style={[styles.benefitButton, { backgroundColor: colors.primary }]}
+                  onPress={() => navigation.navigate('Feed')}
+                >
+                  <Text style={styles.benefitButtonText}>Participar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={[styles.benefitCard, { backgroundColor: colors.surface }]}>
+              <Image 
+                source={require('../../../assets/screen-dev.png')} 
+                style={styles.benefitImage}
+                resizeMode="cover"
+              />
+              <View style={styles.benefitContent}>
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>
+                  Oportunidades Exclusivas
+                </Text>
+                <Text style={[styles.benefitDescription, { color: colors.textMuted }]}>
+                  Acesse vagas exclusivas de empresas parceiras, participe de processos seletivos diferenciados e acelere sua carreira.
+                </Text>
+                <TouchableOpacity 
+                  style={[styles.benefitButton, { backgroundColor: colors.primary }]}
+                  onPress={() => navigation.navigate('Jobs')}
+                >
+                  <Text style={styles.benefitButtonText}>Ver Vagas</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={[styles.benefitCard, { backgroundColor: colors.surface }]}>
+              <Image 
+                source={require('../../../assets/icone.png')} 
+                style={styles.benefitImage}
+                resizeMode="cover"
+              />
+              <View style={styles.benefitContent}>
+                <Text style={[styles.benefitTitle, { color: colors.text }]}>
+                  Desenvolvimento Contínuo
+                </Text>
+                <Text style={[styles.benefitDescription, { color: colors.textMuted }]}>
+                  Acesse conteúdos educacionais, trilhas de aprendizado personalizadas e mantenha-se atualizado com as últimas tecnologias.
+                </Text>
+                <TouchableOpacity 
+                  style={[styles.benefitButton, { backgroundColor: colors.primary }]}
+                  onPress={() => navigation.navigate('Career')}
+                >
+                  <Text style={styles.benefitButtonText}>Aprender</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
 
         {/* Recent Activity & Metrics */}
         <View style={styles.section}>
@@ -804,5 +881,52 @@ const styles = StyleSheet.create({
   progressBarFill: {
     height: '100%',
     borderRadius: 3,
+  },
+  sectionSubtitle: {
+    fontSize: 16,
+    marginTop: 4,
+    marginBottom: 20,
+  },
+  benefitsContainer: {
+    gap: 16,
+  },
+  benefitCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  benefitImage: {
+    width: '100%',
+    height: 200,
+  },
+  benefitContent: {
+    padding: 20,
+  },
+  benefitTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  benefitDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  benefitButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+  },
+  benefitButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

@@ -1,10 +1,11 @@
 
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../contexts/ThemeContext';
 
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
@@ -22,6 +23,20 @@ export default function AppNavigator() {
   const dispatch = useDispatch<AppDispatch>();
   const { isAuthenticated, loading: authLoading } = useSelector((state: RootState) => state.auth);
   const { hasSeenOnboarding, loading: onboardingLoading } = useSelector((state: RootState) => state.onboarding);
+  const { isDark, colors } = useTheme();
+
+  // Create custom Dracula theme for navigation
+  const navigationTheme = {
+    dark: isDark,
+    colors: {
+      primary: colors.primary,
+      background: colors.background,
+      card: colors.surface,
+      text: colors.text,
+      border: colors.border,
+      notification: colors.error,
+    },
+  };
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -66,7 +81,7 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!hasSeenOnboarding ? (
           <Stack.Screen 
