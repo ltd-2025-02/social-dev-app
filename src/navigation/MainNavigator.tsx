@@ -36,6 +36,7 @@ import LearningTrailScreen from '../screens/menu/LearningTrailScreen';
 import LearningModuleScreen from '../screens/menu/LearningModuleScreen';
 import LearningLessonScreen from '../screens/menu/LearningLessonScreen';
 import ResumeBuilderScreen from '../screens/menu/ResumeBuilderScreen';
+import MyResumesScreen from '../screens/menu/MyResumesScreen';
 import ResumeSelectionScreen from '../screens/menu/ResumeSelectionScreen';
 import ResumeAnalysisScreen from '../screens/menu/ResumeAnalysisScreen';
 import InterviewSimulatorScreen from '../screens/menu/InterviewSimulatorScreen';
@@ -326,6 +327,14 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="ResumeBuilder" 
         component={ResumeBuilderScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="MyResumes" 
+        component={MyResumesScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

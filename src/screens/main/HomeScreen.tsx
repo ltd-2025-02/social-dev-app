@@ -96,6 +96,13 @@ export default function HomeScreen({ navigation }: any) {
       color: '#f59e0b',
       onPress: () => navigation.navigate('Profile'),
     },
+    {
+      icon: 'document-text-outline',
+      title: 'Meus Currículos',
+      subtitle: 'Ver currículos',
+      color: '#8b5cf6',
+      onPress: () => navigation.navigate('MyResumes'),
+    },
   ];
 
   return (
