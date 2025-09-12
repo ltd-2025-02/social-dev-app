@@ -434,6 +434,16 @@ export default function JobsScreen({ navigation }: any) {
                       🎯 Mostrando vagas de demonstração
                     </Text>
                   )}
+                  {jobs.some(job => job.id.startsWith('theirstack-')) && (
+                    <Text style={styles.apiSourceText}>
+                      🔥 Vagas do TheirStack (LinkedIn, Indeed, Google)
+                    </Text>
+                  )}
+                  {jobs.some(job => !job.id.startsWith('mock-') && !job.id.startsWith('theirstack-')) && (
+                    <Text style={styles.apiSourceText}>
+                      📊 Vagas do Google Jobs via SerpAPI
+                    </Text>
+                  )}
                 </View>
               )}
             </View>
@@ -693,6 +703,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#f59e0b',
     fontWeight: '500',
+    marginTop: 2,
+  },
+  apiSourceText: {
+    fontSize: 12,
+    color: '#10b981',
+    fontWeight: '600',
     marginTop: 2,
   },
   sortSection: {

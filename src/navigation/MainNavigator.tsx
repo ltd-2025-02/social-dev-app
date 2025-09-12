@@ -11,7 +11,7 @@ import HomeScreen from '../screens/main/HomeScreen';
 import FeedScreen from '../screens/main/FeedScreen';
 import JobsScreen from '../screens/jobs/JobsScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
-import ProfileScreen from '../screens/profile/ModernProfileScreen';
+import ProfileScreen from '../screens/profile/EnhancedProfileScreenSimple';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import PostDetailScreen from '../screens/main/PostDetailScreen';
 import ChatDetailScreen from '../screens/chat/ChatDetailScreen';
@@ -40,6 +40,16 @@ import InterviewSimulatorScreen from '../screens/menu/InterviewSimulatorScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
+
+// Analytics Screens
+import MetricsDashboard from '../screens/analytics/MetricsDashboard';
+
+// Settings Screens
+import ProfileSettings from '../screens/settings/ProfileSettings';
+import PrivacySettings from '../screens/settings/PrivacySettings';
+import NotificationSettings from '../screens/settings/NotificationSettings';
+import AppSettings from '../screens/settings/AppSettings';
+import ContentSettings from '../screens/settings/ContentSettings';
 
 // Components
 import CustomTabBar from '../components/CustomTabBar';
@@ -346,6 +356,56 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="UserSearch" 
         component={UserSearchScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      
+      {/* Settings Screens */}
+      <Stack.Screen 
+        name="ProfileSettings" 
+        component={ProfileSettings} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="PrivacySettings" 
+        component={PrivacySettings} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="NotificationSettings" 
+        component={NotificationSettings} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="AppSettings" 
+        component={AppSettings} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="ContentSettings" 
+        component={ContentSettings} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="MetricsDashboard" 
+        component={MetricsDashboard} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

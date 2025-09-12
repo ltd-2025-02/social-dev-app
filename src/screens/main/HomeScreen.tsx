@@ -256,23 +256,81 @@ export default function HomeScreen({ navigation }: any) {
           </View>
         )}
 
-        {/* Recent Activity */}
+        {/* Recent Activity & Metrics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Atividade recente</Text>
-          <View style={styles.activityCard}>
-            <Ionicons name="information-circle-outline" size={48} color="#94a3b8" />
-            <Text style={styles.emptyStateTitle}>Nenhuma atividade ainda</Text>
-            <Text style={styles.emptyStateText}>
-              Comece a interagir com outros desenvolvedores para ver suas atividades aqui
-            </Text>
-            <TouchableOpacity
-              style={styles.emptyStateButton}
-              onPress={() => navigation.navigate('Feed')}
-              activeOpacity={0.8}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Atividade recente</Text>
+            <TouchableOpacity 
+              style={styles.metricsButton}
+              onPress={() => navigation.navigate('MetricsDashboard')}
             >
-              <Text style={styles.emptyStateButtonText}>Explorar Feed</Text>
+              <Ionicons name="analytics-outline" size={16} color="white" />
+              <Text style={styles.metricsButtonText}>Métricas</Text>
             </TouchableOpacity>
           </View>
+          
+          {recentActivity && recentActivity.length > 0 ? (
+            <View style={styles.recentPostsContainer}>
+              {recentActivity.slice(0, 3).map((post, index) => (
+                <TouchableOpacity
+                  key={post.id || index}
+                  style={styles.recentPostCard}
+                  onPress={() => navigation.navigate('PostDetail', { postId: post.id })}
+                >
+                  <View style={styles.postHeader}>
+                    <View style={styles.postIconContainer}>
+                      <Ionicons name="document-text-outline" size={20} color="#3b82f6" />
+                    </View>
+                    <View style={styles.postContent}>
+                      <Text style={styles.postText} numberOfLines={2}>
+                        {post.content || post.title || 'Post sem conteúdo'}
+                      </Text>
+                      <View style={styles.postStats}>
+                        <View style={styles.postStat}>
+                          <Ionicons name="heart-outline" size={14} color="#ef4444" />
+                          <Text style={styles.postStatText}>{post.likes || 0}</Text>
+                        </View>
+                        <View style={styles.postStat}>
+                          <Ionicons name="chatbubble-outline" size={14} color="#6b7280" />
+                          <Text style={styles.postStatText}>{post.comments || 0}</Text>
+                        </View>
+                        <View style={styles.postStat}>
+                          <Ionicons name="eye-outline" size={14} color="#8b5cf6" />
+                          <Text style={styles.postStatText}>{post.views || 0}</Text>
+                        </View>
+                      </View>
+                      <Text style={styles.postTime}>
+                        {post.created_at ? new Date(post.created_at).toLocaleDateString('pt-BR') : 'Hoje'}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+              
+              <TouchableOpacity
+                style={styles.viewAllPostsButton}
+                onPress={() => navigation.navigate('Feed')}
+              >
+                <Text style={styles.viewAllPostsText}>Ver todos os posts</Text>
+                <Ionicons name="arrow-forward" size={16} color="#3b82f6" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.activityCard}>
+              <Ionicons name="document-text-outline" size={48} color="#94a3b8" />
+              <Text style={styles.emptyStateTitle}>Nenhum post ainda</Text>
+              <Text style={styles.emptyStateText}>
+                Comece a compartilhar conteúdo para ver seus posts aqui
+              </Text>
+              <TouchableOpacity
+                style={styles.emptyStateButton}
+                onPress={() => navigation.navigate('Feed')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.emptyStateButtonText}>Criar Post</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -538,6 +596,88 @@ const styles = StyleSheet.create({
   emptyStateButtonText: {
     fontSize: 14,
     color: 'white',
+    fontWeight: '600',
+  },
+  metricsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  metricsButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  recentPostsContainer: {
+    gap: 12,
+  },
+  recentPostCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  postIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#eff6ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  postContent: {
+    flex: 1,
+  },
+  postText: {
+    fontSize: 14,
+    color: '#1f2937',
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  postStats: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 4,
+  },
+  postStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  postStatText: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  postTime: {
+    fontSize: 11,
+    color: '#9ca3af',
+  },
+  viewAllPostsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8fafc',
+    padding: 12,
+    borderRadius: 8,
+    gap: 6,
+  },
+  viewAllPostsText: {
+    fontSize: 14,
+    color: '#3b82f6',
     fontWeight: '600',
   },
 });

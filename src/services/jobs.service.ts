@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { theirStackService, TheirStackJobFilters } from './theirstack.service';
 
 const SERP_API_KEY = '32c2077982745b4e01ebd5bd31b71d0b515e394647a09e0bbfa9ee0911802b0d';
 const SERP_API_BASE_URL = 'https://serpapi.com/search.json';
@@ -37,7 +38,21 @@ export interface Job {
 class JobsService {
   private jobsCache: Map<string, Job> = new Map();
 
-  async testAPI(): Promise<boolean> {
+  async testAPI(): Promise<{ theirStack: boolean; serpAPI: boolean }> {
+    const results = {
+      theirStack: false,
+      serpAPI: false
+    };
+
+    // Test TheirStack API
+    try {
+      results.theirStack = await theirStackService.testConnection();
+      console.log('TheirStack API Test:', results.theirStack ? 'SUCCESS' : 'FAILED');
+    } catch (error) {
+      console.error('TheirStack API Test Failed:', error);
+    }
+
+    // Test SerpAPI
     try {
       const params = {
         engine: 'google_jobs',
@@ -48,15 +63,67 @@ class JobsService {
       };
 
       const response = await axios.get(SERP_API_BASE_URL, { params });
-      console.log('API Test Response:', response.status, Object.keys(response.data));
-      
-      return response.status === 200 && !response.data.error;
+      results.serpAPI = response.status === 200 && !response.data.error;
+      console.log('SerpAPI Test:', results.serpAPI ? 'SUCCESS' : 'FAILED');
     } catch (error: any) {
-      console.error('API Test Failed:', error.response?.status, error.response?.data);
-      return false;
+      console.error('SerpAPI Test Failed:', error.response?.status, error.response?.data);
     }
+
+    return results;
   }
   async searchJobs(filters: JobFilters = {}, page = 1): Promise<Job[]> {
+    try {
+      // First try TheirStack API for better job data
+      const theirStackResults = await this.searchFromTheirStack(filters, page);
+      if (theirStackResults.length > 0) {
+        console.log(`Found ${theirStackResults.length} jobs from TheirStack`);
+        return theirStackResults;
+      }
+      
+      // Fallback to SerpAPI if TheirStack fails or returns no results
+      console.log('Falling back to SerpAPI');
+      return await this.searchFromSerpAPI(filters, page);
+    } catch (error: any) {
+      console.error('Error in searchJobs:', error);
+      // Return mock data if all APIs fail
+      return this.getMockJobs(filters);
+    }
+  }
+
+  private async searchFromTheirStack(filters: JobFilters, page = 1): Promise<Job[]> {
+    try {
+      // Convert our filters to TheirStack format
+      const theirStackFilters: TheirStackJobFilters = {
+        search: filters.search,
+        location: filters.location,
+        type: filters.type,
+        level: filters.level,
+        page: page - 1, // TheirStack uses 0-based pagination
+        limit: 20,
+        posted_at_max_age_days: 30,
+        job_country_code_or: ['BR']
+      };
+
+      const theirStackJobs = await theirStackService.searchJobs(theirStackFilters);
+      
+      // Transform TheirStack jobs to our internal format
+      const transformedJobs = theirStackJobs.map(job => 
+        theirStackService.transformToInternalJob(job)
+      );
+      
+      // Cache the jobs
+      transformedJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return transformedJobs;
+    } catch (error: any) {
+      console.error('TheirStack search failed:', error);
+      throw error;
+    }
+  }
+
+  private async searchFromSerpAPI(filters: JobFilters, page = 1): Promise<Job[]> {
     try {
       // Build tech-focused search query
       let query = filters.search || 'desenvolvedor';
@@ -121,18 +188,61 @@ class JobsService {
 
       return transformedJobs;
     } catch (error: any) {
-      console.error('Error searching jobs:', error);
-      if (error.response) {
-        console.error('Error response status:', error.response.status);
-        console.error('Error response data:', error.response.data);
-      }
-      
-      // Return mock data if API fails
-      return this.getMockJobs(filters);
+      console.error('SerpAPI search failed:', error);
+      throw error;
     }
   }
 
   async getFeaturedJobs(): Promise<Job[]> {
+    try {
+      // Try to get featured jobs from TheirStack first
+      const theirStackJobs = await this.getFeaturedFromTheirStack();
+      if (theirStackJobs.length > 0) {
+        return theirStackJobs;
+      }
+      
+      // Fallback to SerpAPI
+      return await this.getFeaturedFromSerpAPI();
+    } catch (error: any) {
+      console.error('Error getting featured jobs:', error);
+      return this.getMockFeaturedJobs();
+    }
+  }
+
+  private async getFeaturedFromTheirStack(): Promise<Job[]> {
+    try {
+      const filters: TheirStackJobFilters = {
+        posted_at_max_age_days: 7,
+        limit: 5,
+        job_country_code_or: ['BR']
+      };
+
+      // Search for senior/lead level jobs for featured section
+      const seniorFilters = {
+        ...filters,
+        level: 'senior' as const
+      };
+
+      const theirStackJobs = await theirStackService.searchJobs(seniorFilters);
+      
+      const featuredJobs = theirStackJobs.map(job => ({
+        ...theirStackService.transformToInternalJob(job),
+        is_featured: true
+      }));
+      
+      // Cache the featured jobs
+      featuredJobs.forEach(job => {
+        this.jobsCache.set(job.id, job);
+      });
+
+      return featuredJobs;
+    } catch (error: any) {
+      console.error('TheirStack featured jobs failed:', error);
+      throw error;
+    }
+  }
+
+  private async getFeaturedFromSerpAPI(): Promise<Job[]> {
     try {
       const params = {
         engine: 'google_jobs',
@@ -149,17 +259,14 @@ class JobsService {
       
       if (response.data.error) {
         console.error('SerpAPI Featured Error:', response.data.error);
-        console.log('Returning mock featured jobs due to API error');
-        return this.getMockFeaturedJobs();
+        throw new Error(response.data.error);
       }
       
       const jobs = response.data.jobs_results || [];
-      console.log(`Found ${jobs.length} featured jobs`);
+      console.log(`Found ${jobs.length} featured jobs from SerpAPI`);
       
-      // If no jobs found, return mock data instead of continuing with empty array
       if (jobs.length === 0) {
-        console.log('No featured jobs found from API, returning mock data');
-        return this.getMockFeaturedJobs();
+        throw new Error('No jobs found from SerpAPI');
       }
 
       const transformedJobs = jobs.map((job: any) => ({
@@ -174,12 +281,8 @@ class JobsService {
 
       return transformedJobs;
     } catch (error: any) {
-      console.error('Error getting featured jobs:', error);
-      if (error.response) {
-        console.error('Featured Error response status:', error.response.status);
-        console.error('Featured Error response data:', error.response.data);
-      }
-      return this.getMockFeaturedJobs();
+      console.error('SerpAPI featured jobs failed:', error);
+      throw error;
     }
   }
 

@@ -9,6 +9,10 @@ interface JobsState {
   loading: boolean;
   error: string | null;
   filters: JobFilters;
+  apiStatus: {
+    theirStack: boolean | null;
+    serpAPI: boolean | null;
+  };
 }
 
 const initialState: JobsState = {
@@ -26,12 +30,23 @@ const initialState: JobsState = {
     salary_max: undefined,
     company: '',
   },
+  apiStatus: {
+    theirStack: null,
+    serpAPI: null,
+  },
 };
 
 export const fetchJobs = createAsyncThunk(
   'jobs/fetchJobs',
-  async (filters: JobFilters = {}) => {
-    return await jobsService.searchJobs(filters);
+  async (filters: JobFilters = {}, { rejectWithValue }) => {
+    try {
+      const jobs = await jobsService.searchJobs(filters);
+      return jobs;
+    } catch (error: any) {
+      console.error('fetchJobs error:', error);
+      // Return mock data as fallback to ensure we always have something to show
+      return jobsService.getMockJobs(filters);
+    }
   }
 );
 
@@ -55,6 +70,13 @@ export const applyToJob = createAsyncThunk(
     const { jobId, userId } = params;
     await jobsService.applyToJob(jobId, userId);
     return jobId;
+  }
+);
+
+export const testAPIs = createAsyncThunk(
+  'jobs/testAPIs',
+  async () => {
+    return await jobsService.testAPI();
   }
 );
 
@@ -115,6 +137,9 @@ const jobsSlice = createSlice({
           job.applied_by_user = true;
           job.applications_count += 1;
         }
+      })
+      .addCase(testAPIs.fulfilled, (state, action) => {
+        state.apiStatus = action.payload;
       });
   },
 });
