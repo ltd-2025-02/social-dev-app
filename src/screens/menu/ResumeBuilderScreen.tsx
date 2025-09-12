@@ -20,6 +20,7 @@ import { ResumeData, ConversationState, ResumeStep, Education, Experience, Proje
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { GeminiService } from '../../services/geminiService';
 import { resumeDraftService } from '../../services/resumeDraft.service';
+import { savedResumeService } from '../../services/savedResume.service';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
@@ -210,49 +211,97 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
 
   const finishResume = async () => {
     try {
-      // Mark resume as complete (100%)
-      if (user?.id) {
-        await resumeDraftService.saveDraft(user.id, conversationState, messages, 100);
-        
-        // Remove the draft since it's completed
-        await resumeDraftService.deleteDraft(user.id);
+      if (!user?.id) {
+        Alert.alert('Erro', 'Usuário não encontrado.');
+        return;
       }
 
-      const finalMessage: Message = {
-        id: generateUniqueId(),
-        text: `🎉 **Parabéns! Seu currículo foi finalizado com sucesso!**
+      // Criar título padrão baseado no nome do usuário
+      const defaultTitle = `Currículo - ${conversationState.resumeData.personalInfo.fullName || user.name || 'Usuário'} - ${new Date().toLocaleDateString('pt-BR')}`;
 
-✅ **Seu currículo está salvo e pode ser acessado a qualquer momento na seção Carreira.**
+      // Perguntar nome do currículo
+      Alert.prompt(
+        '📄 Salvar Currículo',
+        'Digite um nome para seu currículo:',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel'
+          },
+          {
+            text: 'Salvar',
+            onPress: async (resumeTitle) => {
+              try {
+                const title = resumeTitle?.trim() || defaultTitle;
+                
+                // Salvar currículo completo no banco de dados
+                const savedResume = await savedResumeService.saveResume(
+                  user.id, 
+                  conversationState.resumeData, 
+                  title
+                );
+
+                // Mark resume as complete (100%) e remove draft
+                await resumeDraftService.saveDraft(user.id, conversationState, messages, 100);
+                await resumeDraftService.deleteDraft(user.id);
+
+                const finalMessage: Message = {
+                  id: generateUniqueId(),
+                  text: `🎉 **Parabéns! Seu currículo "${title}" foi salvo com sucesso!**
+
+✅ **Seu currículo está salvo no banco de dados e pode ser acessado em "Meus Currículos".**
 
 📄 **Próximos passos:**
-- Faça o download em PDF, DOC ou DOCX
-- Use para candidaturas em vagas
+- Acesse "Meus Currículos" para visualizar, editar ou baixar
+- Faça o download em PDF ou HTML
+- Compartilhe com recrutadores
 - Mantenha sempre atualizado
 
 **Obrigado por usar o Construtor de Currículos do SocialDev!** 🚀`,
-        isUser: false,
-        timestamp: new Date(),
-      };
+                  isUser: false,
+                  timestamp: new Date(),
+                };
 
-      setMessages(prev => [...prev, finalMessage]);
+                setMessages(prev => [...prev, finalMessage]);
 
-      // Show completion alert
-      setTimeout(() => {
-        Alert.alert(
-          '🎉 Currículo Finalizado!',
-          'Seu currículo foi concluído com sucesso! Você pode acessá-lo na seção Carreira a qualquer momento.',
-          [
-            {
-              text: 'Ver Carreira',
-              onPress: () => navigation.navigate('Career')
-            },
-            {
-              text: 'Voltar ao Início',
-              onPress: () => navigation.navigate('Home')
+                // Show completion alert with more options
+                setTimeout(() => {
+                  Alert.alert(
+                    '🎉 Currículo Salvo!',
+                    `"${title}" foi salvo com sucesso! O que você gostaria de fazer agora?`,
+                    [
+                      {
+                        text: 'Ver Meus Currículos',
+                        onPress: () => navigation.navigate('MyResumes')
+                      },
+                      {
+                        text: 'Baixar Agora',
+                        onPress: async () => {
+                          try {
+                            await savedResumeService.downloadResume(savedResume, 'html');
+                          } catch (error) {
+                            console.error('Erro no download:', error);
+                          }
+                        }
+                      },
+                      {
+                        text: 'Voltar ao Início',
+                        onPress: () => navigation.navigate('Home')
+                      }
+                    ]
+                  );
+                }, 1500);
+
+              } catch (error) {
+                console.error('Erro ao salvar currículo:', error);
+                Alert.alert('Erro', 'Não foi possível salvar o currículo. Tente novamente.');
+              }
             }
-          ]
-        );
-      }, 1000);
+          }
+        ],
+        'plain-text',
+        defaultTitle
+      );
 
     } catch (error) {
       console.error('Erro ao finalizar currículo:', error);
