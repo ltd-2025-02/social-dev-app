@@ -23,8 +23,20 @@ interface NewsBannerProps {
 
 export default function NewsBanner({ navigation }: NewsBannerProps) {
   const { colors } = useTheme();
-  const [featuredNews, setFeaturedNews] = useState<NewsArticle | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [featuredNews, setFeaturedNews] = useState<NewsArticle>({
+    id: 'mock-1',
+    title: 'As últimas novidades do mundo tech',
+    description: 'Fique por dentro das principais notícias de tecnologia, programação e inovação.',
+    content: '',
+    url: '#',
+    urlToImage: '',
+    publishedAt: new Date().toISOString(),
+    source: { id: 'tech-news', name: 'Tech News' },
+    author: 'Equipe SocialDev',
+    category: 'tecnologia',
+    language: 'pt'
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadFeaturedNews();
@@ -32,26 +44,14 @@ export default function NewsBanner({ navigation }: NewsBannerProps) {
 
   const loadFeaturedNews = async () => {
     try {
+      setLoading(true);
       const response = await newsService.getTopTechStories();
       if (response && Array.isArray(response.articles) && response.articles.length > 0) {
         setFeaturedNews(response.articles[0]);
       }
     } catch (error) {
       console.error('Error loading featured news:', error);
-      // Usar notícia mock em caso de erro
-      setFeaturedNews({
-        id: 'mock-1',
-        title: 'As últimas novidades do mundo tech',
-        description: 'Fique por dentro das principais notícias de tecnologia, programação e inovação.',
-        content: '',
-        url: '#',
-        urlToImage: '',
-        publishedAt: new Date().toISOString(),
-        source: { id: 'tech-news', name: 'Tech News' },
-        author: 'Equipe SocialDev',
-        category: 'tecnologia',
-        language: 'pt'
-      });
+      // Keep mock data
     } finally {
       setLoading(false);
     }
@@ -76,9 +76,8 @@ export default function NewsBanner({ navigation }: NewsBannerProps) {
     }
   };
 
-  if (loading || !featuredNews) {
-    return null;
-  }
+  // Debug sempre mostrar banner
+  console.log('NewsBanner render - loading:', loading, 'featuredNews:', !!featuredNews);
 
   return (
     <View style={styles.container}>
