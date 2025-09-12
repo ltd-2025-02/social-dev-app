@@ -143,7 +143,16 @@ class ProgressService {
         .from('user_badges')
         .select(`
           *,
-          badge:badges(*)
+          badge:badges(
+            id,
+            name,
+            description,
+            icon,
+            image_path,
+            color,
+            rarity,
+            criteria
+          )
         `)
         .eq('user_id', userId)
         .order('earned_at', { ascending: false });
@@ -152,6 +161,32 @@ class ProgressService {
       return data || [];
     } catch (error) {
       console.error('Error fetching user badges:', error);
+      throw error;
+    }
+  }
+
+  async getAllBadges(): Promise<Badge[]> {
+    try {
+      const { data, error } = await supabase
+        .from('badges')
+        .select(`
+          id,
+          name,
+          description,
+          icon,
+          image_path,
+          color,
+          rarity,
+          criteria,
+          track_id,
+          module_id
+        `)
+        .order('name');
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching badges:', error);
       throw error;
     }
   }

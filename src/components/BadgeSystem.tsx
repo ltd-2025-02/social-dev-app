@@ -49,11 +49,15 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
   const loadBadges = async () => {
     try {
       setLoading(true);
-      const userBadges = await progressService.getUserBadges(user!.id);
+      const [userBadges, allBadges] = await Promise.all([
+        progressService.getUserBadges(user!.id),
+        progressService.getAllBadges()
+      ]);
+      
       const earnedBadgeIds = new Set(userBadges.map(ub => ub.badge_id));
       
-      // For now, we'll use the predefined algorithm badges from our schema
-      const algorithmBadges: Badge[] = [
+      // Use badges from database if available, otherwise fallback to predefined
+      const algorithmBadges: Badge[] = allBadges.length > 0 ? allBadges : [
         {
           id: '1',
           name: 'Primeiro Passo',
