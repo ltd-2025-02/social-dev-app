@@ -34,6 +34,7 @@ import BugReportScreen from '../screens/menu/BugReportScreen';
 import FeatureSuggestionScreen from '../screens/menu/FeatureSuggestionScreen';
 import LearningTrailScreen from '../screens/menu/LearningTrailScreen';
 import LearningModuleScreen from '../screens/menu/LearningModuleScreen';
+import LearningLessonScreen from '../screens/menu/LearningLessonScreen';
 import ResumeBuilderScreen from '../screens/menu/ResumeBuilderScreen';
 import ResumeSelectionScreen from '../screens/menu/ResumeSelectionScreen';
 import ResumeAnalysisScreen from '../screens/menu/ResumeAnalysisScreen';
@@ -309,6 +310,14 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="LearningModule" 
         component={LearningModuleScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="LearningLesson" 
+        component={LearningLessonScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',
