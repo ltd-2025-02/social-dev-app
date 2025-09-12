@@ -139,24 +139,14 @@ export default function MainNavigator() {
       screenOptions={{
         headerStyle: {
           backgroundColor: 'white',
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 4,
         },
         headerTintColor: '#1f2937',
         headerTitleStyle: {
           fontWeight: '600',
           fontSize: 18,
         },
-        headerBackTitleVisible: false,
         // Enhanced animations
         animation: 'slide_from_right',
-        animationDuration: 300,
       }}
     >
       <Stack.Screen 
@@ -166,7 +156,7 @@ export default function MainNavigator() {
       />
       <Stack.Screen 
         name="PostDetail" 
-        component={PostDetailScreen} 
+        component={PostDetailScreen as any} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_bottom',
@@ -174,7 +164,7 @@ export default function MainNavigator() {
       />
       <Stack.Screen 
         name="ChatDetail" 
-        component={ChatDetailScreen} 
+        component={ChatDetailScreen as any} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

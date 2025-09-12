@@ -21,6 +21,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import * as ImagePicker from 'expo-image-picker';
+import { SavedResume, savedResumeService } from '../../services/savedResume.service';
 
 const { width } = Dimensions.get('window');
 
@@ -38,8 +39,10 @@ export default function EnhancedProfileScreen({ navigation, route }: EnhancedPro
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingField, setEditingField] = useState('');
   const [editingValue, setEditingValue] = useState('');
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [loadingResumes, setLoadingResumes] = useState(false);
   
   const dispatch = useDispatch();
 
@@ -48,9 +51,29 @@ export default function EnhancedProfileScreen({ navigation, route }: EnhancedPro
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // Simular carregamento
+    await loadSavedResumes();
     setTimeout(() => setRefreshing(false), 1000);
   };
+
+  const loadSavedResumes = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoadingResumes(true);
+      const resumes = await savedResumeService.getUserResumes(user.id);
+      setSavedResumes(resumes);
+    } catch (error) {
+      console.error('Error loading saved resumes:', error);
+    } finally {
+      setLoadingResumes(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id && isOwnProfile) {
+      loadSavedResumes();
+    }
+  }, [user?.id, isOwnProfile]);
 
   const getProfileImage = (): any => {
     return { 
@@ -429,6 +452,84 @@ export default function EnhancedProfileScreen({ navigation, route }: EnhancedPro
     </View>
   );
 
+  const renderSavedResumes = () => {
+    if (!isOwnProfile || (!loadingResumes && savedResumes.length === 0)) {
+      return null;
+    }
+
+    return (
+      <View style={styles.resumesSection}>
+        <View style={styles.resumesHeader}>
+          <Text style={styles.sectionTitle}>Meus Currículos</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('MyResumes')}>
+            <Text style={styles.viewAllText}>Ver todos</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loadingResumes ? (
+          <View style={styles.resumesLoading}>
+            <ActivityIndicator size="small" color="#3b82f6" />
+            <Text style={styles.loadingText}>Carregando currículos...</Text>
+          </View>
+        ) : (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.resumesScrollContainer}
+          >
+            {savedResumes.slice(0, 3).map((resume, index) => (
+              <TouchableOpacity 
+                key={resume.id} 
+                style={styles.resumeCard}
+                onPress={() => navigation.navigate('MyResumes')}
+              >
+                <LinearGradient 
+                  colors={getResumeGradient(index)} 
+                  style={styles.resumeCardGradient}
+                >
+                  <View style={styles.resumeCardContent}>
+                    <Ionicons name="document-text" size={24} color="white" />
+                    <Text style={styles.resumeCardTitle} numberOfLines={2}>
+                      {resume.title}
+                    </Text>
+                    <Text style={styles.resumeCardDate}>
+                      {new Date(resume.updated_at).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: '2-digit'
+                      })}
+                    </Text>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            ))}
+            
+            <TouchableOpacity 
+              style={styles.addResumeCard}
+              onPress={() => navigation.navigate('ResumeBuilder')}
+            >
+              <View style={styles.addResumeContent}>
+                <Ionicons name="add-circle-outline" size={32} color="#3b82f6" />
+                <Text style={styles.addResumeText}>Criar Novo</Text>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        )}
+      </View>
+    );
+  };
+
+  const getResumeGradient = (index: number): string[] => {
+    const gradients = [
+      ['#667eea', '#764ba2'],
+      ['#f093fb', '#f5576c'],
+      ['#4facfe', '#00f2fe'],
+      ['#43e97b', '#38f9d7'],
+      ['#fa709a', '#fee140'],
+    ];
+    return gradients[index % gradients.length];
+  };
+
   const renderEditModal = () => (
     <Modal
       visible={showEditModal}
@@ -488,6 +589,7 @@ export default function EnhancedProfileScreen({ navigation, route }: EnhancedPro
         {renderSkills()}
         {renderExperiences()}
         {renderProjects()}
+        {renderSavedResumes()}
       </ScrollView>
       {renderEditModal()}
     </SafeAreaView>
@@ -891,6 +993,87 @@ const styles = StyleSheet.create({
   projectDate: {
     fontSize: 12,
     color: '#6b7280',
+  },
+  resumesSection: {
+    margin: 16,
+    marginTop: 0,
+    marginBottom: 32,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  resumesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#3b82f6',
+    fontWeight: '600',
+  },
+  resumesLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    gap: 8,
+  },
+  resumesScrollContainer: {
+    paddingRight: 16,
+  },
+  resumeCard: {
+    width: 140,
+    height: 160,
+    marginRight: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  resumeCardGradient: {
+    flex: 1,
+    padding: 16,
+  },
+  resumeCardContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  resumeCardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'white',
+    marginTop: 8,
+    lineHeight: 18,
+  },
+  resumeCardDate: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 'auto',
+  },
+  addResumeCard: {
+    width: 140,
+    height: 160,
+    borderRadius: 12,
+    backgroundColor: '#f8fafc',
+    borderWidth: 2,
+    borderColor: '#e2e8f0',
+    borderStyle: 'dashed',
+  },
+  addResumeContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  addResumeText: {
+    fontSize: 14,
+    color: '#3b82f6',
+    fontWeight: '600',
   },
   comingSoonContainer: {
     alignItems: 'center',

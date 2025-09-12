@@ -217,7 +217,14 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
       }
 
       // Criar título padrão baseado no nome do usuário
-      const defaultTitle = `Currículo - ${conversationState.resumeData.personalInfo.fullName || user.name || 'Usuário'} - ${new Date().toLocaleDateString('pt-BR')}`;
+      const personalInfo = conversationState.resumeData?.personalInfo;
+      const defaultTitle = `Currículo - ${personalInfo?.fullName || user.name || 'Usuário'} - ${new Date().toLocaleDateString('pt-BR')}`;
+
+      // Verificar se os dados do currículo estão completos
+      if (!conversationState.resumeData || !personalInfo) {
+        Alert.alert('Erro', 'Dados do currículo incompletos. Continue preenchendo antes de salvar.');
+        return;
+      }
 
       // Perguntar nome do currículo
       Alert.prompt(
@@ -230,14 +237,14 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
           },
           {
             text: 'Salvar',
-            onPress: async (resumeTitle) => {
+            onPress: async (resumeTitle: string | undefined) => {
               try {
                 const title = resumeTitle?.trim() || defaultTitle;
                 
                 // Salvar currículo completo no banco de dados
                 const savedResume = await savedResumeService.saveResume(
                   user.id, 
-                  conversationState.resumeData, 
+                  conversationState.resumeData as any, 
                   title
                 );
 
