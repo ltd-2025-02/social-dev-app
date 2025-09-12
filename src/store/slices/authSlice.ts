@@ -161,30 +161,76 @@ export const signOut = createAsyncThunk('auth/signOut', async () => {
   if (error) throw error;
 });
 
-export const getCurrentUser = createAsyncThunk('auth/getCurrentUser', async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session?.user) return null;
+export const getCurrentUser = createAsyncThunk(
+  'auth/getCurrentUser', 
+  async (_, { rejectWithValue }) => {
+    try {
+      console.log('🔍 Checking current session...');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.log('❌ Session error:', sessionError);
+        if (sessionError.message?.includes('refresh_token_not_found')) {
+          console.log('🔄 Refresh token not found, clearing session');
+          await supabase.auth.signOut();
+          return null;
+        }
+        throw sessionError;
+      }
+      
+      if (!session?.user) {
+        console.log('🚫 No active session found');
+        return null;
+      }
 
-  const { data: profile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
+      console.log('✅ Valid session found for user:', session.user.email);
 
-  return {
-    id: session.user.id,
-    email: session.user.email!,
-    name: profile?.name || session.user.email!.split('@')[0],
-    avatar: profile?.avatar,
-    persona_id: profile?.persona_id,
-    occupation: profile?.occupation,
-    company: profile?.company,
-    bio: profile?.bio,
-    skills: profile?.skills,
-    location: profile?.location,
-  };
-});
+      let profile = null;
+      try {
+        const { data: profileData, error: profileError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError) {
+          console.warn('⚠️  Profile fetch error (continuing without profile):', profileError);
+        } else {
+          profile = profileData;
+        }
+      } catch (profileErr) {
+        console.warn('⚠️  Profile fetch exception (continuing without profile):', profileErr);
+      }
+
+      const userData = {
+        id: session.user.id,
+        email: session.user.email!,
+        name: profile?.name || session.user.email!.split('@')[0],
+        avatar: profile?.avatar,
+        persona_id: profile?.persona_id,
+        occupation: profile?.occupation,
+        company: profile?.company,
+        bio: profile?.bio,
+        skills: profile?.skills,
+        location: profile?.location,
+      };
+
+      console.log('✅ Current user loaded:', userData);
+      return userData;
+
+    } catch (error: any) {
+      console.error('❌ Get current user error:', error);
+      
+      if (error?.message?.includes('refresh_token_not_found')) {
+        console.log('🔄 Clearing invalid session');
+        await supabase.auth.signOut();
+        return null;
+      }
+      
+      return rejectWithValue(error.message || 'Failed to get current user');
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: 'auth',

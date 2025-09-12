@@ -1,18 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
-import { getCurrentUser } from '../store/slices/authSlice';
 
 export default function LoadingScreen() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getCurrentUser());
-  }, [dispatch]);
 
   return (
     <LinearGradient

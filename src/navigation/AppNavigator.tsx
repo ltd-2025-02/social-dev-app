@@ -11,6 +11,8 @@ import MainNavigator from './MainNavigator';
 import LoadingScreen from '../screens/LoadingScreen';
 import OnboardingContainer from '../screens/onboarding/OnboardingContainer';
 import { setOnboardingState, setOnboardingSeen } from '../store/slices/onboardingSlice';
+import { getCurrentUser } from '../store/slices/authSlice';
+import { supabase } from '../services/supabase';
 
 // RootStackParamList type removed for JavaScript compatibility
 
@@ -33,6 +35,26 @@ export default function AppNavigator() {
     };
 
     checkOnboardingStatus();
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getCurrentUser());
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session ? 'session exists' : 'no session');
+        
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          dispatch(getCurrentUser());
+        } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
+        }
+      }
+    );
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, [dispatch]);
 
   const handleOnboardingComplete = () => {
