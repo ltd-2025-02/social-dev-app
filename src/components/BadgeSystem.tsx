@@ -59,56 +59,80 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
           name: 'Primeiro Passo',
           description: 'Complete sua primeira lição de algoritmos',
           icon: '🎯',
+          image_path: 'badge_first_lesson.png',
           criteria: 'complete_first_lesson',
+          color: '#3b82f6',
+          rarity: 'common'
         },
         {
           id: '2',
           name: 'Mestre da Complexidade',
           description: 'Domine a análise de complexidade Big O',
           icon: '📊',
+          image_path: 'badge_big_o_master.png',
           criteria: 'complete_big_o_module',
+          color: '#3b82f6',
+          rarity: 'common'
         },
         {
           id: '3',
           name: 'Especialista em Arrays',
           description: 'Complete todos os exercícios de arrays',
           icon: '🔢',
+          image_path: 'badge_array_expert.png',
           criteria: 'master_arrays',
+          color: '#10b981',
+          rarity: 'uncommon'
         },
         {
           id: '4',
           name: 'Guru da Recursão',
           description: 'Resolva 10 problemas recursivos consecutivos',
           icon: '🌀',
+          image_path: 'badge_recursion_guru.png',
           criteria: 'recursion_master',
+          color: '#8b5cf6',
+          rarity: 'rare'
         },
         {
           id: '5',
           name: 'Velocista do Código',
           description: 'Resolva um exercício em menos de 5 minutos',
           icon: '⚡',
+          image_path: 'badge_speed_coder.png',
           criteria: 'speed_coder',
+          color: '#ef4444',
+          rarity: 'rare'
         },
         {
           id: '6',
           name: 'Perfeccionista',
           description: 'Obtenha 100% de pontuação em 5 exercícios seguidos',
           icon: '⭐',
+          image_path: 'badge_perfectionist.png',
           criteria: 'perfectionist',
+          color: '#10b981',
+          rarity: 'rare'
         },
         {
           id: '7',
           name: 'Maratonista',
           description: 'Estude por mais de 2 horas seguidas',
           icon: '🏃',
+          image_path: 'badge_marathon_learner.png',
           criteria: 'marathon_learner',
+          color: '#f59e0b',
+          rarity: 'uncommon'
         },
         {
           id: '8',
           name: 'Explorador de Estruturas',
           description: 'Experimente todas as estruturas de dados interativas',
           icon: '🗂️',
+          image_path: 'badge_data_structure_explorer.png',
           criteria: 'data_structure_explorer',
+          color: '#10b981',
+          rarity: 'uncommon'
         }
       ];
 
@@ -208,7 +232,15 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
             </TouchableOpacity>
             
             <View style={styles.modalBadgeIcon}>
-              <Text style={styles.modalBadgeEmoji}>{selectedBadge.icon}</Text>
+              {selectedBadge.image_path ? (
+                <Image 
+                  source={{ uri: `../../../assets/badges/${selectedBadge.image_path}` }}
+                  style={styles.modalBadgeImage}
+                  defaultSource={require('../../../assets/badges/default_badge.png')}
+                />
+              ) : (
+                <Text style={styles.modalBadgeEmoji}>{selectedBadge.icon}</Text>
+              )}
             </View>
             
             <Text style={styles.modalBadgeName}>{selectedBadge.name}</Text>
@@ -343,6 +375,11 @@ const styles = StyleSheet.create({
   badgeEmoji: {
     fontSize: 24,
   },
+  badgeImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+  },
   badgeName: {
     fontSize: 12,
     fontWeight: '500',
@@ -411,6 +448,11 @@ const styles = StyleSheet.create({
   },
   modalBadgeEmoji: {
     fontSize: 32,
+  },
+  modalBadgeImage: {
+    width: 76,
+    height: 76,
+    borderRadius: 38,
   },
   modalBadgeName: {
     fontSize: 20,
