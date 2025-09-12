@@ -43,7 +43,8 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -68,6 +69,11 @@
       ]
     ],
     "extra": {
-    }
+      "router": {},
+      "eas": {
+        "projectId": "a87c157a-09ac-4283-8bef-1c99127cbbd1"
+      }
+    },
+    "owner": "estevam5s"
   }
 }
