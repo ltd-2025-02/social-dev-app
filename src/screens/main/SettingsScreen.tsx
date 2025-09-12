@@ -166,7 +166,7 @@ export default function SettingsScreen({ navigation }: any) {
   if (loading && !settings) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <UniversalHeader title="Configurações" showBackButton={true} />
+        <UniversalHeader title="Configurações" showBackButton={true} minimal={true} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={[styles.loadingText, { color: colors.textMuted }]}>
@@ -179,7 +179,7 @@ export default function SettingsScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <UniversalHeader title="Configurações" showBackButton={true} />
+      <UniversalHeader title="Configurações" showBackButton={true} minimal={true} />
       
       <ScrollView
         style={styles.scrollView}

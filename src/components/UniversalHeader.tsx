@@ -16,13 +16,15 @@ interface UniversalHeaderProps {
   showBackButton?: boolean;
   rightActions?: React.ReactNode;
   style?: any;
+  minimal?: boolean; // New prop to show only back button and title
 }
 
 export default function UniversalHeader({ 
   title, 
   showBackButton = false, 
   rightActions,
-  style 
+  style,
+  minimal = false
 }: UniversalHeaderProps) {
   const navigation = useNavigation();
   const { isDark, colors, toggleTheme, animatedValue } = useTheme();
@@ -53,43 +55,47 @@ export default function UniversalHeader({
       <View style={styles.rightSection}>
         {rightActions}
         
-        {/* Search Button */}
-        <TouchableOpacity 
-          style={styles.headerButton}
-          onPress={() => navigation.navigate('UserSearch')}
-        >
-          <Ionicons name="search-outline" size={24} color={colors.headerText} />
-        </TouchableOpacity>
-        
-        {/* Theme Toggle Button */}
-        <TouchableOpacity 
-          style={[styles.headerButton, styles.themeButton]}
-          onPress={toggleTheme}
-        >
-          <Animated.View style={{
-            transform: [{
-              rotate: animatedValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0deg', '180deg'],
-              })
-            }]
-          }}>
-            <Ionicons 
-              name={isDark ? "sunny-outline" : "moon-outline"} 
-              size={24} 
-              color={colors.headerText} 
-            />
-          </Animated.View>
-        </TouchableOpacity>
-        
-        {/* Notifications Button */}
-        <TouchableOpacity 
-          style={styles.headerButton}
-          onPress={() => navigation.navigate('Notifications')}
-        >
-          <Ionicons name="notifications-outline" size={24} color={colors.headerText} />
-          <NotificationBadge />
-        </TouchableOpacity>
+        {!minimal && (
+          <>
+            {/* Search Button */}
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('UserSearch')}
+            >
+              <Ionicons name="search-outline" size={24} color={colors.headerText} />
+            </TouchableOpacity>
+            
+            {/* Theme Toggle Button */}
+            <TouchableOpacity 
+              style={[styles.headerButton, styles.themeButton]}
+              onPress={toggleTheme}
+            >
+              <Animated.View style={{
+                transform: [{
+                  rotate: animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '180deg'],
+                  })
+                }]
+              }}>
+                <Ionicons 
+                  name={isDark ? "sunny-outline" : "moon-outline"} 
+                  size={24} 
+                  color={colors.headerText} 
+                />
+              </Animated.View>
+            </TouchableOpacity>
+            
+            {/* Notifications Button */}
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <Ionicons name="notifications-outline" size={24} color={colors.headerText} />
+              <NotificationBadge />
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </Animated.View>
   );
