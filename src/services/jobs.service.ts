@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { theirStackService, TheirStackJobFilters } from './theirstack.service';
+import { profileMatchingService, UserProfileAnalysis, JobMatchScore, ProfileBasedFilters } from './profile-matching.service';
+import { ExtendedUserProfile, ExtendedProfileSkill } from './profile.service.enhanced';
 
 const SERP_API_KEY = '32c2077982745b4e01ebd5bd31b71d0b515e394647a09e0bbfa9ee0911802b0d';
 const SERP_API_BASE_URL = 'https://serpapi.com/search.json';
@@ -37,6 +39,8 @@ export interface Job {
 
 class JobsService {
   private jobsCache: Map<string, Job> = new Map();
+  private userProfileAnalysis: UserProfileAnalysis | null = null;
+  private lastProfileUpdate: number = 0;
 
   async testAPI(): Promise<{ theirStack: boolean; serpAPI: boolean }> {
     const results = {
@@ -71,6 +75,137 @@ class JobsService {
 
     return results;
   }
+
+  /**
+   * Updates the user profile analysis cache
+   */
+  updateUserProfile(profile: ExtendedUserProfile, skills: ExtendedProfileSkill[]): void {
+    this.userProfileAnalysis = profileMatchingService.analyzeUserProfile(profile, skills);
+    this.lastProfileUpdate = Date.now();
+    console.log('User profile updated for intelligent job matching:', this.userProfileAnalysis);
+  }
+
+  /**
+   * Intelligent job search based on user profile
+   */
+  async searchJobsIntelligent(userProfile?: ExtendedUserProfile, userSkills?: ExtendedProfileSkill[], customFilters?: ProfileBasedFilters): Promise<JobMatchScore[]> {
+    try {
+      // Update profile analysis if provided
+      if (userProfile && userSkills) {
+        this.updateUserProfile(userProfile, userSkills);
+      }
+
+      if (!this.userProfileAnalysis) {
+        console.warn('No user profile analysis available, falling back to regular search');
+        const jobs = await this.searchJobs(customFilters);
+        return jobs.map(job => ({
+          job,
+          overallScore: 50,
+          levelMatch: 50,
+          skillMatch: 50,
+          locationMatch: 50,
+          salaryMatch: 50,
+          techMatch: 50,
+          requirementsMatch: 50,
+          matchReasons: ['Busca sem análise de perfil'],
+          missingSkills: [],
+          recommendations: ['Complete seu perfil para recomendações personalizadas']
+        }));
+      }
+
+      // Generate intelligent filters
+      const intelligentFilters = customFilters || profileMatchingService.generateProfileBasedFilters(
+        this.userProfileAnalysis,
+        { includeGrowthOpportunities: true, flexibilityLevel: 'moderate' }
+      );
+
+      console.log('Generated intelligent filters:', intelligentFilters);
+
+      // Search with intelligent filters
+      const jobs = await this.searchJobs(intelligentFilters);
+      
+      // Score and rank jobs
+      const rankedJobs = profileMatchingService.filterAndRankJobs(
+        jobs, 
+        this.userProfileAnalysis, 
+        intelligentFilters
+      );
+
+      console.log(`Intelligent search returned ${rankedJobs.length} matched jobs`);
+      return rankedJobs;
+
+    } catch (error) {
+      console.error('Error in intelligent job search:', error);
+      // Fallback to regular search
+      const jobs = await this.searchJobs(customFilters);
+      return jobs.map(job => ({
+        job,
+        overallScore: 50,
+        levelMatch: 50,
+        skillMatch: 50,
+        locationMatch: 50,
+        salaryMatch: 50,
+        techMatch: 50,
+        requirementsMatch: 50,
+        matchReasons: ['Busca com erro na análise'],
+        missingSkills: [],
+        recommendations: ['Tente novamente mais tarde']
+      }));
+    }
+  }
+
+  /**
+   * Get personalized job recommendations
+   */
+  async getPersonalizedRecommendations(userProfile: ExtendedUserProfile, userSkills: ExtendedProfileSkill[], limit = 10): Promise<JobMatchScore[]> {
+    const intelligentResults = await this.searchJobsIntelligent(userProfile, userSkills);
+    
+    // Return top matches with score > 60
+    return intelligentResults
+      .filter(result => result.overallScore >= 60)
+      .slice(0, limit);
+  }
+
+  /**
+   * Get growth opportunities (jobs slightly above user level)
+   */
+  async getGrowthOpportunities(userProfile: ExtendedUserProfile, userSkills: ExtendedProfileSkill[]): Promise<JobMatchScore[]> {
+    if (!this.userProfileAnalysis) {
+      this.updateUserProfile(userProfile, userSkills);
+    }
+
+    if (!this.userProfileAnalysis) return [];
+
+    const growthFilters: ProfileBasedFilters = {
+      search: this.userProfileAnalysis.primaryTechnologies[0],
+      level: this.getNextLevel(this.userProfileAnalysis.experienceLevel),
+      skillMatchThreshold: 40, // Lower threshold for growth opportunities
+      includeGrowthOpportunities: true,
+      excludeOverqualified: false
+    };
+
+    const results = await this.searchJobsIntelligent(undefined, undefined, growthFilters);
+    return results.filter(result => result.overallScore >= 40).slice(0, 5);
+  }
+
+  /**
+   * Analyze job compatibility with user profile
+   */
+  analyzeJobCompatibility(job: Job, userProfile: ExtendedUserProfile, userSkills: ExtendedProfileSkill[]): JobMatchScore {
+    const userAnalysis = profileMatchingService.analyzeUserProfile(userProfile, userSkills);
+    return profileMatchingService.scoreJobMatch(job, userAnalysis);
+  }
+
+  private getNextLevel(currentLevel: string): 'junior' | 'pleno' | 'senior' | 'lead' {
+    const progression: Record<string, 'junior' | 'pleno' | 'senior' | 'lead'> = {
+      'junior': 'pleno',
+      'pleno': 'senior',
+      'senior': 'lead',
+      'lead': 'lead'
+    };
+    return progression[currentLevel] || 'pleno';
+  }
+
   async searchJobs(filters: JobFilters = {}, page = 1): Promise<Job[]> {
     try {
       // First try TheirStack API for better job data
@@ -480,6 +615,20 @@ class JobsService {
   }
 
   // Mock data methods for fallback (public for external access)
+  /**
+   * Get user profile analysis (for debugging/display)
+   */
+  getUserProfileAnalysis(): UserProfileAnalysis | null {
+    return this.userProfileAnalysis;
+  }
+
+  /**
+   * Check if profile analysis is outdated (older than 1 hour)
+   */
+  isProfileAnalysisOutdated(): boolean {
+    return Date.now() - this.lastProfileUpdate > 3600000; // 1 hour
+  }
+
   getMockFeaturedJobs(): Job[] {
     return [
       {
