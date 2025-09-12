@@ -18,8 +18,4 @@ Coloque conteudos de alta qualidade.
 
 ---
 
-Em carreira, Adcione um novo botao de consultoria em Acoes rapidas. Deve contactar um profissional da area para oferecer seus servicos.
-
----
-
-Em carreira, Adcione um novo botao de Contrate, onde os usuarios poderao contratar e/ou oferecer seus servicos. Deve ja ser possivel utilizar chat
+Quando finalizei o meu curriculo e pedi para fazer o download, nao fez e nao ficou salvo em meus curriculos, deve salvar no banco de dados do supabase

@@ -69,11 +69,11 @@ export default function HomeScreen({ navigation }: any) {
       onPress: () => navigation.navigate('Feed'),
     },
     {
-      icon: 'briefcase-outline',
-      title: 'Vagas',
-      subtitle: 'Oportunidades',
+      icon: 'bookmark-outline',
+      title: 'Vagas Salvas',
+      subtitle: 'Vagas salvas',
       color: '#10b981',
-      onPress: () => navigation.navigate('Jobs'),
+      onPress: () => navigation.navigate('SavedJobs'),
     },
     {
       icon: 'people-outline',

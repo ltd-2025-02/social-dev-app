@@ -124,6 +124,8 @@ class SavedResumeService {
   ): Promise<SavedResume> {
     try {
       console.log('💾 Salvando currículo no banco de dados...');
+      console.log('Resume data to save:', JSON.stringify(resumeData, null, 2));
+
 
       const resumeToSave = {
         user_id: userId,
@@ -153,6 +155,8 @@ class SavedResumeService {
         status: 'completed' as const
       };
 
+      console.log('Object being sent to Supabase:', JSON.stringify(resumeToSave, null, 2));
+
       const { data, error } = await supabase
         .from('user_resumes')
         .insert(resumeToSave)
@@ -160,11 +164,11 @@ class SavedResumeService {
         .single();
 
       if (error) {
-        console.error('Erro ao salvar currículo:', error);
+        console.error('Erro ao salvar currículo no Supabase:', error);
         throw new Error(`Erro ao salvar currículo: ${error.message}`);
       }
 
-      console.log('✅ Currículo salvo com sucesso!');
+      console.log('✅ Currículo salvo com sucesso! ID:', data.id);
       return data as SavedResume;
 
     } catch (error) {

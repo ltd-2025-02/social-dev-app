@@ -20,6 +20,7 @@ import { AppDispatch, RootState } from '../../store';
 import { fetchJobs, fetchFeaturedJobs, setFilters, clearFilters, applyToJob } from '../../store/slices/jobsSlice';
 import { useTheme } from '../../contexts/ThemeContext';
 import UniversalHeader from '../../components/UniversalHeader';
+import { jobsService } from '../../services/jobs.service';
 
 const { width } = Dimensions.get('window');
 
@@ -49,19 +50,53 @@ export default function JobsScreen({ navigation }: any) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [savedJobs, setSavedJobs] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(fetchJobs(filters));
     dispatch(fetchFeaturedJobs());
-  }, [dispatch, filters]);
+    if (user) {
+      fetchSavedJobs();
+    }
+  }, [dispatch, filters, user]);
+
+  const fetchSavedJobs = async () => {
+    if (!user) return;
+    try {
+      const saved = await jobsService.getSavedJobs(user.id);
+      setSavedJobs(saved.map((job) => job.id));
+    } catch (error) {
+      console.error('Error fetching saved jobs:', error);
+    }
+  };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     Promise.all([
       dispatch(fetchJobs(filters)),
-      dispatch(fetchFeaturedJobs())
+      dispatch(fetchFeaturedJobs()),
+      fetchSavedJobs(),
     ]).finally(() => setRefreshing(false));
   }, [dispatch, filters]);
+
+  const handleSaveJob = async (jobId: string) => {
+    if (!user) return;
+
+    try {
+      if (savedJobs.includes(jobId)) {
+        await jobsService.unsaveJob(user.id, jobId);
+        setSavedJobs(savedJobs.filter((id) => id !== jobId));
+        Alert.alert('Vaga removida', 'A vaga foi removida da sua lista de vagas salvas.');
+      } else {
+        await jobsService.saveJob(user.id, jobId);
+        setSavedJobs([...savedJobs, jobId]);
+        Alert.alert('Vaga salva', 'A vaga foi salva com sucesso! Você pode vê-la na tela de Vagas Salvas.');
+      }
+    } catch (error) {
+      console.error('Error saving job:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao salvar a vaga.');
+    }
+  };
 
   const handleApplyJob = async (jobId: string) => {
     if (!user) {
@@ -242,9 +277,9 @@ export default function JobsScreen({ navigation }: any) {
         <View style={styles.jobActions}>
           <TouchableOpacity
             style={styles.bookmarkButton}
-            onPress={() => {/* Handle bookmark */}}
+            onPress={() => handleSaveJob(job.id)}
           >
-            <Ionicons name="bookmark-outline" size={20} color="#6b7280" />
+            <Ionicons name={savedJobs.includes(job.id) ? "bookmark" : "bookmark-outline"} size={20} color={savedJobs.includes(job.id) ? colors.primary : "#6b7280"} />
           </TouchableOpacity>
         </View>
       </View>

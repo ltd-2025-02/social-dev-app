@@ -3,6 +3,7 @@ import { theirStackService, TheirStackJobFilters } from './theirstack.service';
 import { alternativeJobsService } from './jobs-alternative.service';
 import { profileMatchingService, UserProfileAnalysis, JobMatchScore, ProfileBasedFilters } from './profile-matching.service';
 import { ExtendedUserProfile, ExtendedProfileSkill } from './profile.service.enhanced';
+import { supabase } from '../lib/supabase';
 
 const SERP_API_KEY = '32c2077982745b4e01ebd5bd31b71d0b515e394647a09e0bbfa9ee0911802b0d';
 const SERP_API_BASE_URL = 'https://serpapi.com/search.json';
@@ -875,6 +876,61 @@ class JobsService {
     }
 
     return filteredJobs;
+  }
+
+  async saveJob(userId: string, jobId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('saved_jobs')
+        .insert({ user_id: userId, job_id: jobId });
+
+      if (error) {
+        if (error.code === '23505') { // unique_violation
+          console.log('Job already saved.');
+          return;
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error saving job:', error);
+      throw error;
+    }
+  }
+
+  async unsaveJob(userId: string, jobId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('saved_jobs')
+        .delete()
+        .eq('user_id', userId)
+        .eq('job_id', jobId);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error unsaving job:', error);
+      throw error;
+    }
+  }
+
+  async getSavedJobs(userId: string): Promise<Job[]> {
+    try {
+      const { data: savedJobs, error } = await supabase
+        .from('saved_jobs')
+        .select('job_id')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+
+      const jobIds = savedJobs.map((job) => job.job_id);
+      const jobs = await Promise.all(
+        jobIds.map((jobId) => this.getJobById(jobId))
+      );
+
+      return jobs.filter((job) => job !== null) as Job[];
+    } catch (error) {
+      console.error('Error getting saved jobs:', error);
+      throw error;
+    }
   }
 
 }

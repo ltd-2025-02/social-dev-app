@@ -11,6 +11,7 @@ import HomeScreen from '../screens/main/HomeScreen';
 import FeedScreen from '../screens/main/FeedScreen';
 import JobsScreen from '../screens/jobs/JobsScreen';
 import IntelligentJobsScreen from '../screens/jobs/IntelligentJobsScreen';
+import SavedJobsScreen from '../screens/jobs/SavedJobsScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
 import ProfileScreen from '../screens/profile/EnhancedProfileScreenSimple';
 import SettingsScreen from '../screens/main/SettingsScreen';
@@ -40,6 +41,7 @@ import MyResumesScreen from '../screens/menu/MyResumesScreen';
 import ResumeSelectionScreen from '../screens/menu/ResumeSelectionScreen';
 import ResumeAnalysisScreen from '../screens/menu/ResumeAnalysisScreen';
 import InterviewSimulatorScreen from '../screens/menu/InterviewSimulatorScreen';
+import HireScreen from '../screens/menu/HireScreen';
 
 // Notification Screens
 import NotificationsScreen from '../screens/notifications/NotificationsScreen';
@@ -355,6 +357,14 @@ export default function MainNavigator() {
         }}
       />
       <Stack.Screen 
+        name="Hire" 
+        component={HireScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
         name="OtherUserProfile" 
         component={UserProfileScreen} 
         options={{ 
@@ -423,6 +433,14 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="IntelligentJobs" 
         component={IntelligentJobsScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="SavedJobs" 
+        component={SavedJobsScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

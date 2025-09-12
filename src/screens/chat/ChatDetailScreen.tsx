@@ -188,7 +188,10 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
             <Ionicons name="arrow-back" size={24} color="#1f2937" />
           </TouchableOpacity>
           
-          <View style={styles.headerUser}>
+          <TouchableOpacity 
+            style={styles.headerUser}
+            onPress={() => navigation.navigate('OtherUserProfile', { userId: otherUser.id })}
+          >
             <Image
               source={getProfileImage(otherUser)}
               style={styles.headerAvatar}
@@ -199,7 +202,7 @@ export default function ChatDetailScreen({ route, navigation }: ChatDetailScreen
               </Text>
               <Text style={styles.headerUserStatus}>Online</Text>
             </View>
-          </View>
+          </TouchableOpacity>
           
           <TouchableOpacity style={styles.headerButton}>
             <Ionicons name="call-outline" size={24} color="#3b82f6" />

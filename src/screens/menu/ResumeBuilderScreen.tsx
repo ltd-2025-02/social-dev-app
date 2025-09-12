@@ -282,12 +282,14 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
                         onPress: () => navigation.navigate('MyResumes')
                       },
                       {
-                        text: 'Baixar Agora',
+                        text: 'Exportar como HTML',
                         onPress: async () => {
                           try {
+                            Alert.alert('Exportar Currículo', 'A geração de PDF ainda não está disponível. Seu currículo será exportado como um arquivo HTML que pode ser aberto no navegador.');
                             await savedResumeService.downloadResume(savedResume, 'html');
                           } catch (error) {
                             console.error('Erro no download:', error);
+                            Alert.alert('Erro de Exportação', 'Ocorreu um erro ao exportar seu currículo.');
                           }
                         }
                       },

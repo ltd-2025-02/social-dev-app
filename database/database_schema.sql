@@ -1,13 +1,4 @@
--- ==================================================
--- SOCIALDEV LEARNING PLATFORM DATABASE SCHEMA
--- Complete database schema for algorithms track and progress tracking
--- ==================================================
 
--- ====================================
--- LEARNING TRACKS & CONTENT STRUCTURE
--- ====================================
-
--- Learning tracks/trails (JavaScript, Python, Algorithms, etc.)
 CREATE TABLE learning_tracks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
@@ -51,20 +42,16 @@ CREATE TABLE learning_lessons (
     difficulty VARCHAR(20) CHECK (difficulty IN ('beginner', 'intermediate', 'advanced')),
     order_index INTEGER NOT NULL DEFAULT 0,
     
-    -- Lesson content
+    
     theory_content TEXT, -- Rich text/markdown content
     key_points TEXT[], -- Array of key learning points
     
-    -- Interactive elements
+    
     has_visualization BOOLEAN DEFAULT FALSE,
     has_animation BOOLEAN DEFAULT FALSE,
     has_interactive_examples BOOLEAN DEFAULT FALSE,
     
-    -- Metadata
-    estimated_reading_time INTEGER DEFAULT 10,
-    complexity_topics TEXT[], -- e.g., ["O(n)", "O(log n)"]
-    tags TEXT[],
-    prerequisites UUID[], -- Array of prerequisite lesson IDs
+    
     
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -83,7 +70,7 @@ CREATE TABLE lesson_code_examples (
     complexity_analysis TEXT,
     order_index INTEGER NOT NULL DEFAULT 0,
     
-    -- Execution metadata
+    
     is_runnable BOOLEAN DEFAULT FALSE,
     expected_output TEXT,
     execution_time_ms INTEGER,
@@ -91,11 +78,7 @@ CREATE TABLE lesson_code_examples (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ====================================
--- EXERCISES & CHALLENGES SYSTEM
--- ====================================
 
--- Exercise templates and challenges
 CREATE TABLE exercises (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     lesson_id UUID REFERENCES learning_lessons(id) ON DELETE CASCADE,
@@ -106,85 +89,76 @@ CREATE TABLE exercises (
     difficulty VARCHAR(20) CHECK (difficulty IN ('easy', 'medium', 'hard')),
     exercise_type VARCHAR(30) CHECK (exercise_type IN ('complexity-analysis', 'algorithm-implementation', 'data-structure', 'optimization', 'multiple-choice', 'coding')),
     
-    -- Exercise content
+    
     problem_statement TEXT NOT NULL,
     code_template TEXT,
     starter_code TEXT,
     expected_complexity VARCHAR(20), -- e.g., "O(n)", "O(log n)"
     expected_space_complexity VARCHAR(20),
     
-    -- Hints and solutions
+    
     hints JSONB DEFAULT '[]', -- Array of hint objects with text and penalty
     solution_code TEXT,
     solution_explanation TEXT,
     
-    -- Testing
+    
     test_cases JSONB DEFAULT '[]', -- Array of test case objects
     custom_judge_code TEXT, -- Custom validation logic if needed
     
-    -- Scoring
+    
     base_points INTEGER NOT NULL DEFAULT 100,
     time_limit_seconds INTEGER DEFAULT 300,
     memory_limit_mb INTEGER DEFAULT 256,
     
-    -- AI Analysis
-    ai_analysis_enabled BOOLEAN DEFAULT TRUE,
-    complexity_weight DECIMAL(3,2) DEFAULT 0.3, -- Weight for complexity analysis in scoring
-    code_quality_weight DECIMAL(3,2) DEFAULT 0.4, -- Weight for code quality
-    correctness_weight DECIMAL(3,2) DEFAULT 0.3, -- Weight for correctness
     
-    -- Metadata
-    tags TEXT[],
-    related_concepts TEXT[],
-    difficulty_rating DECIMAL(3,2) DEFAULT 0.0, -- Calculated from user attempts
-    success_rate DECIMAL(5,2) DEFAULT 0.0, -- Success rate percentage
-    average_attempts DECIMAL(4,1) DEFAULT 0.0,
+    
+    
     
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- User submissions for exercises
+
 CREATE TABLE exercise_submissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     exercise_id UUID NOT NULL REFERENCES exercises(id) ON DELETE CASCADE,
     
-    -- Submission data
+    
     submitted_code TEXT NOT NULL,
     submitted_complexity VARCHAR(50),
     submitted_space_complexity VARCHAR(50),
     user_explanation TEXT,
     language VARCHAR(20) NOT NULL DEFAULT 'javascript',
     
-    -- AI Analysis results
+    
     ai_score INTEGER CHECK (ai_score BETWEEN 0 AND 100),
     correctness_score INTEGER CHECK (correctness_score BETWEEN 0 AND 100),
     complexity_score INTEGER CHECK (complexity_score BETWEEN 0 AND 100),
     code_quality_score INTEGER CHECK (code_quality_score BETWEEN 0 AND 100),
     
-    -- AI Feedback
+    
     ai_feedback JSONB DEFAULT '{}', -- Structured feedback from AI
     ai_suggestions TEXT[],
     detected_complexity VARCHAR(50), -- AI-detected complexity
     detected_patterns TEXT[], -- Detected algorithmic patterns
     
-    -- Test execution results
+    
     test_results JSONB DEFAULT '{}', -- Results of test case execution
     execution_time_ms INTEGER,
     memory_used_mb DECIMAL(8,2),
     compilation_errors TEXT,
     runtime_errors TEXT,
     
-    -- Submission metadata
+    
     attempt_number INTEGER NOT NULL DEFAULT 1,
     is_correct BOOLEAN DEFAULT FALSE,
     final_score INTEGER DEFAULT 0,
     hints_used INTEGER DEFAULT 0,
     time_spent_seconds INTEGER DEFAULT 0,
     
-    -- Status tracking
+    
     status VARCHAR(20) DEFAULT 'submitted' CHECK (status IN ('submitted', 'analyzing', 'analyzed', 'error')),
     
     submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -193,17 +167,13 @@ CREATE TABLE exercise_submissions (
     UNIQUE(user_id, exercise_id, attempt_number)
 );
 
--- ====================================
--- USER PROGRESS TRACKING
--- ====================================
 
--- Track user progress through learning tracks
 CREATE TABLE user_track_progress (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     track_id UUID NOT NULL REFERENCES learning_tracks(id) ON DELETE CASCADE,
     
-    -- Progress metrics
+    
     status VARCHAR(20) DEFAULT 'not_started' CHECK (status IN ('not_started', 'in_progress', 'completed', 'paused')),
     completion_percentage DECIMAL(5,2) DEFAULT 0.0 CHECK (completion_percentage BETWEEN 0 AND 100),
     
@@ -217,7 +187,7 @@ CREATE TABLE user_track_progress (
     total_exercises_completed INTEGER DEFAULT 0,
     correct_first_attempts INTEGER DEFAULT 0,
     
-    -- Skill assessment
+    
     current_skill_level INTEGER DEFAULT 1 CHECK (current_skill_level BETWEEN 1 AND 10),
     skill_areas JSONB DEFAULT '{}', -- Skills breakdown by area
     
@@ -264,7 +234,7 @@ CREATE TABLE user_module_progress (
     post_assessment_score INTEGER, -- Score after completing module
     skill_improvement DECIMAL(5,2) DEFAULT 0.0,
     
-    -- AI-driven insights
+    
     learning_velocity DECIMAL(5,2), -- Concepts learned per hour
     difficulty_areas TEXT[], -- Topics user struggles with
     strength_areas TEXT[], -- Topics user excels at
@@ -793,18 +763,14 @@ SELECT
     u.email,
     usl.overall_level,
     usl.total_xp,
-    utp.completion_percentage,
-    utp.average_score,
+    (SELECT utp.completion_percentage FROM user_track_progress utp WHERE utp.user_id = u.id) as completion_percentage,
+    (SELECT utp.average_score FROM user_track_progress utp WHERE utp.user_id = u.id) as average_score,
     COUNT(ub.id) as badges_count,
     RANK() OVER (ORDER BY usl.overall_level DESC, usl.total_xp DESC) as rank
 FROM users u
 JOIN user_skill_levels usl ON u.id = usl.user_id
-LEFT JOIN user_track_progress utp ON u.id = utp.user_id 
-    AND utp.track_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
 LEFT JOIN user_badges ub ON u.id = ub.user_id
-    AND ub.badge_id IN (SELECT id FROM badges WHERE category = 'algorithms')
-GROUP BY u.id, u.name, u.email, usl.overall_level, usl.total_xp, 
-         utp.completion_percentage, utp.average_score
+GROUP BY u.id, u.name, u.email, usl.overall_level, usl.total_xp
 ORDER BY rank;
 
 -- ====================================

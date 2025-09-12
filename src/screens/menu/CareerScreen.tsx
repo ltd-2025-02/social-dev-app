@@ -170,6 +170,17 @@ export default function CareerScreen({ navigation }: CareerScreenProps) {
               <Text style={styles.actionTitle}>Mentoria</Text>
               <Text style={styles.actionSubtitle}>Encontrar mentor</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('Hire')}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: '#ccfbf1' }]}>
+                <Ionicons name="briefcase-outline" size={24} color="#14b8a6" />
+              </View>
+              <Text style={styles.actionTitle}>Contrate</Text>
+              <Text style={styles.actionSubtitle}>Ofereça serviços</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
