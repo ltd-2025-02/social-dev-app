@@ -36,6 +36,28 @@ export default function AppNavigator() {
       border: colors.border,
       notification: colors.error,
     },
+    fonts: {
+      regular: {
+        fontFamily: 'System',
+        fontWeight: 'normal',
+      },
+      medium: {
+        fontFamily: 'System',
+        fontWeight: '500',
+      },
+      light: {
+        fontFamily: 'System',
+        fontWeight: '300',
+      },
+      thin: {
+        fontFamily: 'System',
+        fontWeight: '100',
+      },
+      heavy: {
+        fontFamily: 'System',
+        fontWeight: '700',
+      },
+    },
   };
 
   useEffect(() => {
