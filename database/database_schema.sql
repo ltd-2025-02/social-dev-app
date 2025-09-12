@@ -1,4 +1,17 @@
 
+-- =============================================
+-- SocialDev - Career Learning System Database Schema
+-- PostgreSQL 12+ Required
+-- Includes: Career Tracks, Skills, Assessments, Analytics
+-- =============================================
+
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+-- Alternative UUID functions for older PostgreSQL versions
+-- If gen_random_uuid() fails, replace with uuid_generate_v4()
+
 CREATE TABLE learning_tracks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
@@ -723,7 +736,7 @@ VALUES
 INSERT INTO learning_lessons (id, module_id, title, description, duration_minutes, difficulty, order_index, theory_content, key_points, complexity_topics, tags)
 VALUES 
     ('l1-big-o-intro', 'm1-complexity', 'Introdução à Análise de Complexidade', 'O que é complexidade computacional e por que importa', 60, 'intermediate', 1, 'A análise de complexidade é fundamental para escrever código eficiente...', '["Big O descreve como o algoritmo escala", "O(1) é ideal, O(n²) deve ser evitado"]', '["O(1)", "O(n)", "O(n²)"]', '["complexity", "big-o", "analysis"]'),
-    ('l2-big-o-notation', 'm1-complexity', 'Notação Big O Completa', 'Todos os tipos de complexidade: O(1), O(log n), O(n), O(n log n), O(n²), O(n³), O(2^n), O(n!)', 90, 'intermediate', 2, 'A notação Big O classifica algoritmos baseado em como seu tempo de execução cresce...', '["O(1) e O(log n) são excelentes", "O(2^n) e O(n!) são impraticáveis"]', '["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)", "O(2^n)", "O(n!)"]', '["complexity", "big-o", "analysis", "time-complexity"]);
+    ('l2-big-o-notation', 'm1-complexity', 'Notação Big O Completa', 'Todos os tipos de complexidade: O(1), O(log n), O(n), O(n log n), O(n²), O(n³), O(2^n), O(n!)', 90, 'intermediate', 2, 'A notação Big O classifica algoritmos baseado em como seu tempo de execução cresce...', '["O(1) e O(log n) são excelentes", "O(2^n) e O(n!) são impraticáveis"]', '["O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)", "O(2^n)", "O(n!)"]', '["complexity", "big-o", "analysis", "time-complexity"]');
 
 -- ====================================
 -- VIEWS FOR COMMON QUERIES
@@ -777,25 +790,27 @@ ORDER BY rank;
 -- PERFORMANCE MONITORING
 -- ====================================
 
--- Create materialized view for analytics (refreshed periodically)
-CREATE MATERIALIZED VIEW learning_analytics AS
+-- Create view for analytics (simplified for compatibility)
+CREATE VIEW learning_analytics AS
 SELECT 
-    DATE_TRUNC('day', ls.session_start) as date,
+    CAST(ls.session_start AS DATE) as analytics_date,
     COUNT(DISTINCT ls.user_id) as active_users,
-    SUM(ls.duration_minutes) as total_learning_time,
-    AVG(ls.duration_minutes) as avg_session_duration,
+    COALESCE(SUM(ls.duration_minutes), 0) as total_learning_time,
+    COALESCE(AVG(ls.duration_minutes), 0) as avg_session_duration,
     COUNT(DISTINCT es.id) as exercises_submitted,
-    AVG(es.final_score) as avg_exercise_score,
+    COALESCE(AVG(es.final_score), 0) as avg_exercise_score,
     COUNT(DISTINCT ub.id) as badges_earned
 FROM learning_sessions ls
-LEFT JOIN exercise_submissions es ON DATE_TRUNC('day', es.submitted_at) = DATE_TRUNC('day', ls.session_start)
-LEFT JOIN user_badges ub ON DATE_TRUNC('day', ub.earned_at) = DATE_TRUNC('day', ls.session_start)
-WHERE ls.session_start >= CURRENT_DATE - INTERVAL '90 days'
-GROUP BY DATE_TRUNC('day', ls.session_start)
-ORDER BY date DESC;
+LEFT JOIN exercise_submissions es ON CAST(es.submitted_at AS DATE) = CAST(ls.session_start AS DATE)
+LEFT JOIN user_badges ub ON CAST(ub.earned_at AS DATE) = CAST(ls.session_start AS DATE)
+WHERE ls.session_start >= CURRENT_DATE - INTERVAL '90 day'
+GROUP BY CAST(ls.session_start AS DATE)
+ORDER BY analytics_date DESC;
 
--- Index for the materialized view
-CREATE UNIQUE INDEX idx_learning_analytics_date ON learning_analytics(date);
+-- Note: Indexes cannot be created on regular views
+-- If this needs to be a materialized view for performance, 
+-- change CREATE VIEW to CREATE MATERIALIZED VIEW and uncomment the index below
+-- CREATE UNIQUE INDEX idx_learning_analytics_date ON learning_analytics(analytics_date);
 
 -- Refresh the materialized view daily
 -- (This would typically be set up as a scheduled job)
