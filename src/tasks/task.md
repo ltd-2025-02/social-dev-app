@@ -15,10 +15,4 @@ O modo dark, o tema dark tem que ser igual ao tema Dracula, com letras nas cores
 
 ---
 
-No arquivo database/career-schema.sql, houve erro ao executar:
-
-ERROR:  42601: syntax error at or near "current_role"
-LINE 169:   current_role VARCHAR(100),
-            ^
-            
-Deve, verificar se esta tudo ok com o script
+Processo de criar o APK nao esta funcionando

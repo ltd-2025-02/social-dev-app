@@ -141,7 +141,7 @@ class SavedResumeService {
         objective: resumeData.objective || null,
         experience: resumeData.experience || [],
         education: resumeData.education || [],
-        technical_skills: Array.isArray(resumeData.skills) ? 
+        technical_skills: (resumeData.skills && Array.isArray(resumeData.skills)) ? 
           resumeData.skills.map(skill => typeof skill === 'string' ? { 
             name: skill, 
             level: 'intermediate' as const, 
