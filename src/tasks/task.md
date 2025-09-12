@@ -10,6 +10,13 @@ Nessa parte, tem a imagem em cima e uma descricao abaixo explicando do que se tr
 Acima de Vagas em destaque: "visite nosso site"
 
 ---
+continue
+Em carreira, Implemente as funcionalidades na parte de Trilhas de Carreira com uma interface completa e avancada salvando as informacoes no banco de dados.
+Deve ser bem completa e avancada.
+Deve oferecer insights profissionais e completo, mostrar graficos, exemplos.
+Coloque conteudos de alta qualidade.
+
+---
 
 Em carreira, Adcione um novo botao de consultoria em Acoes rapidas. Deve contactar um profissional da area para oferecer seus servicos.
 
