@@ -19,6 +19,9 @@ import { ResumeService } from '../../services/resumeService';
 import { ResumeData, ConversationState, ResumeStep, Education, Experience, Project, Language, Certificate } from '../../types/resume';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { GeminiService } from '../../services/geminiService';
+import { resumeDraftService } from '../../services/resumeDraft.service';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 interface Message {
   id: string;
@@ -35,6 +38,8 @@ interface ResumeBuilderScreenProps {
 }
 
 export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenProps) {
+  const { user } = useSelector((state: RootState) => state.auth);
+  
   const generateUniqueId = () => {
     return `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
@@ -55,13 +60,88 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
       skills: [],
     },
   });
+  const [isDraftLoaded, setIsDraftLoaded] = useState(false);
   
   const flatListRef = useRef<FlatList>(null);
   const typingAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    initializeChat();
+    loadDraftOrInitializeChat();
   }, []);
+
+  // Auto-save draft whenever conversation state or messages change
+  useEffect(() => {
+    if (isDraftLoaded && user?.id && messages.length > 0) {
+      saveDraftDebounced();
+    }
+  }, [conversationState, messages, isDraftLoaded, user?.id]);
+
+  // Handle navigation back with draft check
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e: any) => {
+      if (!isDraftLoaded || !user?.id) return;
+      
+      const progress = resumeDraftService.calculateProgress(conversationState);
+      if (progress > 0 && progress < 100) {
+        // Save draft before leaving
+        saveDraft();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, conversationState, messages, isDraftLoaded, user?.id]);
+
+  const loadDraftOrInitializeChat = async () => {
+    if (!user?.id) {
+      await initializeChat();
+      return;
+    }
+
+    try {
+      const draft = await resumeDraftService.loadDraft(user.id);
+      
+      if (draft && draft.progress < 100) {
+        // Load existing draft
+        setConversationState(draft.conversationState);
+        setMessages(draft.messages as Message[]);
+        setIsDraftLoaded(true);
+        
+        Alert.alert(
+          '📄 Rascunho Encontrado',
+          `Você tem um currículo em andamento (${draft.progress}% concluído). Vamos continuar de onde parou!`,
+          [{ text: 'Continuar', style: 'default' }]
+        );
+      } else {
+        // No draft or completed, start fresh
+        await initializeChat();
+      }
+    } catch (error) {
+      console.error('Erro ao carregar rascunho:', error);
+      await initializeChat();
+    }
+  };
+
+  const saveDraft = async () => {
+    if (!user?.id) return;
+
+    try {
+      const progress = resumeDraftService.calculateProgress(conversationState);
+      await resumeDraftService.saveDraft(user.id, conversationState, messages, progress);
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error);
+    }
+  };
+
+  // Debounced save to avoid too frequent saves
+  const saveDraftDebounced = (() => {
+    let timeoutId: NodeJS.Timeout;
+    return () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        saveDraft();
+      }, 2000); // Save after 2 seconds of inactivity
+    };
+  })();
 
   const initializeChat = async () => {
     setIsLoading(true);
@@ -79,6 +159,7 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
       
       setMessages([aiMessage]);
       setConversationState(prev => ({ ...prev, currentStep: 'personal', currentSubStep: 'fullName' }));
+      setIsDraftLoaded(true);
     } catch (error) {
       console.error('Erro ao inicializar chat:', error);
     } finally {
@@ -127,12 +208,70 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
     setMessages(prev => [...prev, previewMessage]);
   };
 
+  const finishResume = async () => {
+    try {
+      // Mark resume as complete (100%)
+      if (user?.id) {
+        await resumeDraftService.saveDraft(user.id, conversationState, messages, 100);
+        
+        // Remove the draft since it's completed
+        await resumeDraftService.deleteDraft(user.id);
+      }
+
+      const finalMessage: Message = {
+        id: generateUniqueId(),
+        text: `🎉 **Parabéns! Seu currículo foi finalizado com sucesso!**
+
+✅ **Seu currículo está salvo e pode ser acessado a qualquer momento na seção Carreira.**
+
+📄 **Próximos passos:**
+- Faça o download em PDF, DOC ou DOCX
+- Use para candidaturas em vagas
+- Mantenha sempre atualizado
+
+**Obrigado por usar o Construtor de Currículos do SocialDev!** 🚀`,
+        isUser: false,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, finalMessage]);
+
+      // Show completion alert
+      setTimeout(() => {
+        Alert.alert(
+          '🎉 Currículo Finalizado!',
+          'Seu currículo foi concluído com sucesso! Você pode acessá-lo na seção Carreira a qualquer momento.',
+          [
+            {
+              text: 'Ver Carreira',
+              onPress: () => navigation.navigate('Career')
+            },
+            {
+              text: 'Voltar ao Início',
+              onPress: () => navigation.navigate('Home')
+            }
+          ]
+        );
+      }, 1000);
+
+    } catch (error) {
+      console.error('Erro ao finalizar currículo:', error);
+      Alert.alert('Erro', 'Não foi possível finalizar o currículo. Tente novamente.');
+    }
+  };
+
   const processUserInput = async (userInput: string) => {
     const trimmedInput = userInput.trim().toLowerCase();
     
     // Check for preview command
     if (trimmedInput === 'preview' || trimmedInput === 'visualizar') {
       showPreview();
+      return;
+    }
+
+    // Check for finish command
+    if (trimmedInput === 'finalizar' || trimmedInput === 'finish' || trimmedInput === 'done') {
+      await finishResume();
       return;
     }
 

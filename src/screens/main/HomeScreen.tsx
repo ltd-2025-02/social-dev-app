@@ -18,6 +18,7 @@ import { fetchUserStats, fetchGlobalStats, fetchRecentActivity } from '../../sto
 import { useNotifications } from '../../hooks/useNotifications';
 import NotificationBadge from '../../components/NotificationBadge';
 import { useTheme } from '../../contexts/ThemeContext';
+import { resumeDraftService } from '../../services/resumeDraft.service';
 
 const { width } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ export default function HomeScreen({ navigation }: any) {
   const { colors } = useTheme();
   
   const [refreshing, setRefreshing] = useState(false);
+  const [resumeDraftStats, setResumeDraftStats] = useState<any>(null);
 
   // Configurar notificações em tempo real
   useNotifications(user?.id);
@@ -41,6 +43,10 @@ export default function HomeScreen({ navigation }: any) {
         dispatch(fetchGlobalStats()),
         dispatch(fetchRecentActivity(user.id))
       ]);
+      
+      // Check for resume draft
+      const draftStats = await resumeDraftService.getDraftStats(user.id);
+      setResumeDraftStats(draftStats);
     }
   };
 
@@ -127,6 +133,47 @@ export default function HomeScreen({ navigation }: any) {
           </View>
         </View>
 
+        {/* Resume Draft Banner */}
+        {resumeDraftStats?.hasActiveDraft && (
+          <View style={styles.section}>
+            <TouchableOpacity
+              style={[styles.resumeDraftBanner, { backgroundColor: '#f59e0b15' }]}
+              onPress={() => navigation.navigate('ResumeBuilder')}
+              activeOpacity={0.8}
+            >
+              <View style={styles.resumeDraftIcon}>
+                <Ionicons name="document-text" size={28} color="#f59e0b" />
+                <View style={styles.draftBadge}>
+                  <Text style={styles.draftBadgeText}>{resumeDraftStats.progress}%</Text>
+                </View>
+              </View>
+              
+              <View style={styles.resumeDraftContent}>
+                <Text style={[styles.resumeDraftTitle, { color: colors.text }]}>
+                  📄 Currículo em Andamento
+                </Text>
+                <Text style={[styles.resumeDraftSubtitle, { color: colors.textMuted }]}>
+                  {resumeDraftStats.currentStep} • {resumeDraftStats.timeElapsed}
+                </Text>
+                <Text style={[styles.resumeDraftAction, { color: '#f59e0b' }]}>
+                  Toque para continuar →
+                </Text>
+              </View>
+              
+              <View style={styles.resumeDraftProgress}>
+                <View style={[styles.progressBarBg, { backgroundColor: colors.border }]}>
+                  <View 
+                    style={[
+                      styles.progressBarFill, 
+                      { width: `${resumeDraftStats.progress}%`, backgroundColor: '#f59e0b' }
+                    ]} 
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* User Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={[styles.statsCard, { backgroundColor: colors.surface }]}>
@@ -206,7 +253,7 @@ export default function HomeScreen({ navigation }: any) {
                 onPress={action.onPress}
               >
                 <View style={[styles.actionIcon, { backgroundColor: action.color }]}>
-                  <Ionicons name={action.icon} size={24} color="white" />
+                  <Ionicons name={action.icon as any} size={24} color="white" />
                 </View>
                 <Text style={styles.actionTitle}>{action.title}</Text>
                 <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
@@ -679,5 +726,72 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#3b82f6',
     fontWeight: '600',
+  },
+  // Resume Draft Banner Styles
+  resumeDraftBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  resumeDraftIcon: {
+    position: 'relative',
+    marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  draftBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    backgroundColor: '#f59e0b',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  draftBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  resumeDraftContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  resumeDraftTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  resumeDraftSubtitle: {
+    fontSize: 13,
+    marginBottom: 6,
+  },
+  resumeDraftAction: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  resumeDraftProgress: {
+    width: 60,
+    alignItems: 'center',
+  },
+  progressBarBg: {
+    width: '100%',
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
   },
 });

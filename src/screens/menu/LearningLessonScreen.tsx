@@ -5,13 +5,10 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getLessonById, getTrailById } from '../../data/learningTrails';
-
-const { width } = Dimensions.get('window');
 
 export default function LearningLessonScreen({ navigation, route }: any) {
   const { trailId, moduleId, lessonId } = route.params;
@@ -149,7 +146,7 @@ export default function LearningLessonScreen({ navigation, route }: any) {
             </Text>
             <Ionicons name="chevron-forward" size={20} color={currentExercise === lesson.exercises.length - 1 ? '#9ca3af' : '#3b82f6'} />
           </TouchableOpacity>
-        </div>
+        </View>
       </View>
     );
   };

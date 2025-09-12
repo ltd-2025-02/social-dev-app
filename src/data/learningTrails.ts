@@ -244,6 +244,90 @@ console.log(\`IMC: \${imc.toFixed(2)}\`);`,
                 explanation: 'Este exercício demonstra operações aritméticas, uso de variáveis e formatação de números com toFixed().'
               }
             ]
+          },
+          {
+            id: 'js-operators',
+            title: 'Operadores e Expressões',
+            description: 'Operadores aritméticos, lógicos e de comparação',
+            duration: '40 min',
+            difficulty: 'beginner',
+            content: {
+              theory: `Operadores são símbolos que executam operações específicas em valores (operandos).
+
+## Operadores Aritméticos:
+- \`+\` : Adição
+- \`-\` : Subtração  
+- \`*\` : Multiplicação
+- \`/\` : Divisão
+- \`%\` : Módulo (resto da divisão)
+- \`**\` : Exponenciação
+
+## Operadores de Atribuição:
+- \`=\` : Atribuição simples
+- \`+=\` : Soma e atribui
+- \`-=\` : Subtrai e atribui
+- \`*=\` : Multiplica e atribui
+- \`/=\` : Divide e atribui
+
+## Operadores de Incremento/Decremento:
+- \`++\` : Incrementa em 1
+- \`--\` : Decrementa em 1`,
+              codeExamples: [
+                {
+                  title: 'Operadores em ação',
+                  code: `let a = 10;
+let b = 3;
+
+// Aritméticos
+console.log(a + b);  // 13
+console.log(a - b);  // 7
+console.log(a * b);  // 30
+console.log(a / b);  // 3.333...
+console.log(a % b);  // 1
+console.log(a ** b); // 1000
+
+// Atribuição
+let x = 5;
+x += 3; // x = x + 3 = 8
+x *= 2; // x = x * 2 = 16
+console.log(x); // 16
+
+// Incremento/Decremento
+let contador = 0;
+contador++; // 1
+++contador; // 2
+console.log(contador); // 2`,
+                  explanation: 'Operadores são fundamentais para manipular dados e criar lógicas complexas.'
+                }
+              ],
+              keyPoints: [
+                'Operadores têm precedência (ordem de execução)',
+                'Use parênteses para controlar a ordem',
+                '++ antes incrementa primeiro, depois incrementa',
+                'Módulo (%) é útil para verificar números pares/ímpares',
+                'Operadores de atribuição são mais eficientes'
+              ]
+            },
+            exercises: [
+              {
+                id: 'js-ex-operators',
+                title: 'Calculadora de Desconto',
+                description: 'Crie um programa que calcule o preço final com desconto',
+                difficulty: 'easy',
+                code: `let preco = 100;
+let desconto = 15; // 15%
+
+// Calcule o preço final`,
+                expectedOutput: 'Preço final: R$ 85.00',
+                hint: 'Use: precoFinal = preco - (preco * desconto / 100)',
+                solution: `let preco = 100;
+let desconto = 15;
+
+let precoFinal = preco - (preco * desconto / 100);
+console.log(\`Preço final: R$ \${precoFinal.toFixed(2)}\`);`,
+                explanation: 'Este exercício demonstra uso de operadores aritméticos e formatação.'
+              }
+            ]
           }
         ]
       },
@@ -918,6 +1002,707 @@ server.listen(3000, () => {
         {
           title: 'Node.js Official Documentation',
           url: 'https://nodejs.org/docs/',
+          type: 'documentation'
+        }
+      ]
+    }
+  },
+
+  // TypeScript Trail
+  {
+    id: 'typescript',
+    name: 'TypeScript',
+    description: 'Aprenda TypeScript para escrever código JavaScript mais seguro e escalável com tipagem estática.',
+    color: '#3178c6',
+    icon: 'code-outline',
+    level: 'Intermediário → Avançado',
+    totalHours: 80,
+    modules: [
+      {
+        id: 'ts-fundamentals',
+        title: 'Fundamentos do TypeScript',
+        description: 'Tipos básicos, interfaces e configuração',
+        icon: 'shield-checkmark-outline',
+        estimatedHours: 25,
+        lessons: [
+          {
+            id: 'ts-intro',
+            title: 'Introdução ao TypeScript',
+            description: 'O que é TypeScript e por que usar',
+            duration: '45 min',
+            difficulty: 'intermediate',
+            content: {
+              theory: `TypeScript é um superset do JavaScript que adiciona tipagem estática opcional, desenvolvido pela Microsoft.
+
+## Por que TypeScript?
+
+1. **Detecção de Erros**: Encontra erros em tempo de compilação
+2. **Melhor IDE**: Autocompletar, refatoração e navegação
+3. **Manutenibilidade**: Código mais legível e documentado
+4. **Escalabilidade**: Ideal para projetos grandes
+
+## Características:
+- Compila para JavaScript puro
+- Tipagem estática opcional
+- Suporte a recursos ES6+
+- Compatível com bibliotecas JavaScript`,
+              codeExamples: [
+                {
+                  title: 'Tipos básicos',
+                  code: `// Tipos primitivos
+let nome: string = "João";
+let idade: number = 30;
+let ativo: boolean = true;
+
+// Arrays
+let numeros: number[] = [1, 2, 3];
+let frutas: Array<string> = ["maçã", "banana"];
+
+// Funções
+function somar(a: number, b: number): number {
+  return a + b;
+}`,
+                  explanation: 'TypeScript adiciona tipos aos seus dados, tornando o código mais previsível.'
+                }
+              ],
+              keyPoints: [
+                'TypeScript é JavaScript com tipos',
+                'Compilação encontra erros antes da execução',
+                'Melhora a experiência de desenvolvimento',
+                'Totalmente compatível com JavaScript existente'
+              ]
+            },
+            exercises: [
+              {
+                id: 'ts-ex-1',
+                title: 'Função Tipada',
+                description: 'Crie uma função que calcule a área de um retângulo com tipos',
+                difficulty: 'medium',
+                solution: `function calcularArea(largura: number, altura: number): number {
+  return largura * altura;
+}
+
+const area: number = calcularArea(10, 5);
+console.log(\`Área: \${area}\`);`,
+                explanation: 'Este exercício demonstra tipagem de parâmetros e retorno de função.'
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    documentation: {
+      overview: `TypeScript é um superset tipado do JavaScript que compila para JavaScript puro. Adiciona tipagem estática opcional ao JavaScript.`,
+      syntax: [
+        {
+          category: 'Tipos',
+          items: [
+            {
+              name: 'Type Annotation',
+              syntax: 'let variable: type = value;',
+              description: 'Adiciona tipo a uma variável',
+              example: 'let name: string = "TypeScript";'
+            }
+          ]
+        }
+      ],
+      bestPractices: [
+        'Use strict mode no tsconfig.json',
+        'Prefira interfaces a types para objetos',
+        'Use union types ao invés de any',
+        'Configure path mapping para imports limpos'
+      ],
+      commonPitfalls: [
+        'Usar any excessivamente',
+        'Não configurar strict mode',
+        'Ignorar erros com @ts-ignore',
+        'Não usar tipos genéricos quando apropriado'
+      ],
+      resources: [
+        {
+          title: 'TypeScript Handbook',
+          url: 'https://www.typescriptlang.org/docs/',
+          type: 'documentation'
+        }
+      ]
+    }
+  },
+
+  // Java Trail
+  {
+    id: 'java',
+    name: 'Java',
+    description: 'Domine Java, uma das linguagens mais utilizadas no mundo corporativo, do básico ao avançado.',
+    color: '#ed8b00',
+    icon: 'cafe-outline',
+    level: 'Básico → Avançado',
+    totalHours: 180,
+    modules: [
+      {
+        id: 'java-fundamentals',
+        title: 'Fundamentos do Java',
+        description: 'Sintaxe básica, OOP e estruturas de dados',
+        icon: 'library-outline',
+        estimatedHours: 45,
+        lessons: [
+          {
+            id: 'java-intro',
+            title: 'Introdução ao Java',
+            description: 'História, JVM e primeiro programa',
+            duration: '60 min',
+            difficulty: 'beginner',
+            content: {
+              theory: `Java é uma linguagem de programação orientada a objetos, desenvolvida pela Sun Microsystems (agora Oracle).
+
+## Por que Java?
+
+1. **Portabilidade**: "Write once, run anywhere" (WORA)
+2. **Robustez**: Gerenciamento automático de memória
+3. **Segurança**: Sandbox de segurança
+4. **Performance**: JIT compilation
+5. **Comunidade**: Vasta comunidade e bibliotecas
+
+## Características:
+- Orientada a objetos
+- Independente de plataforma (JVM)
+- Multithreading nativo
+- Garbage collection automático
+- Fortemente tipada`,
+              codeExamples: [
+                {
+                  title: 'Primeiro programa Java',
+                  code: `public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Olá, mundo!");
+        
+        // Variáveis
+        String nome = "Java";
+        int versao = 17;
+        
+        System.out.println("Linguagem: " + nome);
+        System.out.println("Versão: " + versao);
+    }
+}`,
+                  explanation: 'Todo programa Java precisa de uma classe com método main para execução.'
+                }
+              ],
+              keyPoints: [
+                'Java roda na JVM (Java Virtual Machine)',
+                'Tudo é objeto (exceto tipos primitivos)',
+                'Fortemente tipada e compilada',
+                'Gerenciamento automático de memória',
+                'Case-sensitive como JavaScript'
+              ]
+            },
+            exercises: [
+              {
+                id: 'java-ex-1',
+                title: 'Calculadora Simples',
+                description: 'Crie uma classe que faça operações matemáticas básicas',
+                difficulty: 'easy',
+                solution: `public class Calculadora {
+    public double somar(double a, double b) {
+        return a + b;
+    }
+    
+    public double subtrair(double a, double b) {
+        return a - b;
+    }
+    
+    public static void main(String[] args) {
+        Calculadora calc = new Calculadora();
+        System.out.println("5 + 3 = " + calc.somar(5, 3));
+        System.out.println("5 - 3 = " + calc.subtrair(5, 3));
+    }
+}`,
+                explanation: 'Este exercício demonstra criação de classe, métodos e instanciação.'
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    documentation: {
+      overview: `Java é uma linguagem de programação orientada a objetos, robusta, segura e independente de plataforma.`,
+      syntax: [
+        {
+          category: 'Classes e Objetos',
+          items: [
+            {
+              name: 'Class Declaration',
+              syntax: 'public class ClassName { }',
+              description: 'Declara uma classe pública',
+              example: 'public class MinhaClasse { }'
+            }
+          ]
+        }
+      ],
+      bestPractices: [
+        'Siga convenções de nomenclatura Java',
+        'Use encapsulamento (getters/setters)',
+        'Implemente equals() e hashCode() quando necessário',
+        'Use StringBuilder para concatenação de strings',
+        'Prefira composition over inheritance'
+      ],
+      commonPitfalls: [
+        'Comparar strings com == ao invés de equals()',
+        'Não fechar recursos (try-with-resources)',
+        'Memory leaks com listeners',
+        'Não tratar exceptions adequadamente',
+        'Usar raw types ao invés de generics'
+      ],
+      resources: [
+        {
+          title: 'Oracle Java Documentation',
+          url: 'https://docs.oracle.com/javase/',
+          type: 'documentation'
+        }
+      ]
+    }
+  },
+
+  // Go Trail
+  {
+    id: 'go',
+    name: 'Go',
+    description: 'Aprenda Go (Golang), a linguagem criada pelo Google para sistemas distribuídos e alta performance.',
+    color: '#00add8',
+    icon: 'flash-outline',
+    level: 'Intermediário → Avançado',
+    totalHours: 120,
+    modules: [
+      {
+        id: 'go-fundamentals',
+        title: 'Fundamentos do Go',
+        description: 'Sintaxe, goroutines e channels',
+        icon: 'rocket-outline',
+        estimatedHours: 35,
+        lessons: [
+          {
+            id: 'go-intro',
+            title: 'Introdução ao Go',
+            description: 'Filosofia, características e instalação',
+            duration: '50 min',
+            difficulty: 'intermediate',
+            content: {
+              theory: `Go é uma linguagem de programação open source desenvolvida pelo Google, focada em simplicidade e eficiência.
+
+## Por que Go?
+
+1. **Simplicidade**: Sintaxe limpa e minimalista
+2. **Performance**: Compilado para código nativo
+3. **Concorrência**: Goroutines e channels nativos
+4. **Produtividade**: Compilação rápida e deploy simples
+
+## Características:
+- Staticamente tipada
+- Garbage collection
+- Compilação cruzada
+- Reflection limitada
+- Sem herança de classes`,
+              codeExamples: [
+                {
+                  title: 'Hello World em Go',
+                  code: `package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Olá, mundo!")
+    
+    // Declaração de variáveis
+    var nome string = "Go"
+    idade := 14 // inferência de tipo
+    
+    fmt.Printf("Linguagem: %s, Idade: %d anos\\n", nome, idade)
+}`,
+                  explanation: 'Go usa packages, imports explícitos e := para declaração com inferência.'
+                }
+              ],
+              keyPoints: [
+                'Go é compilado para binário único',
+                'Goroutines tornam concorrência simples',
+                'Sem classes, usa structs e métodos',
+                'Error handling explícito',
+                'Formatação automática com gofmt'
+              ]
+            },
+            exercises: [
+              {
+                id: 'go-ex-1',
+                title: 'Servidor HTTP Simples',
+                description: 'Crie um servidor web básico que responda "Hello, Go!"',
+                difficulty: 'medium',
+                solution: `package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, "Hello, Go!")
+}
+
+func main() {
+    http.HandleFunc("/", helloHandler)
+    fmt.Println("Servidor rodando em http://localhost:8080")
+    http.ListenAndServe(":8080", nil)
+}`,
+                explanation: 'Go tem excelente suporte nativo para servidores HTTP.'
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    documentation: {
+      overview: `Go é uma linguagem de programação open source que torna fácil construir software simples, confiável e eficiente.`,
+      syntax: [
+        {
+          category: 'Funções',
+          items: [
+            {
+              name: 'Function Declaration',
+              syntax: 'func name(params) returnType { }',
+              description: 'Declara uma função',
+              example: 'func add(a, b int) int { return a + b }'
+            }
+          ]
+        }
+      ],
+      bestPractices: [
+        'Use gofmt para formatação consistente',
+        'Siga convenções de nomenclatura Go',
+        'Trate erros explicitamente',
+        'Use interfaces pequenas',
+        'Prefira composition over embedding'
+      ],
+      commonPitfalls: [
+        'Não tratar todos os erros',
+        'Usar goroutines sem sincronização',
+        'Não entender slices vs arrays',
+        'Não usar defer adequadamente',
+        'Criar vazamentos de goroutines'
+      ],
+      resources: [
+        {
+          title: 'Go Official Documentation',
+          url: 'https://golang.org/doc/',
+          type: 'documentation'
+        }
+      ]
+    }
+  },
+
+  // Rust Trail
+  {
+    id: 'rust',
+    name: 'Rust',
+    description: 'Domine Rust, a linguagem que combina performance de baixo nível com segurança de memória.',
+    color: '#ce422b',
+    icon: 'shield-outline',
+    level: 'Avançado',
+    totalHours: 150,
+    modules: [
+      {
+        id: 'rust-fundamentals',
+        title: 'Fundamentos do Rust',
+        description: 'Ownership, borrowing e lifetimes',
+        icon: 'construct-outline',
+        estimatedHours: 50,
+        lessons: [
+          {
+            id: 'rust-intro',
+            title: 'Introdução ao Rust',
+            description: 'Filosofia, ownership e primeiro programa',
+            duration: '60 min',
+            difficulty: 'advanced',
+            content: {
+              theory: `Rust é uma linguagem de programação de sistemas que combina performance com segurança de memória.
+
+## Por que Rust?
+
+1. **Segurança**: Zero-cost abstractions sem garbage collector
+2. **Performance**: Velocidade comparável a C/C++
+3. **Concorrência**: Concorrência segura por design
+4. **Confiabilidade**: Sistema de tipos previne bugs comuns
+
+## Conceitos Únicos:
+
+### Ownership
+Cada valor tem um único owner que gerencia sua memória.
+
+### Borrowing
+Referências que permitem usar valores sem tomar ownership.
+
+### Lifetimes
+Garantem que referências são válidas pelo tempo necessário.`,
+              codeExamples: [
+                {
+                  title: 'Hello World e Ownership',
+                  code: `fn main() {
+    println!("Olá, mundo!");
+    
+    // Ownership
+    let s1 = String::from("hello");
+    let s2 = s1; // s1 não pode mais ser usado
+    
+    println!("{}", s2);
+    
+    // Borrowing
+    let s3 = String::from("world");
+    let len = calculate_length(&s3);
+    println!("Comprimento de '{}': {}", s3, len);
+}
+
+fn calculate_length(s: &String) -> usize {
+    s.len()
+}`,
+                  explanation: 'Rust previne bugs de memória através do sistema de ownership.'
+                }
+              ],
+              keyPoints: [
+                'Ownership previne vazamentos de memória',
+                'Borrow checker garante segurança',
+                'Performance sem garbage collection',
+                'Pattern matching poderoso',
+                'Error handling com Result<T, E>'
+              ]
+            },
+            exercises: [
+              {
+                id: 'rust-ex-1',
+                title: 'Contador de Palavras',
+                description: 'Implemente uma função que conte palavras em uma string',
+                difficulty: 'hard',
+                solution: `fn main() {
+    let texto = "Rust é uma linguagem incrível";
+    let contador = contar_palavras(&texto);
+    println!("Número de palavras: {}", contador);
+}
+
+fn contar_palavras(s: &str) -> usize {
+    s.split_whitespace().count()
+}`,
+                explanation: 'Este exercício demonstra borrowing e métodos de iteradores.'
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    documentation: {
+      overview: `Rust é uma linguagem de programação de sistemas que roda incrivelmente rápido, previne segfaults e garante thread safety.`,
+      syntax: [
+        {
+          category: 'Ownership',
+          items: [
+            {
+              name: 'Borrowing',
+              syntax: 'let reference = &value;',
+              description: 'Cria uma referência imutável',
+              example: 'let s = String::from("hello"); let r = &s;'
+            }
+          ]
+        }
+      ],
+      bestPractices: [
+        'Use ownership para gerenciar recursos',
+        'Prefira &str a String quando possível',
+        'Use Result<T, E> para error handling',
+        'Aproveite pattern matching',
+        'Use iterators ao invés de loops quando apropriado'
+      ],
+      commonPitfalls: [
+        'Lutar contra o borrow checker',
+        'Usar clone() excessivamente',
+        'Não entender lifetimes',
+        'Unwrap() sem tratamento de erro',
+        'Não usar ownership corretamente'
+      ],
+      resources: [
+        {
+          title: 'The Rust Book',
+          url: 'https://doc.rust-lang.org/book/',
+          type: 'book'
+        }
+      ]
+    }
+  },
+
+  // Flutter/Dart Trail
+  {
+    id: 'flutter',
+    name: 'Flutter & Dart',
+    description: 'Construa aplicativos móveis multiplataforma com Flutter e a linguagem Dart.',
+    color: '#02569b',
+    icon: 'phone-portrait-outline',
+    level: 'Intermediário → Avançado',
+    totalHours: 140,
+    modules: [
+      {
+        id: 'flutter-fundamentals',
+        title: 'Fundamentos do Flutter',
+        description: 'Widgets, estado e layouts',
+        icon: 'grid-outline',
+        estimatedHours: 40,
+        lessons: [
+          {
+            id: 'flutter-intro',
+            title: 'Introdução ao Flutter',
+            description: 'Framework, Dart e primeiro app',
+            duration: '55 min',
+            difficulty: 'intermediate',
+            content: {
+              theory: `Flutter é um SDK de desenvolvimento de aplicativos móveis criado pelo Google que permite criar apps nativos para iOS e Android.
+
+## Por que Flutter?
+
+1. **Cross-platform**: Um código para iOS e Android
+2. **Performance**: Compilado para código nativo
+3. **Hot Reload**: Desenvolvimento rápido
+4. **Widgets**: Interface consistente e customizável
+
+## Dart Language:
+- Orientada a objetos
+- Tipagem opcional
+- Null safety
+- Async/await nativo
+- Compilada para ARM e JavaScript
+
+## Conceitos Fundamentais:
+- Everything is a Widget
+- Stateless vs Stateful
+- Build method
+- Widget tree`,
+              codeExamples: [
+                {
+                  title: 'Primeiro app Flutter',
+                  code: `import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MeuApp());
+}
+
+class MeuApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Meu Primeiro App',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Hello Flutter'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Olá, Flutter!'),
+              ElevatedButton(
+                onPressed: () {
+                  print('Botão pressionado!');
+                },
+                child: Text('Clique aqui'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}`,
+                  explanation: 'Flutter usa widgets para construir interfaces. Tudo é um widget!'
+                }
+              ],
+              keyPoints: [
+                'Everything is a Widget no Flutter',
+                'StatelessWidget para UI estática',
+                'StatefulWidget para UI dinâmica',
+                'Hot reload acelera desenvolvimento',
+                'Material Design e Cupertino built-in'
+              ]
+            },
+            exercises: [
+              {
+                id: 'flutter-ex-1',
+                title: 'Contador Interativo',
+                description: 'Crie um app que conte cliques com StatefulWidget',
+                difficulty: 'medium',
+                solution: `class ContadorApp extends StatefulWidget {
+  @override
+  _ContadorAppState createState() => _ContadorAppState();
+}
+
+class _ContadorAppState extends State<ContadorApp> {
+  int _contador = 0;
+  
+  void _incrementar() {
+    setState(() {
+      _contador++;
+    });
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Contador')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Você clicou:'),
+            Text('$_contador', style: Theme.of(context).textTheme.headline4),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementar,
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}`,
+                explanation: 'StatefulWidget permite mudanças de estado com setState().'
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    documentation: {
+      overview: `Flutter é o kit de ferramentas de UI do Google para criar aplicativos nativos compilados para mobile, web e desktop a partir de uma única base de código.`,
+      syntax: [
+        {
+          category: 'Widgets',
+          items: [
+            {
+              name: 'StatelessWidget',
+              syntax: 'class MyWidget extends StatelessWidget { Widget build(BuildContext context) { return Container(); } }',
+              description: 'Widget sem estado interno',
+              example: 'class MyText extends StatelessWidget { ... }'
+            }
+          ]
+        }
+      ],
+      bestPractices: [
+        'Use const constructors quando possível',
+        'Extraia widgets complexos em widgets menores',
+        'Use StatelessWidget sempre que possível',
+        'Implemente keys para performance',
+        'Use async/await para operações assíncronas'
+      ],
+      commonPitfalls: [
+        'Não usar const em widgets estáticos',
+        'Árvore de widgets muito profunda',
+        'setState() em widgets desmontados',
+        'Não tratar estados de loading',
+        'Memory leaks com StreamSubscriptions'
+      ],
+      resources: [
+        {
+          title: 'Flutter Documentation',
+          url: 'https://flutter.dev/docs',
           type: 'documentation'
         }
       ]

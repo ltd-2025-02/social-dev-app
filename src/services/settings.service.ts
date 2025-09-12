@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '../lib/supabase';
 
 export interface UserSettings {
   // Profile Settings
@@ -114,33 +113,17 @@ class SettingsService {
     try {
       console.log('📋 Carregando configurações para o usuário:', userId);
       
-      // Primeiro, tentar carregar do AsyncStorage (cache local)
+      // Carregar do AsyncStorage (cache local)
       const localSettings = await this.loadLocalSettings();
       
-      // Depois, tentar carregar do Supabase
-      const { data: remoteSettings, error } = await supabase
-        .from('user_settings')
-        .select('settings')
-        .eq('user_id', userId)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') { // PGRST116 = No rows found
-        console.error('Erro ao carregar configurações remotas:', error);
-        return localSettings || DEFAULT_SETTINGS;
-      }
-      
-      if (remoteSettings?.settings) {
-        // Mesclar configurações remotas com padrões para garantir que todas as chaves existam
-        const mergedSettings = this.mergeWithDefaults(remoteSettings.settings);
-        
-        // Salvar no cache local
-        await this.saveLocalSettings(mergedSettings);
-        
+      // Por enquanto, usar apenas armazenamento local até a tabela user_settings ser criada
+      if (localSettings) {
+        const mergedSettings = this.mergeWithDefaults(localSettings);
         return mergedSettings;
       }
       
-      // Se não há configurações remotas, usar locais ou padrões
-      return localSettings || DEFAULT_SETTINGS;
+      // Se não há configurações locais, usar padrões
+      return DEFAULT_SETTINGS;
       
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
@@ -155,22 +138,8 @@ class SettingsService {
     try {
       console.log('💾 Salvando configurações para o usuário:', userId);
       
-      // Salvar no AsyncStorage primeiro (rápido)
+      // Salvar no AsyncStorage (por enquanto, apenas local)
       await this.saveLocalSettings(settings);
-      
-      // Depois salvar no Supabase
-      const { error } = await supabase
-        .from('user_settings')
-        .upsert({
-          user_id: userId,
-          settings: settings,
-          updated_at: new Date().toISOString()
-        });
-      
-      if (error) {
-        console.error('Erro ao salvar configurações remotas:', error);
-        throw error;
-      }
       
       console.log('✅ Configurações salvas com sucesso');
       
