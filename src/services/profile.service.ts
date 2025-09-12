@@ -180,7 +180,7 @@ class ProfileService {
 
       return {
         ...profile,
-        skills
+        skills: skills || [] // Ensure skills is always an array
       };
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -290,7 +290,7 @@ class ProfileService {
 
       if (error) throw error;
 
-      if (!skills) return [];
+      if (!skills || !Array.isArray(skills)) return [];
 
       // Get endorsements for each skill
       const skillsWithEndorsements = await Promise.all(
@@ -306,7 +306,8 @@ class ProfileService {
       return skillsWithEndorsements;
     } catch (error) {
       console.error('Error fetching profile skills:', error);
-      throw error;
+      // Return empty array instead of throwing error to prevent app crashes
+      return [];
     }
   }
 
