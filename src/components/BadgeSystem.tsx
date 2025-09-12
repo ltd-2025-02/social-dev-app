@@ -163,7 +163,15 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
       >
         <View style={[styles.badgeIcon, !isEarned && styles.lockedIcon]}>
           {isEarned ? (
-            <Text style={styles.badgeEmoji}>{badge.icon}</Text>
+            badge.image_path ? (
+              <Image 
+                source={{ uri: `../../../assets/badges/${badge.image_path}` }}
+                style={styles.badgeImage}
+                defaultSource={require('../../../assets/badges/default_badge.png')}
+              />
+            ) : (
+              <Text style={styles.badgeEmoji}>{badge.icon}</Text>
+            )
           ) : (
             <Ionicons name="lock-closed" size={24} color="#666" />
           )}

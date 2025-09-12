@@ -36,10 +36,13 @@ export interface Badge {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon?: string; // Legacy emoji support
+  image_path?: string; // Path to custom badge image
   criteria: string;
   track_id?: string;
   module_id?: string;
+  color?: string;
+  rarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 }
 
 class ProgressService {

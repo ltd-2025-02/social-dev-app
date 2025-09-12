@@ -335,7 +335,8 @@ CREATE TABLE badges (
     description TEXT NOT NULL,
     
     -- Visual design
-    icon VARCHAR(100) NOT NULL, -- Icon name or SVG path
+    icon VARCHAR(100), -- Legacy icon name or emoji
+    image_path VARCHAR(255), -- Path to custom badge image in assets/badges/
     color VARCHAR(7) NOT NULL, -- Hex color for badge
     background_color VARCHAR(7), -- Background color if needed
     gradient_colors TEXT[], -- Array of colors for gradient
@@ -543,30 +544,30 @@ CREATE TABLE learning_sessions (
 -- ====================================
 
 -- Insert algorithm-specific badges
-INSERT INTO badges (name, description, icon, color, gradient_colors, rarity, badge_type, category, unlock_criteria, points_reward) VALUES
+INSERT INTO badges (name, description, icon, image_path, color, gradient_colors, rarity, badge_type, category, unlock_criteria, points_reward) VALUES
 
 -- Completion badges
-('Big O Novice', 'Completed the Big O Notation module', 'analytics', '#3b82f6', '["#3b82f6", "#1d4ed8"]', 'common', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Análise de Complexidade e Big O", "min_score": 70}', 100),
+('Primeiro Passo', 'Complete sua primeira lição de algoritmos', 'star', 'badge_first_lesson.png', '#3b82f6', '["#3b82f6", "#1d4ed8"]', 'common', 'completion', 'algorithms', '{"type": "complete_first_lesson"}', 50),
 
-('Data Structure Explorer', 'Mastered fundamental data structures', 'library', '#10b981', '["#10b981", "#047857"]', 'uncommon', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Estruturas de Dados Fundamentais", "min_score": 75}', 150),
+('Mestre da Complexidade', 'Domine a análise de complexidade Big O', 'analytics', 'badge_big_o_master.png', '#3b82f6', '["#3b82f6", "#1d4ed8"]', 'common', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Análise de Complexidade e Big O", "min_score": 70}', 100),
 
-('Algorithm Architect', 'Completed advanced algorithmic techniques', 'construct', '#8b5cf6', '["#8b5cf6", "#6d28d9"]', 'rare', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Técnicas Avançadas de Algoritmos", "min_score": 80}', 200),
+('Explorador de Estruturas', 'Experimente todas as estruturas de dados interativas', 'library', 'badge_data_structure_explorer.png', '#10b981', '["#10b981", "#047857"]', 'uncommon', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Estruturas de Dados Fundamentais", "min_score": 75}', 150),
 
-('Complexity Master', 'Achieved mastery in the entire Algorithms track', 'trophy', '#f59e0b', '["#f59e0b", "#d97706"]', 'epic', 'completion', 'algorithms', '{"type": "complete_track", "track_name": "Algoritmos e Estruturas de Dados", "min_score": 85}', 500),
+('Mestre dos Algoritmos', 'Complete todo o módulo de técnicas avançadas', 'construct', 'badge_algorithm_master.png', '#8b5cf6', '["#8b5cf6", "#6d28d9"]', 'rare', 'completion', 'algorithms', '{"type": "complete_module", "module_name": "Técnicas Avançadas de Algoritmos", "min_score": 80}', 200),
+
+('Guru da Complexidade', 'Conquiste maestria em toda a trilha de Algoritmos', 'trophy', 'badge_complexity_guru.png', '#f59e0b', '["#f59e0b", "#d97706"]', 'epic', 'completion', 'algorithms', '{"type": "complete_track", "track_name": "Algoritmos e Estruturas de Dados", "min_score": 85}', 500),
 
 -- Performance badges
-('Speed Demon', 'Solved 10 exercises with optimal time complexity on first try', 'flash', '#ef4444', '["#ef4444", "#dc2626"]', 'rare', 'performance', 'algorithms', '{"type": "optimal_complexity", "exercise_count": 10, "first_attempt": true, "complexity_type": "time"}', 300),
+('Velocista do Código', 'Resolva um exercício em menos de 5 minutos', 'flash', 'badge_speed_coder.png', '#ef4444', '["#ef4444", "#dc2626"]', 'rare', 'performance', 'algorithms', '{"type": "speed_exercise", "max_time_minutes": 5}', 300),
 
-('Memory Efficient', 'Optimized space complexity in 15 different solutions', 'save', '#06b6d4', '["#06b6d4", "#0891b2"]', 'uncommon', 'performance', 'algorithms', '{"type": "optimal_complexity", "exercise_count": 15, "complexity_type": "space"}', 200),
+('Perfeccionista', 'Obtenha 100% de pontuação em 5 exercícios seguidos', 'checkmark-circle', 'badge_perfectionist.png', '#10b981', '["#10b981", "#059669"]', 'rare', 'performance', 'algorithms', '{"type": "perfect_streak", "exercise_count": 5, "score": 100}', 250),
 
-('Perfect Score', 'Achieved 100% on 5 consecutive exercise submissions', 'checkmark-circle', '#10b981', '["#10b981", "#059669"]', 'rare', 'performance', 'algorithms', '{"type": "perfect_streak", "exercise_count": 5, "score": 100}', 250),
+('Guru da Recursão', 'Resolva 10 problemas recursivos consecutivos', 'git-network', 'badge_recursion_guru.png', '#8b5cf6', '["#8b5cf6", "#7c3aed"]', 'rare', 'challenge', 'algorithms', '{"type": "topic_mastery", "topic": "recursion", "exercise_count": 10, "min_score": 80}', 300),
 
--- Streak badges
-('Consistent Learner', '7-day learning streak', 'calendar', '#8b5cf6', '["#8b5cf6", "#7c3aed"]', 'common', 'streak', 'general', '{"type": "daily_streak", "days": 7}', 100),
+-- Streak badges  
+('Maratonista', 'Estude por mais de 2 horas seguidas', 'time', 'badge_marathon_learner.png', '#f59e0b', '["#f59e0b", "#d97706"]', 'uncommon', 'streak', 'general', '{"type": "study_session", "min_hours": 2}', 200),
 
-('Dedicated Student', '30-day learning streak', 'school', '#f59e0b', '["#f59e0b", "#d97706"]', 'uncommon', 'streak', 'general', '{"type": "daily_streak", "days": 30}', 300),
-
-('Algorithm Addict', 'Solved exercises for 14 consecutive days', 'code-slash', '#ef4444', '["#ef4444", "#dc2626"]', 'rare', 'streak', 'algorithms', '{"type": "exercise_streak", "days": 14, "category": "algorithms"}', 400),
+('Especialista em Arrays', 'Complete todos os exercícios de arrays', 'grid', 'badge_array_expert.png', '#10b981', '["#10b981", "#047857"]', 'uncommon', 'completion', 'algorithms', '{"type": "topic_mastery", "topic": "arrays", "completion_rate": 100}', 250),
 
 -- Challenge badges
 ('Optimization Wizard', 'Improved algorithm complexity in 20 exercises', 'trending-up', '#10b981', '["#10b981", "#059669"]', 'uncommon', 'challenge', 'algorithms', '{"type": "optimization_count", "count": 20}', 250),
