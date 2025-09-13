@@ -41,6 +41,21 @@ export interface ThemeColors {
   inputBorder: string;
   inputText: string;
   placeholder: string;
+  
+  // Dracula Specific Colors
+  purple: string;      // #bd93f9
+  pink: string;        // #ff79c6
+  cyan: string;        // #8be9fd
+  green: string;       // #50fa7b
+  orange: string;      // #ffb86c
+  red: string;         // #ff5555
+  yellow: string;      // #f1fa8c
+  
+  // Additional UI
+  accent: string;
+  selection: string;
+  comment: string;
+  foreground: string;
 }
 
 const lightTheme: ThemeColors = {
@@ -74,47 +89,76 @@ const lightTheme: ThemeColors = {
   inputBorder: '#d1d5db',
   inputText: '#1f2937',
   placeholder: '#9ca3af',
+  
+  // Light theme equivalents
+  purple: '#8b5cf6',
+  pink: '#ec4899',
+  cyan: '#06b6d4',
+  green: '#10b981',
+  orange: '#f59e0b',
+  red: '#ef4444',
+  yellow: '#eab308',
+  
+  accent: '#667eea',
+  selection: '#e0e7ff',
+  comment: '#6b7280',
+  foreground: '#1f2937',
 };
 
 const darkTheme: ThemeColors = {
-  // Dracula-inspired backgrounds
-  background: '#282a36',
-  surface: '#44475a',
-  card: '#44475a',
+  // Dracula Official Color Palette
+  background: '#282a36',      // Background
+  surface: '#44475a',         // Current Line
+  card: '#373844',            // Darker card variant
   
-  // Dracula-inspired text colors
-  text: '#f8f8f2',
-  textSecondary: '#f8f8f2',
-  textMuted: '#6272a4',
+  // Dracula Text Colors
+  text: '#f8f8f2',           // Foreground
+  textSecondary: '#e6e6e6',   // Slightly dimmed foreground
+  textMuted: '#6272a4',       // Comment
   
-  // Dracula purple as primary
-  primary: '#bd93f9',
-  primaryText: '#282a36',
+  // Dracula Purple as Primary
+  primary: '#bd93f9',         // Purple
+  primaryText: '#282a36',     // Background for contrast
   
-  // Dracula status colors
-  success: '#50fa7b',
-  warning: '#f1fa8c',
-  error: '#ff5555',
-  info: '#8be9fd',
+  // Dracula Authentic Status Colors
+  success: '#50fa7b',         // Green
+  warning: '#ffb86c',         // Orange  
+  error: '#ff5555',           // Red
+  info: '#8be9fd',            // Cyan
   
-  // Dracula UI elements
-  border: '#6272a4',
-  shadow: '#000000',
-  overlay: 'rgba(40, 42, 54, 0.8)',
+  // Dracula UI Elements
+  border: '#6272a4',          // Comment color for borders
+  shadow: '#191a21',          // Darker shadow
+  overlay: 'rgba(40, 42, 54, 0.9)',
   
-  // Dracula header
+  // Dracula Header - Pure theme colors
   headerBackground: '#282a36',
   headerText: '#f8f8f2',
   
-  // Dracula button
+  // Dracula Button - Purple theme
   buttonBackground: '#bd93f9',
   buttonText: '#282a36',
   
-  // Dracula input
+  // Dracula Input
   inputBackground: '#44475a',
   inputBorder: '#6272a4',
   inputText: '#f8f8f2',
   placeholder: '#6272a4',
+  
+  // Official Dracula Color Palette
+  purple: '#bd93f9',          // Purple
+  pink: '#ff79c6',            // Pink
+  cyan: '#8be9fd',            // Cyan
+  green: '#50fa7b',           // Green
+  orange: '#ffb86c',          // Orange
+  red: '#ff5555',             // Red
+  yellow: '#f1fa8c',          // Yellow
+  
+  // Dracula Additional UI
+  accent: '#ff79c6',          // Pink as accent
+  selection: '#44475a',       // Current Line for selections
+  comment: '#6272a4',         // Comment
+  foreground: '#f8f8f2',      // Foreground
 };
 
 interface ThemeContextType {

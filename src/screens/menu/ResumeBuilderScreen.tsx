@@ -23,6 +23,8 @@ import { resumeDraftService } from '../../services/resumeDraft.service';
 import { savedResumeService } from '../../services/savedResume.service';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useThemedStyles } from '../../hooks/useThemedStyles';
 
 interface Message {
   id: string;
@@ -40,6 +42,8 @@ interface ResumeBuilderScreenProps {
 
 export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenProps) {
   const { user } = useSelector((state: RootState) => state.auth);
+  const { colors, isDark } = useTheme();
+  const themedStyles = useThemedStyles();
   
   const generateUniqueId = () => {
     return `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -241,12 +245,23 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
               try {
                 const title = resumeTitle?.trim() || defaultTitle;
                 
+                console.log('💾 Iniciando salvamento do currículo...');
+                console.log('User ID:', user.id);
+                console.log('Resume Data:', JSON.stringify(conversationState.resumeData, null, 2));
+                
                 // Salvar currículo completo no banco de dados
                 const savedResume = await savedResumeService.saveResume(
                   user.id, 
-                  conversationState.resumeData as any, 
+                  conversationState.resumeData as ResumeData, 
                   title
                 );
+
+                console.log('✅ Currículo salvo com sucesso:', savedResume);
+
+                // Tornar o currículo público para que possa ser visualizado no perfil
+                await savedResumeService.updateResume(savedResume.id, {
+                  is_public: true
+                });
 
                 // Mark resume as complete (100%) e remove draft
                 await resumeDraftService.saveDraft(user.id, conversationState, messages, 100);
@@ -257,6 +272,7 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
                   text: `🎉 **Parabéns! Seu currículo "${title}" foi salvo com sucesso!**
 
 ✅ **Seu currículo está salvo no banco de dados e pode ser acessado em "Meus Currículos".**
+🔗 **Seu currículo agora está visível no seu perfil para qualquer pessoa consultar.**
 
 📄 **Próximos passos:**
 - Acesse "Meus Currículos" para visualizar, editar ou baixar
@@ -275,21 +291,22 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
                 setTimeout(() => {
                   Alert.alert(
                     '🎉 Currículo Salvo!',
-                    `"${title}" foi salvo com sucesso! O que você gostaria de fazer agora?`,
+                    `"${title}" foi salvo com sucesso no banco de dados e está visível no seu perfil! O que você gostaria de fazer agora?`,
                     [
                       {
                         text: 'Ver Meus Currículos',
                         onPress: () => navigation.navigate('MyResumes')
                       },
                       {
-                        text: 'Exportar como HTML',
+                        text: 'Baixar como HTML',
                         onPress: async () => {
                           try {
-                            Alert.alert('Exportar Currículo', 'A geração de PDF ainda não está disponível. Seu currículo será exportado como um arquivo HTML que pode ser aberto no navegador.');
+                            console.log('📥 Iniciando download do currículo...');
                             await savedResumeService.downloadResume(savedResume, 'html');
+                            console.log('✅ Download concluído com sucesso!');
                           } catch (error) {
                             console.error('Erro no download:', error);
-                            Alert.alert('Erro de Exportação', 'Ocorreu um erro ao exportar seu currículo.');
+                            Alert.alert('Erro de Exportação', 'Ocorreu um erro ao exportar seu currículo. Você pode tentar novamente em "Meus Currículos".');
                           }
                         }
                       },
@@ -302,26 +319,38 @@ export default function ResumeBuilderScreen({ navigation }: ResumeBuilderScreenP
                 }, 1500);
 
               } catch (error) {
-                console.error('Erro ao salvar currículo:', error);
+                console.error('❌ Erro ao salvar currículo:', error);
+                
+                let errorMessage = 'Erro desconhecido';
+                if (error instanceof Error) {
+                  errorMessage = error.message;
+                }
+                
                 Alert.alert(
                   'Erro ao Salvar',
-                  `Não foi possível salvar o currículo no banco de dados. ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+                  `Não foi possível salvar o currículo no banco de dados.\n\nDetalhes: ${errorMessage}\n\nVerifique sua conexão com a internet e tente novamente.`,
                   [
                     {
                       text: 'Tentar Novamente',
                       onPress: async () => {
-                        // Retry the save operation
                         try {
+                          console.log('🔄 Tentando salvar novamente...');
                           const title = resumeTitle?.trim() || defaultTitle;
                           const savedResume = await savedResumeService.saveResume(
                             user.id, 
-                            conversationState.resumeData as any, 
+                            conversationState.resumeData as ResumeData, 
                             title
                           );
-                          Alert.alert('Sucesso!', 'Currículo salvo com sucesso!');
+                          
+                          // Tornar público
+                          await savedResumeService.updateResume(savedResume.id, {
+                            is_public: true
+                          });
+                          
+                          Alert.alert('✅ Sucesso!', 'Currículo salvo com sucesso no banco de dados e está visível no seu perfil!');
                           navigation.navigate('MyResumes');
                         } catch (retryError) {
-                          console.error('Retry failed:', retryError);
+                          console.error('❌ Falha na segunda tentativa:', retryError);
                           Alert.alert('Erro', 'Falha na segunda tentativa. Por favor, verifique sua conexão e tente mais tarde.');
                         }
                       }

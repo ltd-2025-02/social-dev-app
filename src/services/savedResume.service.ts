@@ -221,6 +221,38 @@ class SavedResumeService {
   }
 
   /**
+   * Busca currículos públicos de um usuário (visíveis para todos)
+   */
+  async getUserPublicResumes(userId: string): Promise<SavedResume[]> {
+    try {
+      console.log('🔗 Buscando currículos públicos do usuário...');
+
+      const { data, error } = await supabase
+        .from('user_resumes')
+        .select(`
+          *,
+          template:resume_templates(name, category, preview_image_url)
+        `)
+        .eq('user_id', userId)
+        .eq('is_public', true)
+        .eq('status', 'completed')
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Erro ao buscar currículos públicos:', error);
+        throw new Error(`Erro ao buscar currículos públicos: ${error.message}`);
+      }
+
+      console.log(`🔗 ${data?.length || 0} currículos públicos encontrados`);
+      return data || [];
+
+    } catch (error) {
+      console.error('Erro no SavedResumeService.getUserPublicResumes:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Busca um currículo específico por ID
    */
   async getResumeById(resumeId: string): Promise<SavedResume | null> {

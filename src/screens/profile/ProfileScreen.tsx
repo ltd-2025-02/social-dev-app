@@ -22,6 +22,8 @@ import { updateProfile, signOut } from '../../store/slices/authSlice';
 import { fetchProfile, fetchProfileStats, updateProfile as updateUserProfile, updateCurrentProfile } from '../../store/slices/profileSlice';
 import PersonaSelector from '../../components/PersonaSelector';
 import { PERSONAS, Persona, getPersonaById, getPersonaImage } from '../../utils/personas';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useProfileScreenStyles } from '../../hooks/useThemedStyles';
 
 const { width } = Dimensions.get('window');
 
@@ -34,6 +36,8 @@ export default function ProfileScreen({ navigation }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const { currentProfile, profileStats, loading, updating } = useSelector((state: RootState) => state.profile);
+  const { colors } = useTheme();
+  const styles = useProfileScreenStyles();
 
   const [editMode, setEditMode] = useState(false);
   const [showSkillModal, setShowSkillModal] = useState(false);
@@ -237,11 +241,11 @@ export default function ProfileScreen({ navigation }: any) {
 
   const getSkillColor = (level: string) => {
     switch (level) {
-      case 'Iniciante': return '#10b981';
-      case 'Intermediário': return '#3b82f6';
-      case 'Avançado': return '#f59e0b';
-      case 'Expert': return '#ef4444';
-      default: return '#6b7280';
+      case 'Iniciante': return colors.green;
+      case 'Intermediário': return colors.cyan;
+      case 'Avançado': return colors.orange;
+      case 'Expert': return colors.red;
+      default: return colors.textMuted;
     }
   };
 
@@ -306,7 +310,7 @@ export default function ProfileScreen({ navigation }: any) {
               style={styles.selectPersonaButton} 
               onPress={() => setShowPersonaSelector(true)}
             >
-              <Ionicons name="happy-outline" size={20} color="#10b981" />
+              <Ionicons name="happy-outline" size={20} color={colors.green} />
               <Text style={styles.selectPersonaText}>
                 {editedProfile.persona_id ? 'Alterar Persona' : 'Escolher Persona'}
               </Text>
@@ -372,7 +376,7 @@ export default function ProfileScreen({ navigation }: any) {
               <View style={styles.skillsHeader}>
                 <Text style={styles.inputLabel}>Habilidades</Text>
                 <TouchableOpacity onPress={() => setShowSkillModal(true)}>
-                  <Ionicons name="add-circle-outline" size={24} color="#3b82f6" />
+                  <Ionicons name="add-circle-outline" size={24} color={colors.primary} />
                 </TouchableOpacity>
               </View>
               <View style={styles.skillsList}>
@@ -460,7 +464,7 @@ export default function ProfileScreen({ navigation }: any) {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <LinearGradient
-          colors={['#3b82f6', '#8b5cf6']}
+          colors={[colors.primary, colors.pink]}
           style={styles.profileHeader}
         >
           <View style={styles.headerActions}>
@@ -506,7 +510,7 @@ export default function ProfileScreen({ navigation }: any) {
         <View style={styles.statsContainer}>
           {profileStatsData.map((stat, index) => (
             <View key={index} style={styles.statItem}>
-              <Ionicons name={stat.icon as any} size={24} color="#3b82f6" />
+              <Ionicons name={stat.icon as any} size={24} color={colors.primary} />
               <Text style={styles.statValue}>{stat.value}</Text>
               <Text style={styles.statLabel}>{stat.label}</Text>
             </View>
