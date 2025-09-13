@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActionSheetIOS,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useThemedStyles } from '../../hooks/useThemedStyles';
 import PersonaSelector from '../../components/PersonaSelector';
 import { PERSONAS, getPersonaById, getPersonaImage } from '../../utils/personas';
+import { enhancedProfileService } from '../../services/profileService.enhanced';
 import * as ImagePicker from 'expo-image-picker';
 
 interface EditProfileScreenProps {
@@ -127,6 +129,7 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
   const [courses, setCourses] = useState<Course[]>([]);
 
   // Estados da UI
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showPersonaSelector, setShowPersonaSelector] = useState(false);
   const [editingSection, setEditingSection] = useState<string | null>(null);
@@ -388,6 +391,17 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
       color: colors.textMuted,
       textAlign: 'center',
     },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.background,
+    },
+    loadingText: {
+      fontSize: 16,
+      color: colors.text,
+      marginTop: 12,
+    },
   });
 
   useEffect(() => {
@@ -395,16 +409,58 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
   }, []);
 
   const loadProfileData = async () => {
-    // Carregar dados do perfil do usuário
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+    
     try {
-      // Aqui você carregaria os dados do banco de dados
-      // Por enquanto, vamos usar dados mock
+      setLoading(true);
+      console.log('🔍 Carregando dados do perfil...');
+      const fullProfile = await enhancedProfileService.getFullProfile(user.id);
+      
+      if (fullProfile) {
+        // Atualizar dados básicos do perfil
+        setProfileData({
+          name: fullProfile.name || '',
+          email: fullProfile.email || '',
+          phone: fullProfile.phone || '',
+          occupation: fullProfile.occupation || '',
+          company: fullProfile.company || '',
+          location: fullProfile.location || '',
+          bio: fullProfile.bio || '',
+          website: fullProfile.website || '',
+          persona_id: fullProfile.persona_id || null,
+          avatar: fullProfile.avatar || null,
+        });
+        
+        // Atualizar dados das seções
+        setSocialLinks(fullProfile.socialLinks || []);
+        setExperiences(fullProfile.experiences || []);
+        setEducation(fullProfile.education || []);
+        setProjects(fullProfile.projects || []);
+        setSkills(fullProfile.skills || []);
+        setLanguages(fullProfile.languages || []);
+        setCertificates(fullProfile.certificates || []);
+        setCourses(fullProfile.courses || []);
+        
+        console.log('✅ Dados do perfil carregados com sucesso!');
+      }
     } catch (error) {
-      console.error('Error loading profile data:', error);
+      console.error('❌ Erro ao carregar dados do perfil:', error);
+      // Don't show alert for now, just log the error as it might be first time user
+      console.log('📝 Usuário pode não ter perfil salvo ainda, utilizando dados padrão');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSave = async () => {
+    if (!user?.id) {
+      Alert.alert('Erro', 'Usuário não identificado');
+      return;
+    }
+    
     try {
       setSaving(true);
       
@@ -414,9 +470,19 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
         return;
       }
 
-      // Salvar dados do perfil
+      console.log('💾 Salvando perfil completo...');
+      
+      // Fazer upload do avatar se necessário
+      let avatarUrl = profileData.avatar;
+      if (profileData.avatar && profileData.avatar.startsWith('file://')) {
+        console.log('📸 Fazendo upload do avatar...');
+        avatarUrl = await enhancedProfileService.uploadAvatar(user.id, profileData.avatar);
+      }
+      
+      // Preparar dados para salvar
       const profileToSave = {
         ...profileData,
+        avatar: avatarUrl,
         socialLinks,
         experiences,
         education,
@@ -427,17 +493,16 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
         courses,
       };
 
-      console.log('Saving profile:', profileToSave);
+      // Salvar no banco de dados
+      await enhancedProfileService.updateFullProfile(user.id, profileToSave);
       
-      // Aqui você salvaria no banco de dados
-      // await profileService.updateProfile(user.id, profileToSave);
-      
+      console.log('✅ Perfil salvo com sucesso!');
       Alert.alert('Sucesso', 'Perfil atualizado com sucesso!', [
         { text: 'OK', onPress: () => navigation.goBack() }
       ]);
       
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('❌ Erro ao salvar perfil:', error);
       Alert.alert('Erro', 'Não foi possível salvar o perfil');
     } finally {
       setSaving(false);
@@ -669,6 +734,30 @@ export default function EditProfileScreen({ navigation }: EditProfileScreenProps
     }
     return { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData.name || 'User')}&background=2563eb&color=fff` };
   };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.headerButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={[styles.headerButtonText, styles.cancelText]}>Cancelar</Text>
+          </TouchableOpacity>
+          
+          <Text style={styles.headerTitle}>Editar Perfil</Text>
+          
+          <View style={styles.headerButton} />
+        </View>
+        
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Carregando perfil...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
