@@ -420,7 +420,7 @@ class JobsService {
 
       return featuredJobs;
     } catch (error: any) {
-      console.error('TheirStack featured jobs failed:', error.message);
+      // console.error('TheirStack featured jobs failed:', error.message);
       
       // Handle specific error cases with alternative service
       if (error.message?.includes('THEIRSTACK_')) {

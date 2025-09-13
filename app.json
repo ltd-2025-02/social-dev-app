@@ -4,12 +4,14 @@
     "slug": "socialdev-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icone.png",
+    "icon": "./assets/screen-dev.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/screen-dev.png",
       "resizeMode": "cover",
-      "backgroundColor": "#1a202c"
+      "backgroundColor": "#1a202c",
+      "androidStatusBar": { "hidden": true },
+      "androidNavigationBar": { "hidden": true }
     },
     "assetBundlePatterns": [
       "**/*"
@@ -29,13 +31,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icone.png",
-        "backgroundColor": "#2563eb"
+        "foregroundImage": "./assets/screen-dev.png",
+        "backgroundColor": "#1a202c"
       },
       "splash": {
         "image": "./assets/screen-dev.png",
         "resizeMode": "cover",
-        "backgroundColor": "#1a202c"
+        "backgroundColor": "#1a202c",
+        "androidStatusBar": { "hidden": true },
+        "androidNavigationBar": { "hidden": true }
       },
       "package": "com.socialdev.app",
       "permissions": [
@@ -45,7 +49,8 @@
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "resizeMode": "cover"
     },
     "web": {
       "favicon": "./assets/favicon.png",

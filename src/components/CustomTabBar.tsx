@@ -87,23 +87,6 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
           onPress={() => setIsMenuOpen(!isMenuOpen)}
         />
       </View>
-      {/* Animated indicator */}
-      <Animated.View
-        style={[
-          styles.indicator,
-          {
-            transform: [{ translateX: indicatorAnim }],
-            width: tabWidth,
-          },
-        ]}
-      >
-        <LinearGradient
-          colors={['#667eea', '#764ba2']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.indicatorGradient}
-        />
-      </Animated.View>
 
       {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
@@ -151,7 +134,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
               focused={isFocused}
               iconName={getIconName(route.name, isFocused)}
             />
-            <Text style={[styles.label, isFocused && styles.labelActive]}>
+            <Text style={[styles.label, { color: isFocused ? 'black' : 'white' }]}>
               {getTabTitle(route.name)}
             </Text>
           </TouchableOpacity>
@@ -175,138 +158,12 @@ interface TabIconProps {
 }
 
 function TabIcon({ routeName, focused, iconName }: TabIconProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (focused) {
-      // Enhanced animation sequence with rotation and glow
-      Animated.parallel([
-        Animated.sequence([
-          Animated.spring(scaleAnim, {
-            toValue: 1.3,
-            tension: 400,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1.1,
-            tension: 400,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.spring(bounceAnim, {
-          toValue: 1,
-          tension: 300,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotateAnim, {
-          toValue: 1,
-          duration: 400,
-          easing: Easing.out(Easing.back(1.2)),
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 300,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.parallel([
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          tension: 300,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        Animated.spring(bounceAnim, {
-          toValue: 0,
-          tension: 300,
-          friction: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(rotateAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }
-  }, [focused]);
-
-  const rotateInterpolate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
   return (
-    <Animated.View
-      style={{
-        transform: [
-          { scale: scaleAnim },
-          { rotate: rotateInterpolate },
-        ],
-      }}
-    >
-      {/* Glow effect background */}
-      {focused && (
-        <Animated.View
-          style={[
-            styles.glowEffect,
-            {
-              opacity: glowAnim.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 0.3],
-              }),
-              transform: [
-                {
-                  scale: glowAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.8, 1.4],
-                  }),
-                },
-              ],
-            },
-          ]}
-        />
-      )}
-      
-      <Ionicons
-        name={iconName}
-        size={24}
-        color={focused ? '#667eea' : '#9ca3af'}
-      />
-      
-      {focused && (
-        <Animated.View
-          style={[
-            styles.activeDot,
-            {
-              opacity: bounceAnim,
-              transform: [
-                {
-                  scale: bounceAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.5, 1],
-                  }),
-                },
-              ],
-            },
-          ]}
-        />
-      )}
-    </Animated.View>
+    <Ionicons
+      name={iconName}
+      size={24}
+      color={focused ? 'black' : 'white'}
+    />
   );
 }
 
