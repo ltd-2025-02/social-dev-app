@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,6 +11,7 @@ import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import LoadingScreen from '../screens/LoadingScreen';
 import OnboardingContainer from '../screens/onboarding/OnboardingContainer';
+import SplashScreen from '../screens/SplashScreen';
 import { setOnboardingState, setOnboardingSeen } from '../store/slices/onboardingSlice';
 import { getCurrentUser } from '../store/slices/authSlice';
 import { supabase } from '../services/supabase';
@@ -24,6 +25,7 @@ export default function AppNavigator() {
   const { isAuthenticated, loading: authLoading } = useSelector((state: RootState) => state.auth);
   const { hasSeenOnboarding, loading: onboardingLoading } = useSelector((state: RootState) => state.onboarding);
   const { isDark, colors } = useTheme();
+  const [showSplash, setShowSplash] = useState(true);
 
   // Create custom Dracula theme for navigation
   const navigationTheme = {
@@ -61,6 +63,11 @@ export default function AppNavigator() {
   };
 
   useEffect(() => {
+    // Mostrar splash screen por 3 segundos
+    const splashTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000);
+
     const checkOnboardingStatus = async () => {
       try {
         const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
@@ -72,6 +79,8 @@ export default function AppNavigator() {
     };
 
     checkOnboardingStatus();
+
+    return () => clearTimeout(splashTimer);
   }, [dispatch]);
 
   useEffect(() => {
@@ -97,6 +106,11 @@ export default function AppNavigator() {
   const handleOnboardingComplete = () => {
     dispatch(setOnboardingSeen());
   };
+
+  // Mostrar splash screen primeiro
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   if (authLoading || onboardingLoading) {
     return <LoadingScreen />;
