@@ -25,6 +25,8 @@ import UserSearchScreen from '../screens/users/UserSearchScreen';
 import CareerScreen from '../screens/menu/CareerScreen';
 import LearningScreen from '../screens/menu/LearningScreen';
 import AIChatScreen from '../screens/menu/AIChatScreen';
+import AIAssistantInfoScreen from '../screens/menu/AIAssistantInfoScreen';
+import AIAssistantConfigScreen from '../screens/menu/AIAssistantConfigScreen';
 import SupportScreen from '../screens/menu/SupportScreen';
 import AboutScreen from '../screens/menu/AboutScreen';
 import TermsOfUseScreen from '../screens/menu/TermsOfUseScreen';
@@ -58,6 +60,7 @@ import PrivacySettings from '../screens/settings/PrivacySettings';
 import NotificationSettings from '../screens/settings/NotificationSettings';
 import AppSettings from '../screens/settings/AppSettings';
 import ContentSettings from '../screens/settings/ContentSettings';
+import AIAssistantPromptListScreen from '../screens/menu/AIAssistantPromptListScreen';
 
 // Components
 import CustomTabBar from '../components/CustomTabBar';
@@ -138,6 +141,24 @@ function MainTabs() {
   );
 }
 
+function SettingsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="ProfileSettings" component={ProfileSettings} />
+      <Stack.Screen name="PrivacySettings" component={PrivacySettings} />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettings} />
+      <Stack.Screen name="AppSettings" component={AppSettings} />
+      <Stack.Screen name="ContentSettings" component={ContentSettings} />
+    </Stack.Navigator>
+  );
+}
+
 export default function MainNavigator() {
   return (
     <Stack.Navigator
@@ -184,10 +205,10 @@ export default function MainNavigator() {
         }}
       />
       <Stack.Screen 
-        name="Settings" 
-        component={SettingsScreen} 
+        name="SettingsStack" 
+        component={SettingsStack} 
         options={{ 
-          title: 'Configurações',
+          headerShown: false,
           animation: 'slide_from_right',
         }}
       />
@@ -218,6 +239,30 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="AIChat" 
         component={AIChatScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="AIAssistantInfo" 
+        component={AIAssistantInfoScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="AIAssistantConfig" 
+        component={AIAssistantConfigScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="AIAssistantPromptList" 
+        component={AIAssistantPromptListScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',
@@ -392,47 +437,6 @@ export default function MainNavigator() {
         }}
       />
       
-      {/* Settings Screens */}
-      <Stack.Screen 
-        name="ProfileSettings" 
-        component={ProfileSettings} 
-        options={{ 
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
-      <Stack.Screen 
-        name="PrivacySettings" 
-        component={PrivacySettings} 
-        options={{ 
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
-      <Stack.Screen 
-        name="NotificationSettings" 
-        component={NotificationSettings} 
-        options={{ 
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
-      <Stack.Screen 
-        name="AppSettings" 
-        component={AppSettings} 
-        options={{ 
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
-      <Stack.Screen 
-        name="ContentSettings" 
-        component={ContentSettings} 
-        options={{ 
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
       <Stack.Screen 
         name="MetricsDashboard" 
         component={MetricsDashboard} 

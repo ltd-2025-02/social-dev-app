@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { GeminiService } from '../../services/geminiService';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 import { useTheme } from '../../contexts/ThemeContext';
 import UniversalHeader from '../../components/UniversalHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Message {
   id: string;
@@ -27,6 +28,20 @@ interface Message {
   hasCode?: boolean;
   parsedContent?: Array<{ type: 'text' | 'code'; content: string; language?: string }>;
 }
+
+interface AIConfig {
+  apiKey: string;
+  model: string;
+  temperature: number;
+  creativity: number;
+}
+
+const DEFAULT_AI_CONFIG: AIConfig = {
+  apiKey: '',
+  model: 'Gemini',
+  temperature: 0.7,
+  creativity: 0.5,
+};
 
 interface AIChatScreenProps {
   navigation: any;
@@ -53,8 +68,24 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AIConfig>(DEFAULT_AI_CONFIG);
   const flatListRef = useRef<FlatList>(null);
   const typingAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    loadAiConfig();
+  }, []);
+
+  const loadAiConfig = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@ai_assistant_config');
+      if (jsonValue != null) {
+        setAiConfig(JSON.parse(jsonValue));
+      }
+    } catch (e) {
+      console.error("Failed to load AI config from AsyncStorage", e);
+    }
+  };
 
   const startTypingAnimation = () => {
     setIsTyping(true);
@@ -100,7 +131,13 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
 
     try {
       // Call Gemini AI
-      const aiResponseText = await GeminiService.sendMessage(currentMessage);
+      const aiResponseText = await GeminiService.sendMessage(
+        currentMessage,
+        aiConfig.apiKey,
+        aiConfig.model,
+        aiConfig.temperature,
+        aiConfig.creativity
+      );
       
       // Parse the response for code blocks
       const parsedContent = GeminiService.extractCodeBlocks(aiResponseText);
@@ -151,7 +188,7 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
             colors={['#8b5cf6', '#3b82f6']}
             style={styles.avatarGradient}
           >
-            <Ionicons name="chatbot" size={16} color="#fff" />
+            <Ionicons name="sparkles" size={16} color="#fff" />
           </LinearGradient>
         </View>
       )}
@@ -192,7 +229,7 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
           colors={['#8b5cf6', '#3b82f6']}
           style={styles.avatarGradient}
         >
-          <Ionicons name="chatbot" size={16} color="#fff" />
+          <Ionicons name="sparkles" size={16} color="#fff" />
         </LinearGradient>
       </View>
       
@@ -233,7 +270,10 @@ export default function AIChatScreen({ navigation }: AIChatScreenProps) {
         title="IA Assistant" 
         showBackButton={true}
         rightActions={
-          <TouchableOpacity style={styles.moreButton}>
+          <TouchableOpacity 
+            style={styles.moreButton}
+            onPress={() => navigation.navigate('AIAssistantConfig')}
+          >
             <Ionicons name="ellipsis-vertical" size={20} color={colors.textMuted} />
           </TouchableOpacity>
         }

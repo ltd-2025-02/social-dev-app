@@ -16,11 +16,11 @@ interface GeminiRequest {
   }[];
 }
 
-const GEMINI_API_KEY = 'AIzaSyCRfarEDTrIlXNPdonkf-KNAU414KrGnEQ';
+const GEMINI_API_KEY = ''; // Will be provided by config or user
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const APP_CONTEXT = `
-Você é um assistente de IA especializado para desenvolvedores no app SocialDev, uma rede social focada em desenvolvimento de software e carreira tech. Você também é um consultor geral de carreira em TI.
+Você é um assistente de IA especializado para desenvolvedores no app SocialDev, uma rede social focada em desenvolvimento de software e carreira tech aqui no SocialDev. Você também é um consultor geral de carreira em TI.
 
 INFORMAÇÕES DO APP:
 - SocialDev: Rede social para desenvolvedores
@@ -90,9 +90,19 @@ Sempre que apropriado, mencione recursos disponíveis no app (trilhas, vagas, ne
 `;
 
 export class GeminiService {
-  static async sendMessage(userMessage: string): Promise<string> {
+  static async sendMessage(
+    userMessage: string,
+    apiKey: string,
+    model: string,
+    temperature: number,
+    creativity: number
+  ): Promise<string> {
     try {
-      const requestBody: GeminiRequest = {
+      if (model !== 'Gemini') {
+        throw new Error(`Modelo de IA '${model}' não suportado ainda.`);
+      }
+
+      const requestBody: any = {
         contents: [
           {
             parts: [
@@ -101,10 +111,21 @@ export class GeminiService {
               }
             ]
           }
-        ]
+        ],
+        generationConfig: {
+          temperature: temperature,
+          topK: 40,
+          topP: creativity,
+          maxOutputTokens: 1024,
+        },
       };
 
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      const usedApiKey = apiKey || GEMINI_API_KEY;
+      if (!usedApiKey) {
+        throw new Error("Chave de API não fornecida para o modelo Gemini.");
+      }
+
+      const response = await fetch(`${GEMINI_API_URL}?key=${usedApiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

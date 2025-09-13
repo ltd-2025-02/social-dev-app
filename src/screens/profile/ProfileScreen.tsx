@@ -146,7 +146,7 @@ export default function ProfileScreen({ navigation }: any) {
       title: 'Configurações',
       subtitle: 'Conta e privacidade',
       color: '#6b7280',
-      onPress: () => navigation.navigate('Settings'),
+      onPress: () => navigation.navigate('SettingsStack', { screen: 'Settings' }),
     },
   ];
 

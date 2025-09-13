@@ -160,11 +160,11 @@ export default function HamburgerMenu({ isVisible, onClose, navigation }: Hambur
       badge: 'Novo',
     },
     {
-      icon: 'chatbubble-ellipses-outline',
+      icon: 'sparkles-outline',
       title: 'IA Assistant',
       subtitle: 'Seu guia pessoal',
       color: '#8b5cf6',
-      route: 'AIChat',
+      route: 'AIAssistantInfo',
       gradient: ['#8b5cf6', '#3b82f6'],
     },
     {

@@ -135,7 +135,7 @@ export default function HomeScreen({ navigation }: any) {
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.settingsButton}
-              onPress={() => navigation.navigate('Settings')}
+              onPress={() => navigation.navigate('SettingsStack', { screen: 'Settings' })}
             >
               <Ionicons name="settings-outline" size={24} color={colors.headerText} />
             </TouchableOpacity>

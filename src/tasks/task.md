@@ -1,1 +1,2 @@
-No perfil, nao consigo editar as informacoes e nem salvar, mesma coisa em perfil, nao esta salvando nem a foto
+Houve erro no arquivo "database/enhanced_profile_schema.sql":
+ERROR:  42P01: relation "user_profiles" does not exist
