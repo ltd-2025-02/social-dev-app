@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -37,6 +37,50 @@ export default function NewsBanner({ navigation }: NewsBannerProps) {
     language: 'pt'
   });
   const [loading, setLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const banners = [
+    {
+      type: 'news',
+      image: require('../../assets/banner/banner2.jpg'),
+      title: featuredNews.title,
+      description: featuredNews.description,
+      source: featuredNews.source.name,
+      time: newsService.formatTimeAgo(featuredNews.publishedAt),
+      badgeText: 'NOVO',
+      badgeColor: '#ef4444',
+      actionText: 'Ler mais',
+      actionIcon: 'chevron-forward',
+      onPress: () => navigation.navigate('News'),
+    },
+    {
+      type: 'jobs',
+      image: require('../../assets/banner/banner1.jpg'),
+      title: 'Encontre as melhores oportunidades',
+      description: 'Acesse nosso site e descubra vagas exclusivas para desenvolvedores e profissionais de tech.',
+      source: 'SocialDev',
+      time: 'Portal de Vagas',
+      badgeText: 'SITE',
+      badgeColor: '#22c55e',
+      actionText: 'Visitar',
+      actionIcon: 'open-outline',
+      onPress: async () => {
+        try {
+          const url = 'https://socialdev.com.br/vagas';
+          const supported = await Linking.canOpenURL(url);
+          if (supported) {
+            await Linking.openURL(url);
+          } else {
+            Alert.alert('Erro', 'Não foi possível abrir o link');
+          }
+        } catch (error) {
+          console.error('Error opening jobs URL:', error);
+          Alert.alert('Erro', 'Não foi possível abrir o link');
+        }
+      },
+    },
+  ];
 
   useEffect(() => {
     loadFeaturedNews();
@@ -57,129 +101,79 @@ export default function NewsBanner({ navigation }: NewsBannerProps) {
     }
   };
 
-  const handleNewsPress = () => {
-    navigation.navigate('News');
+  const handleScroll = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(contentOffsetX / width);
+    setActiveIndex(newIndex);
   };
-
-  const handleJobsPress = async () => {
-    try {
-      const url = 'https://socialdev.com.br/vagas'; // URL do site de vagas
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert('Erro', 'Não foi possível abrir o link');
-      }
-    } catch (error) {
-      console.error('Error opening jobs URL:', error);
-      Alert.alert('Erro', 'Não foi possível abrir o link');
-    }
-  };
-
-  // Debug sempre mostrar banner
-  console.log('NewsBanner render - loading:', loading, 'featuredNews:', !!featuredNews);
 
   return (
     <View style={styles.container}>
       <ScrollView 
+        ref={scrollViewRef}
         horizontal 
         showsHorizontalScrollIndicator={false}
         pagingEnabled
+        onScroll={handleScroll}
+        scrollEventThrottle={16} // Adjust as needed for performance
         style={styles.carousel}
       >
-        {/* First Banner - News */}
-        <View style={styles.bannerContainer}>
-          <View style={styles.headerContainer}>
-            <View style={styles.newsLabel}>
-              <Ionicons name="newspaper-outline" size={16} color={colors.primary} />
-              <Text style={[styles.newsLabelText, { color: colors.primary }]}>TECH NEWS</Text>
-            </View>
-            
-            <Text style={[styles.bannerTitle, { color: colors.text }]} numberOfLines={2}>
-              {featuredNews.title}
-            </Text>
-            
-            <Text style={[styles.bannerDescription, { color: colors.textMuted }]} numberOfLines={2}>
-              {featuredNews.description}
-            </Text>
-            
-            <View style={styles.bannerMeta}>
-              <Text style={[styles.bannerSource, { color: colors.textMuted }]}>{featuredNews.source.name}</Text>
-              <Text style={[styles.bannerTime, { color: colors.textMuted }]}>
-                {newsService.formatTimeAgo(featuredNews.publishedAt)}
+        {banners.map((banner, index) => (
+          <View key={index} style={styles.bannerWrapper}>
+            <View style={styles.headerContainer}>
+              <View style={[styles.newsLabel, { backgroundColor: `${banner.badgeColor}15` }]}>
+                <Ionicons name={banner.type === 'news' ? 'newspaper-outline' : 'briefcase-outline'} size={16} color={banner.badgeColor} />
+                <Text style={[styles.newsLabelText, { color: banner.badgeColor }]}>{banner.type === 'news' ? 'TECH NEWS' : 'VISITE NOSSO SITE'}</Text>
+              </View>
+              
+              <Text style={[styles.bannerTitle, { color: colors.text }]} numberOfLines={2}>
+                {banner.title}
               </Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.banner}
-            onPress={handleNewsPress}
-            activeOpacity={0.9}
-          >
-            <Image 
-              source={require('../../assets/banner/banner2.jpg')}
-              style={styles.bannerImage}
-              resizeMode="cover"
-            />
-            <View style={styles.newBadge}>
-              <Text style={styles.newBadgeText}>NOVO</Text>
-            </View>
-            <View style={styles.readMoreButton}>
-              <Text style={styles.readMoreText}>Ler mais</Text>
-              <Ionicons name="chevron-forward" size={16} color="#fff" />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Second Banner - Jobs */}
-        <View style={styles.bannerContainer}>
-          <View style={styles.headerContainer}>
-            <View style={[styles.newsLabel, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]}>
-              <Ionicons name="briefcase-outline" size={16} color="#22c55e" />
-              <Text style={[styles.newsLabelText, { color: '#22c55e' }]}>VISITE NOSSO SITE</Text>
-            </View>
-            
-            <Text style={[styles.bannerTitle, { color: colors.text }]} numberOfLines={2}>
-              Encontre as melhores oportunidades
-            </Text>
-            
-            <Text style={[styles.bannerDescription, { color: colors.textMuted }]} numberOfLines={2}>
-              Acesse nosso site e descubra vagas exclusivas para desenvolvedores e profissionais de tech.
-            </Text>
-            
-            <View style={styles.bannerMeta}>
-              <Text style={[styles.bannerSource, { color: colors.textMuted }]}>SocialDev</Text>
-              <Text style={[styles.bannerTime, { color: colors.textMuted }]}>
-                Portal de Vagas
+              
+              <Text style={[styles.bannerDescription, { color: colors.textMuted }]} numberOfLines={2}>
+                {banner.description}
               </Text>
+              
+              <View style={styles.bannerMeta}>
+                <Text style={[styles.bannerSource, { color: colors.textMuted }]}>{banner.source}</Text>
+                <Text style={[styles.bannerTime, { color: colors.textMuted }]}>{banner.time}</Text>
+              </View>
             </View>
-          </View>
 
-          <TouchableOpacity
-            style={styles.banner}
-            onPress={handleJobsPress}
-            activeOpacity={0.9}
-          >
-            <Image 
-              source={require('../../assets/banner/banner1.jpg')}
-              style={styles.bannerImage}
-              resizeMode="cover"
-            />
-            <View style={[styles.newBadge, { backgroundColor: '#22c55e' }]}>
-              <Text style={styles.newBadgeText}>SITE</Text>
-            </View>
-            <View style={styles.readMoreButton}>
-              <Text style={styles.readMoreText}>Visitar</Text>
-              <Ionicons name="open-outline" size={16} color="#fff" />
-            </View>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={styles.banner}
+              onPress={banner.onPress}
+              activeOpacity={0.9}
+            >
+              <Image 
+                source={banner.image}
+                style={styles.bannerImage}
+                resizeMode="cover"
+              />
+              <View style={[styles.newBadge, { backgroundColor: banner.badgeColor }]}>
+                <Text style={styles.newBadgeText}>{banner.badgeText}</Text>
+              </View>
+              <View style={styles.readMoreButton}>
+                <Text style={styles.readMoreText}>{banner.actionText}</Text>
+                <Ionicons name={banner.actionIcon as any} size={16} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
 
       {/* Page Indicators */}
       <View style={styles.pageIndicators}>
-        <View style={[styles.indicator, { backgroundColor: colors.primary }]} />
-        <View style={[styles.indicator, { backgroundColor: colors.border }]} />
+        {banners.map((_, index) => (
+          <View 
+            key={index}
+            style={[
+              styles.indicator,
+              { backgroundColor: index === activeIndex ? colors.primary : colors.border },
+              index === activeIndex && styles.activeIndicator,
+            ]}
+          />
+        ))}
       </View>
     </View>
   );
@@ -192,7 +186,7 @@ const styles = StyleSheet.create({
   carousel: {
     flexGrow: 0,
   },
-  bannerContainer: {
+  bannerWrapper: {
     width: width,
     paddingHorizontal: 16,
   },
@@ -223,7 +217,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignSelf: 'flex-start',
     marginBottom: 8,
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
   },
   newsLabelText: {
     fontSize: 11,
@@ -297,5 +290,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
+  },
+  activeIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
 });

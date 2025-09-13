@@ -134,7 +134,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
               focused={isFocused}
               iconName={getIconName(route.name, isFocused)}
             />
-            <Text style={[styles.label, { color: isFocused ? 'black' : 'white' }]}>
+            <Text style={[styles.label, { color: isFocused ? 'black' : '#6b7280' }]}>
               {getTabTitle(route.name)}
             </Text>
           </TouchableOpacity>
@@ -162,7 +162,7 @@ function TabIcon({ routeName, focused, iconName }: TabIconProps) {
     <Ionicons
       name={iconName}
       size={24}
-      color={focused ? 'black' : 'white'}
+      color={focused ? 'black' : '#6b7280'}
     />
   );
 }
@@ -185,16 +185,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#f1f5f9',
   },
-  indicator: {
-    position: 'absolute',
-    top: 0,
-    height: 3,
-  },
-  indicatorGradient: {
-    flex: 1,
-    borderBottomLeftRadius: 2,
-    borderBottomRightRadius: 2,
-  },
   tab: {
     flex: 1,
     alignItems: 'center',
@@ -206,27 +196,6 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     marginTop: 4,
     fontWeight: '500',
-  },
-  labelActive: {
-    color: '#667eea',
-    fontWeight: '600',
-  },
-  activeDot: {
-    position: 'absolute',
-    bottom: -8,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#667eea',
-  },
-  glowEffect: {
-    position: 'absolute',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#667eea',
-    top: -4,
-    left: -4,
   },
   hamburgerContainer: {
     position: 'absolute',

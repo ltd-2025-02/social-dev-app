@@ -61,6 +61,10 @@ import NotificationSettings from '../screens/settings/NotificationSettings';
 import AppSettings from '../screens/settings/AppSettings';
 import ContentSettings from '../screens/settings/ContentSettings';
 import AIAssistantPromptListScreen from '../screens/menu/AIAssistantPromptListScreen';
+import EventsScreen from '../screens/menu/EventsScreen';
+import CommunityScreen from '../screens/menu/CommunityScreen';
+import ResourcesScreen from '../screens/menu/ResourcesScreen';
+import TechnologyRoadmapScreen from '../screens/menu/TechnologyRoadmapScreen';
 
 // Components
 import CustomTabBar from '../components/CustomTabBar';
@@ -263,6 +267,38 @@ export default function MainNavigator() {
       <Stack.Screen 
         name="AIAssistantPromptList" 
         component={AIAssistantPromptListScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Events" 
+        component={EventsScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Community" 
+        component={CommunityScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="Resources" 
+        component={ResourcesScreen} 
+        options={{ 
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen 
+        name="TechnologyRoadmap" 
+        component={TechnologyRoadmapScreen} 
         options={{ 
           headerShown: false,
           animation: 'slide_from_right',

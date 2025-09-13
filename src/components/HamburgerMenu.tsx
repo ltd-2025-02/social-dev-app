@@ -186,7 +186,35 @@ export default function HamburgerMenu({ isVisible, onClose, navigation }: Hambur
       title: 'Configurações',
       subtitle: 'Preferências do app',
       color: '#6b7280',
-      route: 'Settings',
+      route: 'SettingsStack',
+    },
+    {
+      icon: 'calendar-outline',
+      title: 'Eventos',
+      subtitle: 'Descubra eventos tech',
+      color: '#ef4444',
+      route: 'Events',
+    },
+    {
+      icon: 'people-circle-outline',
+      title: 'Comunidade',
+      subtitle: 'Conecte-se com grupos',
+      color: '#0ea5e9',
+      route: 'Community',
+    },
+    {
+      icon: 'library-outline',
+      title: 'Recursos',
+      subtitle: 'Ferramentas e documentação',
+      color: '#a855f7',
+      route: 'Resources',
+    },
+    {
+      icon: 'map-outline',
+      title: 'Roadmap de Tecnologias',
+      subtitle: 'Trilhas de aprendizado completas',
+      color: '#22c55e',
+      route: 'TechnologyRoadmap',
     },
   ];
 
