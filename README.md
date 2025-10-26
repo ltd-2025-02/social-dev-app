@@ -271,7 +271,7 @@ socialdev-mobile-app/
 │   ├── images/             # Imagens da aplicação
 │   ├── icons/              # Ícones customizados
 │   ├── icone.png           # Ícone principal do app
-│   ├── screen-dev.png      # Screenshot para README
+│   ├── app1.png            # Screenshot para README (substitui screen-dev.png)
 │   └── fonts/              # Fontes personalizadas
 ├── src/
 │   ├── components/         # Componentes reutilizáveis

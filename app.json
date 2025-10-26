@@ -4,14 +4,18 @@
     "slug": "socialdev-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/screen-dev.png",
+  "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/screen-dev.png",
+  "image": "./assets/images/splash.png",
       "resizeMode": "cover",
       "backgroundColor": "#1a202c",
-      "androidStatusBar": { "hidden": true },
-      "androidNavigationBar": { "hidden": true }
+      "androidStatusBar": {
+        "hidden": true
+      },
+      "androidNavigationBar": {
+        "hidden": true
+      }
     },
     "assetBundlePatterns": [
       "**/*"
@@ -20,7 +24,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.socialdev.app",
       "splash": {
-        "image": "./assets/screen-dev.png",
+  "image": "./assets/images/splash.png",
         "resizeMode": "cover",
         "backgroundColor": "#1a202c"
       },
@@ -31,15 +35,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/screen-dev.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#1a202c"
       },
       "splash": {
-        "image": "./assets/screen-dev.png",
+  "image": "./assets/images/splash-icon.png",
         "resizeMode": "cover",
         "backgroundColor": "#1a202c",
-        "androidStatusBar": { "hidden": true },
-        "androidNavigationBar": { "hidden": true }
+        "androidStatusBar": {
+          "hidden": true
+        },
+        "androidNavigationBar": {
+          "hidden": true
+        }
       },
       "package": "com.socialdev.app",
       "permissions": [
@@ -49,11 +57,10 @@
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.RECORD_AUDIO"
-      ],
-      "resizeMode": "cover"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/images/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
@@ -73,12 +80,12 @@
         }
       ]
     ],
+    "owner": "estevam7s",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "a87c157a-09ac-4283-8bef-1c99127cbbd1"
+        "projectId": "c931e2d4-f75f-49c1-8732-4c4665d7a962"
       }
-    },
-    "owner": "estevam5s"
+    }
   }
 }

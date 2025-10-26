@@ -347,7 +347,7 @@ export default function HomeScreen({ navigation }: any) {
 
             <View style={[styles.benefitCard, { backgroundColor: colors.surface }]}>
               <Image 
-                source={require('../../../assets/screen-dev.png')} 
+                source={require('../../../assets/app1.png')} 
                 style={styles.benefitImage}
                 resizeMode="cover"
               />

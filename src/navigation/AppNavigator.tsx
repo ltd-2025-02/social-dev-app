@@ -25,7 +25,6 @@ export default function AppNavigator() {
   const { isAuthenticated, loading: authLoading } = useSelector((state: RootState) => state.auth);
   const { hasSeenOnboarding, loading: onboardingLoading } = useSelector((state: RootState) => state.onboarding);
   const { isDark, colors } = useTheme();
-  const [showSplash, setShowSplash] = useState(true);
 
   // Create custom Dracula theme for navigation
   const navigationTheme = {
@@ -47,6 +46,10 @@ export default function AppNavigator() {
         fontFamily: 'System',
         fontWeight: '500',
       },
+      bold: {
+        fontFamily: 'System',
+        fontWeight: '700',
+      },
       light: {
         fontFamily: 'System',
         fontWeight: '300',
@@ -63,11 +66,6 @@ export default function AppNavigator() {
   };
 
   useEffect(() => {
-    // Mostrar splash screen por 3 segundos
-    const splashTimer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-
     const checkOnboardingStatus = async () => {
       try {
         const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
@@ -79,8 +77,6 @@ export default function AppNavigator() {
     };
 
     checkOnboardingStatus();
-
-    return () => clearTimeout(splashTimer);
   }, [dispatch]);
 
   useEffect(() => {
@@ -107,17 +103,14 @@ export default function AppNavigator() {
     dispatch(setOnboardingSeen());
   };
 
-  // Mostrar splash screen primeiro
-  if (showSplash) {
-    return <SplashScreen />;
-  }
+  // No JS splash screen — native splash handled in App.tsx
 
   if (authLoading || onboardingLoading) {
     return <LoadingScreen />;
   }
 
   return (
-    <NavigationContainer theme={navigationTheme}>
+    <NavigationContainer theme={navigationTheme as any}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!hasSeenOnboarding ? (
           <Stack.Screen 
