@@ -14,7 +14,7 @@ export default function SplashScreen() {
     <View style={styles.container}>
       <StatusBar hidden />
       <Image 
-        source={require('../../assets/images/splash.png')} 
+        source={require('../../assets/images/splash-icon.png')} 
         style={styles.splashImage}
         resizeMode="cover"
       />
